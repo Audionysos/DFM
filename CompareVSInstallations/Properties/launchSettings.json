@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CompareVSInstallations": {
+      "commandName": "Project",
+      "commandLineArgs": "testData/a.vsconfig testData/b.vsconfig"
+    }
+  }
+}
