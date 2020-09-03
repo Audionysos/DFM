@@ -34,6 +34,8 @@ namespace com.audionysos.data
 		private static ReflContext rc;
 
 		static void Main(string[] args) {
+			newLinesTest(); return;
+
 			var c = new console.Console();
 			c.handlers.Clear();
 			c.handlers.Add(ConsoleHanders.CONSOLE);
@@ -60,6 +62,10 @@ namespace com.audionysos.data
 			//dm.Diagnose();
 			//dm.
         }
+
+		private static void newLinesTest() {
+			File.WriteAllText("newlines", "000\r\n111\n222\n\r333\n\r\n444\r\r\n\r\r555");
+		}
 
 		private static void processInput() {
 			(int x, int y) hp = (System.Console.CursorLeft, System.Console.CursorTop + 1);

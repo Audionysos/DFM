@@ -1,4 +1,5 @@
 ﻿using com.audionysos.text.parsing.expression;
+using com.audionysos.text.utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,7 @@ namespace com.audionysos.text.parsing {
 
 			/// <summary>Matches speficic sequence of characters (case sensitive).</summary>
 			public Sequence(string sequence) {
+				if (sequence.isEmpty()) throw new ArgumentException("Empty or null string cannot represent a sequence", nameof(sequence));
 				this.sequence = sequence;
 				signature = sequence;
 			}

@@ -58,6 +58,7 @@
     <Compile Include="text\parsing\patterns\BasicPatterns.cs" />
     <Compile Include="text\parsing\patterns\GenericConstructs.cs" />
     <Compile Include="text\parsing\SyntaxParser.cs" />
+    <Compile Include="text\utils\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

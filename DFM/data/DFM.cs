@@ -18,15 +18,21 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 
 namespace com.audionysos.data {
-	public class DFM {
 
+	public class DFM {
+		/// <summary>Specifes root directory on which the dfm will operate.
+		/// This can be either absolute or relative path. Note that when DFM scans the file system, it will change current directory (see <see cref="Directory.GetCurrentDirectory"/>) to the one you specified in this property.</summary>
 		public string root { get; set; }
 		private Pah rot;
+		/// <summary>Items associated with the <see cref="root"/> directory.
+		/// For this property to be available you must first call <see cref="Scan"/> method.</summary>
 		public Item top { get; private set; }
+
 		/// <summary>Loaded modules used in the system.</summary>
 		private List<DFMModule> mods = new List<DFMModule>();
 		/// <summary>Loaded modules used in the system.</summary>
 		public ReadOnlyCollection<DFMModule> modules => mods.AsReadOnly();
+		
 		public DFMAccesor get { get; }
 		/// <summary>Main item provider </summary>
 		private ItemProvider itemProvder;
@@ -53,15 +59,10 @@ namespace com.audionysos.data {
 		}
 
 		#region Scanning
+		/// <summary>Scans files system for items at given <see cref="root"/> directory.</summary>
 		public async void Scan() {
 			setRootPath();
 			var r = rot.fsRoot;
-			//var com = Combine(@"..\..\", @"abc\def");
-
-			//var dip = new SDocItemsProvider() {
-				//baseHTML = File.ReadAllText("base.html"),
-				//defaultCSS = rot.Add("themes").Add("github.css")
-			//};
 
 			top = Item.newTree(rot, itemProvder);
 			var sits = Directory.EnumerateFileSystemEntries(root); //system items
@@ -71,7 +72,6 @@ namespace com.audionysos.data {
 			await Scan3(st);
 			//s = Scan3NoPreview(dip, st);
 			//Scan2(dip, st);
-
 			return;
 		}
 

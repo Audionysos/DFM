@@ -52,6 +52,7 @@
     <Compile Include="data\DFM.cs" />
     <Compile Include="data\DFMExtension.cs" />
     <Compile Include="data\items\Item.cs" />
+    <Compile Include="data\items\ItemProvider.cs" />
     <Compile Include="generics\diagnostinc\Issue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

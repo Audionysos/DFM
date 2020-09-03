@@ -6,9 +6,13 @@ using System.Threading.Tasks;
 
 namespace com.audionysos.generics.diagnostinc {
 
+	/// <summary>Simple generic type representing any issue.</summary>
 	public class Issue {
+		/// <summary>End user message, writen is source language.</summary>
 		public string message { get; private set; }
+		/// <summary>Data associated with the issue, may be any object but typically an exception.</summary>
 		public object data { get; private set; }
+		/// <summary>Spefices how important the issue is.</summary>
 		public Impact impact { get; private set; }
 
 		public Issue(string message, Impact impact = null, object data = null) {
@@ -17,18 +21,29 @@ namespace com.audionysos.generics.diagnostinc {
 			this.data = data;
 		}
 
+		/// <summary>False if null.</summary>
 		public static implicit operator bool(Issue i)=> i!=null;
 
+		/// <summary>Compares two issues in terms of ther <see cref="impact"/>.</summary>
 		public static bool operator <(Issue i, Impact b) => i ?  i.impact.level < b.level : true;
+		/// <summary>Compares two issues in terms of ther <see cref="impact"/>.</summary>
 		public static bool operator <=(Issue i, Impact b) => i ? i.impact.level <= b.level : true;
+		/// <summary>Compares two issues in terms of ther <see cref="impact"/>.</summary>
 		public static bool operator >(Issue i, Impact b) => i ? i.impact.level > b.level : false;
+		/// <summary>Compares two issues in terms of ther <see cref="impact"/>.</summary>
 		public static bool operator >=(Issue i, Impact b) => i ?  i.impact.level >= b.level : false;
 	}
 
+	/// <summary>Represent collection of <see cref="Issue"/> instances while been the issue itself.</summary>
 	public class Issues : Issue {
 		private List<Issue> subs = new List<Issue>();
+		/// <summary>Number of sub issues this issue stores.</summary>
 		public int Count => subs.Count;
 
+		/// <summary></summary>
+		/// <param name="message"></param>
+		/// <param name="impact"></param>
+		/// <param name="data"></param>
 		public Issues(string message, Impact impact = null, object data = null)
 			: base(message, impact, data) {
 		}
@@ -36,8 +51,7 @@ namespace com.audionysos.generics.diagnostinc {
 
 	}
 
-
-
+	/// <summary>Specifies possible impacts of an <see cref="Issue"/> thay may occure in a system.</summary>
 	public class Impact {
 		/// <summary>Insignificant issue that not afect sytem operation and wont intrudce any futher problems by itself but may be incovienied and/or could be improved. This could be for example poor naming or formatting of some texts.</summary>
 		public static readonly Impact COSMETIC = new Impact("COSMETIC", 0);
@@ -50,9 +64,12 @@ namespace com.audionysos.generics.diagnostinc {
 		/// <summary>The sytem cannot operated with the issue.</summary>
 		public static readonly Impact CRITICAL = new Impact("CRITICAL", 4);
 
+		/// <summary>Word for the impact level.</summary>
 		public string name { get; private set; }
+		/// <summary>Numerical value for the impact, lower value means less impact.</summary>
 		public int level { get; private set; }
 
+		/// <summary>Returns true if this impact is at least on the same level or higher.</summary>
 		public bool atLeast(Impact i) => this >= i;
 
 		private Impact(string name, int level) {
@@ -60,9 +77,13 @@ namespace com.audionysos.generics.diagnostinc {
 			this.level = level;
 		}
 
+		/// <summary>Compares two impacts in therm of their <see cref="level"/>s.</summary>
 		public static bool operator <(Impact a, Impact b) => a.level < b.level;
+		/// <summary>Compares two impacts in therm of their <see cref="level"/>s.</summary>
 		public static bool operator <=(Impact a, Impact b) => a.level <= b.level;
+		/// <summary>Compares two impacts in therm of their <see cref="level"/>s.</summary>
 		public static bool operator >(Impact a, Impact b) => a.level > b.level;
+		/// <summary>Compares two impacts in therm of their <see cref="level"/>s.</summary>
 		public static bool operator >=(Impact a, Impact b) => a.level >= b.level;
 
 	}

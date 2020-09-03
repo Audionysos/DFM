@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 
 namespace com.audionysos.files {
+
+	/// <summary>Provides abstraction layer from <see cref="System.IO"/> file system for use by <see cref="Pah"/> object.
+	/// This will make possible to add virtual file systems/database access/reflection acces... i.e. it's to allow to work on file/data on multiple different systems using the same <see cref="Pah"/> trees.</summary>
 	public abstract class DataSystem {
 		private List<PahAccess> accs = new List<PahAccess>();
 
