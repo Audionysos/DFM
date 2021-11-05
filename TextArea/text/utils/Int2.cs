@@ -2,6 +2,17 @@
 
 namespace com.audionysos.text.utils {
 
+	/// <summary>Represents bounds in quantized 2d grid.</summary>
+	public class Int4 {
+		/// <summary>Initial posion of the in the grid.</summary>
+		public Int2 pos;
+		/// <summary>Dimensions of the (width-height).</summary>
+		public Int2 size;
+
+		public Int4() { }
+	}
+
+	/// <summary>Represents trackable position withn some quantized 2d space.</summary>
 	public class Int2 {
 		/// <summary>Dispatched when one of object's properties were changed.
 		/// First handler argument is this instance, second argument is difference from previous state.</summary>

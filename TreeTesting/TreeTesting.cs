@@ -1,0 +1,34 @@
+using audioysos.display;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace TreeTesting {
+
+	[TestClass]
+	public class TreeTesting {
+
+		[TestMethod]
+		public void TestMethod1() {
+			var c = new DisplayObjectContainer();
+			c.name = "root";
+			var ch = new DisplayObjectContainer();
+			ch.name = "ch1";
+			c.addChild(ch);
+
+			Assert.IsTrue(c.tree.children.Count == 1);
+			Assert.AreSame(c, ch.parent);
+			c.transform.x = 100;
+			ch.transform.x = 20;
+			Assert.IsTrue(ch.getGlobaTransform().x == 120);
+			c.transform.sX = 2;
+			Assert.IsTrue(ch.getGlobaTransform().x == 140);
+
+			var ch2 = new DisplayObjectContainer();
+			ch2.name = "ch2";
+			ch.addChild(ch2);
+			Assert.AreSame(c, ch.parent);
+
+			ch2.transform.x = 10;
+			Assert.AreEqual(160, ch2.getGlobaTransform().x);
+		}
+	}
+}

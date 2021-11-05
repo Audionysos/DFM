@@ -18,7 +18,9 @@ namespace com.audionysos.text.edit {
 
 		}
 
+		/// <inheritdoc/>
 		public IEnumerator<TextSpan> GetEnumerator() => _all.GetEnumerator();
+		/// <inheritdoc/>
 		IEnumerator IEnumerable.GetEnumerator() => _all.GetEnumerator();
 
 	}

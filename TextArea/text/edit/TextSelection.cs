@@ -2,7 +2,7 @@
 
 namespace com.audionysos.text.edit {
 	/// <summary>Represents selection in a <see cref="TextManipulator"/>.
-	/// The selection can be composed of any number of <see cref="TextSpan"/>'s while it is a <see cref="TextSpan"/> itselef which idicates boundres of all selected spans (there may be fragments whitn that range that are not coverted selected).</summary>
+	/// The selection can be composed of any number of <see cref="TextSpan"/>'s while it is a <see cref="TextSpan"/> itselef which idicates boundres of all selected spans (there may be fragments whitn that range that are not selected).</summary>
 	public class TextSelection : TextSpan {
 		private List<TextSpan> spans = new List<TextSpan>();
 

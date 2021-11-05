@@ -1,11 +1,14 @@
 ﻿using System;
 
 namespace com.audionysos.text.edit {
-	/// <summary>Represents a sub sequence of characters in a <see cref="Text"/> by stroing boundry indices.</summary>
+	/// <summary>Represents a continous sub sequence of characters in a <see cref="Text"/> by stroing boundry indices.</summary>
 	public class TextSpan {
 
+		/// <summary>Source text this span is part of.</summary>
 		public Text source { get; private set; }
+		/// <summary>Position of first character of this span in <see cref="source"/> text.</summary>
 		public int start { get; set; }
+		/// <summary>Position of last character of this span.</summary>
 		public int end { get; set; }
 
 		public Attributes attributes { get;  }
@@ -49,6 +52,7 @@ namespace com.audionysos.text.edit {
 			get => source[start + i];
 		}
 
+		/// <inheritdoc/>
 		public override string ToString() {
 			return $@"({start}-{end}): {fullOrError}";
 		}
