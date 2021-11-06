@@ -10,6 +10,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Drawing;
+using S = SixLabors.ImageSharp;
 
 namespace WpfDNet {
 	public class SharpGraphics : IMicroGraphics2D {
@@ -30,26 +31,55 @@ namespace WpfDNet {
 
 		private void render() {
 			img.Mutate(x => {
+				var polys = new List<Polygon>();
+				S.Color lfill = S.Color.Transparent;
+				IPen lpen = null;
 				for (int i = 0; i < figures.Count; i++) {
 					var f = figures[i];
 					var so = new ShapeGraphicsOptions();
-					var pts = f.points.ToArray();
+					PointF[] pts = null;
+					Polygon p = null;
+					if (f.points.Count < 2) goto FINISH;
+					pts = f.points.ToArray();
 					var ls = new LinearLineSegment(f.points.ToArray());
-					var p = new Polygon(ls);
+					p = new Polygon(ls);
 					//so.GraphicsOptions.
-					if (f.fill != null) {
-						x.Fill(f.getBrush(), p);
-						//x.DrawText("fdsfds", null, null, null);
+					var cfill = f.fill != null ? f.getBrush() : S.Color.Transparent;
+					var cpen = f.stroke != null ? f.getPen() : null;
+					polys.Add(p);
+					if(polys.Count == 1) {
+						lfill = cfill;
+						lpen = cpen;
 					}
-					if(f.stroke != null) {
-						x.DrawLines(f.getPen(), pts);
+					if(lfill == cfill && lpen == cpen
+						&& i < figures.Count -1) {
+						continue;
+					}
+					FINISH:
+					if(polys.Count == 1) {
+						if (lfill != S.Color.Transparent) {
+							x.Fill(lfill, polys[0]);
+						}
+						if(lpen != null) {
+							x.DrawLines(lpen, pts);
+						}
+					}else {
+						var cp = new ComplexPolygon(polys);
+						if(lfill != S.Color.Transparent)
+							x.Fill(f.getBrush(), cp);
+						if(lpen != null)
+							x.DrawLines(f.getPen(), pts);
+
+						polys.Clear();
+						lfill = S.Color.Transparent;
+						lpen = null;
 					}
 				}
 			});
 		}
 
 		public IMicroGraphics2D beginFill(uint rgb, double a = 1) {
-			fill = (com.audionysos.Color)rgb;
+			fill = (com.audionysos.Color)((rgb << 8) | 0xFF);
 			return this;
 		}
 
