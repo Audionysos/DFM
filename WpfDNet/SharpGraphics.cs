@@ -13,6 +13,7 @@ using SixLabors.ImageSharp.Drawing;
 using S = SixLabors.ImageSharp;
 
 namespace WpfDNet {
+	/// <summary>Implements <see cref="IMicroGraphics2D"/> interface utilizing <see cref="SixLabors.ImageSharp"/> library.</summary>
 	public class SharpGraphics : IMicroGraphics2D {
 		public double x { get; }
 		public double y { get; }

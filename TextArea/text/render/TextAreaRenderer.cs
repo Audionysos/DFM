@@ -26,7 +26,7 @@ namespace com.audionysos.text.render {
 		public TextManipulator manipulator;
 		public GlyphsProvider glyphs;
 		public TextAreaView view;
-
+		public IGraphics2D gfx;
 	}
 
 	public class TextAreaView {

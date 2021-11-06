@@ -35,6 +35,7 @@ namespace WpfDNet {
 				null);
 			this.img.Source = wpfBitmap;
 			img.Stretch = WM.Stretch.None;
+			img.UseLayoutRounding = true;
 
 			var sw = Stopwatch.StartNew();
 
