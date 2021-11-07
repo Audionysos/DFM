@@ -9,16 +9,77 @@ using SixLabors.ImageSharp.Drawing;
 using F = SixLabors.Fonts;
 using SixLabors.Fonts;
 using X = com.audionysos.text.render;
+using audioysos.display;
+using com.audionysos;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Advanced;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.Drawing;
+using W = System.Windows;
+using WM = System.Windows.Media;
+using WMI = System.Windows.Media.Imaging;
+using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace WpfDNet {
 	public class TextAreaTest {
+		public SLDiplaySurface surface;
 
 		public TextAreaTest() {
+			surface = new SLDiplaySurface();
 			TextDisplayContext.defaulGlyphsProvider = new SLGlyphsProvider();
 			var ta = new TextAreaView();
-			ta.text = "Chrząszcz brzmi w trzcinie w trzebżeszynie";
+			surface.Add(ta.view);
+			ta.text =
+				"Chrząszcz brzmi w trzcinie w trzebżeszynie" +
+				"\nJaba daba doom";
+			surface.transferBitmap();
 		}
 
+	}
+
+	public class SLDiplaySurface : DisplaySurface {
+		(int x, int y) size = (500, 500);
+		Image<Bgra32> image;
+		public WMI.WriteableBitmap wpfBitmap { get; private set; }
+
+		public SLDiplaySurface() {
+			image = new Image<Bgra32>(size.x, size.y);
+
+			wpfBitmap = new WMI.WriteableBitmap(size.x, size.y,
+				96, 96,
+				WM.PixelFormats.Bgra32,
+				null);
+			drawBackground();
+		}
+
+		private void drawBackground() {
+			var p = new Star(100f, 100f, 5, 20f, 50f);
+			image.Mutate(x => 
+				x.Fill(SixLabors.ImageSharp.Color.LightGray));
+		}
+
+		public void transferBitmap() {
+			var img = image.GetPixelMemoryGroup();
+			var mg = img.ToArray()[0];
+			var PixelData = MemoryMarshal.AsBytes(mg.Span).ToArray();
+
+			wpfBitmap.Lock();
+			wpfBitmap.WritePixels(new W.Int32Rect(0, 0, size.x, size.y),
+				PixelData,
+				size.x * 4, //stride (bytes per row);
+				0, 0);
+			wpfBitmap.Unlock();
+		}
+
+		public override Graphics createGraphics() {
+			var sg = new SharpGraphics(image);
+			var g = new com.audionysos.Graphics(sg);
+			return g;
+		}
 	}
 
 	public class SLGlyphsProvider : GlyphsProvider {
@@ -31,7 +92,7 @@ namespace WpfDNet {
 			var gi = gl.Instance;
 			//gi.
 			var min = gi.Height - font.EmSize;
-			var scale = 1; var x = 0; var y = 0;
+			var scale = (float)f.size/11; var x = 0; var y = 0;
 			var sf = (font.Ascender + font.Descender) / gi.ScaleFactor * scale;
 			//var sf = (font.Ascender) / gi.ScaleFactor * scale;
 			var s = new System.Numerics.Vector2(sf, -sf);
@@ -75,9 +136,4 @@ namespace WpfDNet {
 		}
 	}
 
-	//public class GlyphPathsProvider : IGlyphPathsProvider {
-	//	public Path[] getPath(Glyph g) {
-	//		g.
-	//	}
-	//}
 }

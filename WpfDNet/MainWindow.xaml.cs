@@ -27,6 +27,18 @@ namespace WpfDNet {
 		public MainWindow() {
 			InitializeComponent();
 			Left = 1800;
+			textarea();
+			//previous();
+		}
+
+		private void textarea() {
+			var ta = new TextAreaTest();
+			this.img.Source = ta.surface.wpfBitmap;
+			img.Stretch = WM.Stretch.None;
+			img.UseLayoutRounding = true;
+		}
+
+		private void previous() {
 			image = new Image<Bgra32>(size.x, size.y);
 
 			wpfBitmap = new WMI.WriteableBitmap(size.x, size.y,
@@ -50,7 +62,7 @@ namespace WpfDNet {
 
 			drawGlyphs(g, "Hello world! Prawdopodobnie najlepszy program na świecie!");
 			//drawGlyphs(g, "apapapapapapapapapapapapapapapapapapap");
-			
+
 
 			transferBitmap();
 			sw.Stop();

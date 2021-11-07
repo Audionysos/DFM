@@ -15,6 +15,11 @@
 
 		public static implicit operator Point2((double x, double y) t)
 			=> new Point2(t.x, t.y);
+
+		/// <inheritdoc/>
+		public override string ToString() {
+			return $@"({x}, {y})";
+		}
 	}
 
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 namespace com.audionysos {
+
 	public class Graphics : IGraphics2D, IPoint2 {
 
 		private IMicroGraphics2D m;
@@ -28,6 +29,13 @@ namespace com.audionysos {
 			m = baseDrawer ?? throw new ArgumentNullException();
 			b = baseDrawer as IBasicGraphics2D;
 			g = baseDrawer as IGraphics2D;
+		}
+
+		public void changeBaseDrawer(IMicroGraphics2D old, IMicroGraphics2D nev) {
+			if (m != old) throw new InvalidOperationException("Old base drawer is a differen instance.");
+			m = nev ?? throw new ArgumentNullException();
+			b = nev as IBasicGraphics2D;
+			g = nev as IGraphics2D;
 		}
 
 		public IMicroGraphics2D lineSyle(double w = 0, uint rgb = 0, double a = 1)

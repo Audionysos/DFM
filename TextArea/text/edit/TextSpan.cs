@@ -11,7 +11,7 @@ namespace com.audionysos.text.edit {
 		/// <summary>Position of last character of this span.</summary>
 		public int end { get; set; }
 
-		public Attributes attributes { get;  }
+		public Attributes attributes { get; } = new Attributes();
 
 		#region Derived
 		public int length => end - start;

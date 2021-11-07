@@ -27,6 +27,8 @@
 		public int v { get; }
 
 		public uint rgba { get; }
+
+		public uint rgb => rgba >> 8;
 		public uint r => rgba >> 24;
 		public uint g => (rgba >> 16) & 0x000000FF;
 		public uint b => (rgba >> 8) & 0x000000FF;
@@ -42,6 +44,10 @@
 
 		public static implicit operator Color(uint rgba)
 			=> new Color(rgba);
+
+		public override string ToString() {
+			return rgba.ToString("X8");
+		}
 	}
 
 }

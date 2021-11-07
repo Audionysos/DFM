@@ -7,8 +7,8 @@ using System.Text;
 //skatching
 
 namespace audioysos.display {
-	public class DisplaySurface {
-		public Graphics graphics;
+	public abstract class DisplaySurface {
+		private List<DisplayObject> _displayed = new List<DisplayObject>(); 
 
 		public DisplaySurface() {
 			//var c = new DisplayObjectContainer();
@@ -22,100 +22,37 @@ namespace audioysos.display {
 			//graphics = new Graphics();
 		}
 
+		public void Add(DisplayObject d) {
+			_displayed.Add(d);
+			d.surface = this;
+		}
+
+		/// <summary>Create graphics that this sufrace will display.</summary>
+		public abstract Graphics createGraphics();
+
+		/// <summary>False if null.</summary>
+		public static implicit operator bool(DisplaySurface s) => s!=null;
 	}
 
 	public class Der : DisplayObject {
 
 	}
 
-	public class DisplayObjectContainer : DisplayObject, ITreeNodeClient<DisplayObject> {
-		//new public TreeNode<DisplayObject> tree { get; private set; }
-		/// <summary>Return tree point which is associated with this node.</summary>
-		new public TreeNode<DisplayObject> tree => base.tree as TreeNode<DisplayObject>;
-
-		/// <summary>Number of children present in this container.</summary>
-		public int Count => tree.children.Count;
-
-		public DisplayObjectContainer() {
-			//tree = new TreeNode<DisplayObject>(this);
-			
-		}
-
-		protected override bool isContainer() => true;
-
-		public void addChild(DisplayObject child) => tree.addChild(child.tree);
-		public void removeChild(DisplayObject child) => tree.removeChild(child.tree);
+	public class DerX : DisplayObjectContainer {
 
 	}
 
-	public abstract class DisplayObject : ITransformProvier, ITreeLeafClient<DisplayObject> {
-		public string name { get; set; }
-		public Transform transform { get; } = new Transform();
-		public Transform globalTransform { get; } = new Transform();
-		public DisplaySurface surface { get; }
-		public TreePoint<DisplayObject> tree { get; private set; }
-		public DisplayObjectContainer parent => tree.parent?.data as DisplayObjectContainer;
+	public class XXX : IDisplayable<DerX> {
+		public DerX view { get; }
+	}
 
-		public DisplayObject() {
-			tree = !isContainer() ? new TreePoint<DisplayObject>(this)
-				: new TreeNode<DisplayObject>(this);
-			tree.ADDED += onAdded;
-		}
-
-		/// <summary>Indicate if this object suppose to be container that is able to to store children and thus <see cref="TreeNode{T}"/> should be created for it as oppose to <see cref="TreePoint{T}"/>.</summary>
-		protected virtual bool isContainer() => false;
-
-
-		private void onAdded(TreePoint<DisplayObject> obj) {
-			//throw new NotImplementedException();
-		}
-
-		public Transform getGlobaTransform() {
-			var t = globalTransform.setTo(transform);
-			tree.forAncestors(d => t.append(d.transform));
-			return t;
-		}
-
-		/// <inheritdoc/>
-		public override string ToString() {
-			return $@"{name} [{GetType().Name}]";	
-		}
+	public interface IDisplayable<T> where T : DisplayObject {
+		/// <summary>Displayable view that could be add to a <see cref="DisplayObject"/>.</summary>
+		public T view { get; }
 	}
 
 	public class Polygon {
 
-	}
-
-	public class Transform {
-		public double x { get; set; }
-		public double y { get; set; }
-		public double z { get; set; }
-		public double sX { get; set; } = 1;
-		public double sY { get; set; } = 1;
-
-		public Transform append(Transform t) {
-			sX *= t.sX; sY *= t.sY;
-			x = x * sX + t.x;
-			y = y * sY + t.y;
-			//z = t.z;
-			return this;
-		}
-
-		public Transform copy() {
-			return new Transform() {
-				x = x,
-				y = y,
-				z = z,
-			};
-		}
-
-		public Transform setTo(Transform transform) {
-			var t = transform;
-			this.x = t.x;
-			this.y = t.y;
-			this.z = t.z;
-			return this;
-		}
 	}
 
 	public interface ITransformProvier {

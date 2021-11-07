@@ -19,11 +19,15 @@ namespace com.audionysos.text.edit {
 		/// <summary>List of all lines associated with the text.</summary>
 		public IReadOnlyList<TextSpan> lines => _lines;
 
+		/// <summary>Span containing whole text.</summary>
+		public TextSpan span { get; }
+
 		/// <summary></summary>
 		/// <param name="text">Source string from which the text will be produces.</param>
 		public Text(string text = null) {
 			chars = text ?? "";
 			splitLines(chars, _lines);
+			span = new TextSpan(this, 0, chars.Length-1);
 		}
 
 		/// <summary>Produces <see cref="lines"/> out of source text.</summary>
