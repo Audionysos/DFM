@@ -65,6 +65,11 @@ namespace com.audionysos.text.edit {
 
 		/// <summary>Converts string into text.</summary>
 		public static implicit operator Text(string t) => new Text(t);
+
+		/// <inheritdoc/>
+		public override string ToString() {
+			return chars;
+		}
 	}
 
 	/// <summary>Represents a line of <see cref="Text"/>.</summary>

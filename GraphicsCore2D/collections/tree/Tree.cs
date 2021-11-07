@@ -117,6 +117,9 @@ namespace audioysos.collections.tree {
 		#region Conversions
 		/// <inheritdoc/>
 		public override string ToString() {
+			if (data == null) return null;
+			if (data is TreeNode tn) return $@"N:{tn.data}"; 
+			if (data is TreePoint tp) return $@"P:{tp.data}"; 
 			return data.ToString();
 		}
 
@@ -187,7 +190,7 @@ namespace audioysos.collections.tree {
 		public T data { get; private set; }
 		public TreeInfo<T> info => bass.info
 			.getAttached((i) => new TreeInfo<T>(i));
-		public TreeNode<T> parent => bass.parent as TreeNode<T>;
+		public TreeNode<T> parent => bass?.parent.data as TreeNode<T>;
 
 		public TreePoint(T data){
 			this.data = data;
@@ -197,9 +200,16 @@ namespace audioysos.collections.tree {
 		}
 
 		public void forAncestors(Action<T> a) {
-			bass.forAncestorNodes(tn => a(tn.data as T));
+			bass.forAncestorNodes((tn) => {
+				var p = tn.data as TreePoint<T>;
+				a(p.data);
+			});
 		}
 
+		/// <inheritdoc/>
+		public override string ToString() {
+			return $@"TN<{typeof(T).Name}>";
+		}
 	}
 
 	public class TreeNode<T> : TreePoint<T> where T : class {
@@ -225,6 +235,11 @@ namespace audioysos.collections.tree {
 
 		public void removeChild(TreePoint<T> leaf)
 			=> bass.removeChild(leaf.bass);
+
+		/// <inheritdoc/>
+		public override string ToString() {
+			return $@"TN<{typeof(T).Name}>";
+		}
 	}
 
 	/// <summary>Wraps collection of <see cref="TreePoint{T}"/>.</summary>

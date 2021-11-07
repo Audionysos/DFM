@@ -10,7 +10,6 @@ namespace com.audionysos.text.render {
 			var ta = new TextAreaView();
 			//ta.renderer.
 
-
 			var a = new TextManipulator();
 			var r = a.regions.Add(0, 5);
 			r.attributes.Add(new TextFormat() { 
@@ -23,18 +22,47 @@ namespace com.audionysos.text.render {
 
 	/// <summary>Associates all objects need for text displaying/editing controls.</summary>
 	public class TextDisplayContext {
+		public static GlyphsProvider defaulGlyphsProvider = new DefaultGlyphsProvider();
+
 		public TextManipulator manipulator;
-		public GlyphsProvider glyphs;
+		public GlyphsProvider glyphs = defaulGlyphsProvider;
+		public TextAreaRenderer renderer;
 		public TextAreaView view;
 		public IGraphics2D gfx;
 	}
 
 	public class TextAreaView {
 		Int2 size;
-		/// <summary>Object which renders glyps on this view.</summary>
-		public TextAreaRenderer renderer { get; }
-		public TextManipulator manipulator;
 		public TextDisplayContext context;
+		
+		/// <summary>Object which renders glyps on this view.</summary>
+		public TextAreaRenderer renderer {
+			get => context.renderer;
+			private set => context.renderer = value;
+		}
+		public TextManipulator manipulator {
+			get => context.manipulator;
+			private set => context.manipulator = value;
+		}
+
+		/// <summary>Gets or set displayed text as raw string.</summary>
+		public string text {
+			get {
+				return manipulator.text.ToString();
+			}
+			set {
+				manipulator = new TextManipulator(value);
+				renderer.render();
+			}
+		}
+
+		public TextAreaView() {
+			var x = context = new TextDisplayContext() {};
+			x.view = this;
+			manipulator = new TextManipulator();
+			renderer = new TextAreaRenderer(context);
+			x.gfx
+		}
 
 	}
 
@@ -68,54 +96,6 @@ namespace com.audionysos.text.render {
 		}
 
 
-	}
-
-	public class DefaultGlyphsProvider : GlyphsProvider {
-		/// <summary>Glyph used when </summary>
-		public Glyph missingGlyph { get; set; }
-
-		public override Glyph get(char c, ITextFormat f) {
-			var r = getCached(c, f);
-			if (r) return r;
-			r = produceGlpyh(c, f);
-			return missingGlyph;
-		}
-
-		/// <summary>Produces glpyh for given configuration.
-		/// Result may be sotred in chache.
-		/// Returns null if glyph cannot be produced for the configuration.</summary>
-		/// <param name="c"></param>
-		/// <param name="f"></param>
-		private Glyph produceGlpyh(char c, ITextFormat f) {
-
-			return null;
-		}
-
-		/// <summary>Tries to get a glyph from cache.
-		/// Returns null if not glyhp for given configuration was produced yet.</summary>
-		/// <param name="c"></param>
-		/// <param name="f"></param>
-		private Glyph getCached(char c, ITextFormat f) {
-			return null;
-		}
-	}
-
-	/// <summary>Provides <see cref="Glyph"/>s for given characters.</summary>
-	public abstract class GlyphsProvider {
-
-		public abstract Glyph get(char c, ITextFormat f);
-
-	}
-
-	/// <summary>Represents a single glyph that could be rendered in text area.</summary>
-	public class Glyph {
-		public object pixelsCache { get; }
-		public double width { get; }
-		public double height { get; }
-
-		/// <summary>False if null.</summary>
-		/// <param name="g"></param>
-		public static implicit operator bool(Glyph g) => g!=null;
 	}
 
 	public class TextLayouter {

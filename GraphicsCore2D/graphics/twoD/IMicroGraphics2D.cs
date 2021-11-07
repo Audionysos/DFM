@@ -95,6 +95,12 @@ namespace com.audionysos {
 			g.lineTo(p.x, p.y);
 			return g;
 		}
+
+		public static T moveTo<T>(this T g, IPoint2 p)
+			where T : IMicroGraphics2D {
+			g.lineTo(p.x, p.y);
+			return g;
+		}
 	}
 
 }

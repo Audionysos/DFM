@@ -1,5 +1,6 @@
 ﻿using audioysos.collections.tree;
 using audioysos.geom;
+using com.audionysos;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,15 +8,18 @@ using System.Text;
 
 namespace audioysos.display {
 	public class DisplaySurface {
+		public Graphics graphics;
 
 		public DisplaySurface() {
-			var c = new DisplayObjectContainer();
-			var d = new Der();
-			var o = d as DisplayObject;
-			c.addChild(o);
-			c.addChild(d);
-			//d.
-			//c.
+			//var c = new DisplayObjectContainer();
+			//var d = new Der();
+			//var o = d as DisplayObject;
+			//c.addChild(o);
+			//c.addChild(d);
+			////d.
+			////c.
+			//c.tree.addChild(c.tree);
+			//graphics = new Graphics();
 		}
 
 	}
@@ -26,7 +30,7 @@ namespace audioysos.display {
 
 	public class DisplayObjectContainer : DisplayObject, ITreeNodeClient<DisplayObject> {
 		//new public TreeNode<DisplayObject> tree { get; private set; }
-		/// <summary>Return this point which is aaociated with this node.</summary>
+		/// <summary>Return tree point which is associated with this node.</summary>
 		new public TreeNode<DisplayObject> tree => base.tree as TreeNode<DisplayObject>;
 
 		/// <summary>Number of children present in this container.</summary>
@@ -72,6 +76,7 @@ namespace audioysos.display {
 			return t;
 		}
 
+		/// <inheritdoc/>
 		public override string ToString() {
 			return $@"{name} [{GetType().Name}]";	
 		}

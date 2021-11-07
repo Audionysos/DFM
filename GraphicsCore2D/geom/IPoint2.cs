@@ -12,6 +12,7 @@
 		public P create(double x, double y);
 
 		public static P operator -(P a, P b) => a.copy().sub(b);
+		public static P operator +(P a, P b) => a.copy().add(b);
 	}
 
 	public static class IPoint2Extensions {
@@ -20,6 +21,10 @@
 			return v2.copy().sub(v1).mul(d).add(v1);
 		}
 
+		/// <summary>Adds coordinates of some other point to this point and returns this point.</summary>
+		/// <param name="a"></param>
+		/// <param name="b">Other point which coordinates to add.</param>
+		/// <returns></returns>
 		public static P add(this P a, P b) {
 			a.x += b.x; a.y += b.y; return a;
 		}

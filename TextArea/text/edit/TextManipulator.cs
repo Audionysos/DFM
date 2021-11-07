@@ -96,7 +96,7 @@ namespace com.audionysos.text.edit {
 	}
 
 	public interface ITextFont {
-
+		public string name { get; }
 	} 
 
 
