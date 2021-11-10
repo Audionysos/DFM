@@ -14,29 +14,32 @@ using System.Diagnostics;
 using System;
 using SixLabors.Fonts;
 using F = SixLabors.Fonts;
+using WpfDNet.SLtoWPF;
 
 namespace WpfDNet {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow : W.Window {
-		(int x, int y) size = (500, 500);
-		Image<Bgra32> image;
-		WMI.WriteableBitmap wpfBitmap;
+		SixLaborsToWPFAdapter adapter;
 
 		public MainWindow() {
 			InitializeComponent();
+			adapter = new SixLaborsToWPFAdapter(img);
 			Left = 1800;
-			textarea();
+			new DisplayTest(adapter);
+			//textarea();
 			//previous();
 		}
 
 		private void textarea() {
-			var ta = new TextAreaTest();
-			this.img.Source = ta.surface.wpfBitmap;
-			img.Stretch = WM.Stretch.None;
-			img.UseLayoutRounding = true;
+			var ta = new TextAreaTest(adapter);
 		}
+
+		#region Old
+		(int x, int y) size = (500, 500);
+		Image<Bgra32> image;
+		WMI.WriteableBitmap wpfBitmap;
 
 		private void previous() {
 			image = new Image<Bgra32>(size.x, size.y);
@@ -163,6 +166,8 @@ namespace WpfDNet {
 				0, 0);
 			wpfBitmap.Unlock();
 		}
+
+		#endregion
 
 	}
 }

@@ -1,7 +1,9 @@
-﻿using audioysos.geom;
+﻿using audioysos.display;
+using audioysos.geom;
 using com.audionysos.text.edit;
 using com.audionysos.text.utils;
 using System;
+using System.Collections.Generic;
 
 namespace com.audionysos.text.render {
 
@@ -12,36 +14,39 @@ namespace com.audionysos.text.render {
 			this.ctx = ctx;
 		}
 
+		private List<RenderedGlyph> rendered = new List<RenderedGlyph>();
+
 		private Graphics g;
 		public void render() {
+			renderCarrets();
+			rendered.Clear();
 			var man = ctx.manipulator;
 			var grc = new GlyphRenderingContext();
-			ctx.fromat.size = 11; //TODO: 
+			ctx.fromat.size = 11; 
 			grc.gfx = ctx.gfx;
-			var s = 7;
-			//for (int i = 0; i < man.text.Count; i++) {
-			//	var chi = man.getCharInfo(i);
-			//	//if (i != 2) continue;
-			//	grc.position.add(new Point2(s, 0));
-			//	renderCharacter(chi, grc);
-			//	//if(i == 2) break;
-			//}
+			var w = 7; //char width
+			var linesSpacing = 4; var tabSize = 4;
 			var lns = man.text.lines;
 			for (int i = 0; i < lns.Count; i++) {
 				var l = lns[i];
 				for (int j = 0; j < l.length; j++) {
 					var chi = man.getCharInfo(l.start + j);
-					grc.position.add(new Point2(s, 0));
-					renderCharacter(chi, grc);
+					if (chi.character == '\n') continue;
+					if (chi.character == '\t') {
+						grc.position.x += w * tabSize;
+						continue;
+					}
+					grc.position.x += w;
+					rendered.Add(renderCharacter(chi, grc));
 				}
 				grc.position.x = 0;
-				grc.position.y += ctx.fromat.size;
+				grc.position.y += ctx.fromat.size + linesSpacing;
 			}
 
 			ctx.gfx.close();
 		}
 
-		private void renderCharacter(CharInfo chi, GlyphRenderingContext grc) {
+		private RenderedGlyph renderCharacter(CharInfo chi, GlyphRenderingContext grc) {
 			var r = ctx.glyphsRenderer;
 			var fp = chi.spans[0].attributes.get<ITextFormatProvider>();
 			var tf = fp?.textFormat ?? ctx.fromat;
@@ -50,10 +55,22 @@ namespace com.audionysos.text.render {
 			var gf = ctx.glyphs.get(chi.character, tf);
 			grc.g = gf;
 			grc.format = tf;
-			r.render(grc);
+			return r.render(grc);
 		}
 
-
+		//private Sprite carrets = new Sprite();
+		private Sprite carret = new Sprite();
+		private void renderCarrets() {
+			var cts = ctx.manipulator.carets;
+			var gfx = carret.graphics;
+			gfx.clear();
+			gfx.lineSyle(1);
+			gfx.lineTo(0, ctx.fromat.size);
+			gfx.close();
+			if (rendered.Count <= cts.ch) return;
+			var cp = rendered[cts.ch];
+			cts.pos = new Int2((int)cp.position.x, (int)cp.position.y);
+		}
 	}
 
 	public class TextLayouter {

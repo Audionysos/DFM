@@ -33,7 +33,7 @@ namespace audioysos.display {
 
 
 		private void onAdded(TreePoint<DisplayObject> obj) {
-			//throw new NotImplementedException();
+			surface = parent.surface;
 		}
 
 		public Transform getGlobaTransform() {
@@ -68,7 +68,7 @@ namespace audioysos.display {
 
 	}
 
-	public class Sprite : DisplayObject {
+	public class Sprite : DisplayObjectContainer {
 		public Graphics graphics { get; private set; }
 		private IMicroGraphics2D currGraphics = BlankGraphics.instance;
 
