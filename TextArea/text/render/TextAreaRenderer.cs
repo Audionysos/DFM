@@ -24,6 +24,7 @@ namespace com.audionysos.text.render {
 			var grc = new GlyphRenderingContext();
 			ctx.fromat.size = 11; 
 			grc.gfx = ctx.gfx;
+			grc.gfx.clear();
 			var w = 7; //char width
 			var linesSpacing = 4; var tabSize = 4;
 			var lns = man.text.lines;

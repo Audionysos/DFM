@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Media;
 using System.Windows.Threading;
 using W = System.Windows;
 using WM = System.Windows.Media;
@@ -33,9 +34,16 @@ namespace WpfDNet.SLtoWPF {
 			image.UseLayoutRounding = true;
 
 			timer = new DispatcherTimer(DispatcherPriority.Normal);
-			timer.Interval = TimeSpan.FromMilliseconds(30);
+			timer.Interval = TimeSpan.FromMilliseconds(15);
 			timer.Tick += onTick;
-			timer.Start();
+			//timer.Start();
+
+			CompositionTarget.Rendering += onRender;
+		}
+
+		private void onRender(object sender, EventArgs e) {
+			displaySurface.update();
+			transferBitmap();
 		}
 
 		private void onTick(object sender, EventArgs e) {

@@ -30,8 +30,8 @@ namespace WpfDNet {
 			var d = DateTime.Now - lastCheck;
 			frames++;
 			if(d.Seconds > 1) {
-				var fps = frames / d.Seconds;
-				ta.text = $@"FPS: {fps}";
+				var fps = frames / d.TotalSeconds;
+				ta.text = $@"FPS: {fps:###.#}";
 				frames = 0; lastCheck = DateTime.Now;
 			}
 		}
@@ -54,13 +54,13 @@ namespace WpfDNet {
 		private void test2() {
 			var r = new Random();
 			vels.Clear();
-			for (int i = 0; i < 50; i++) {
+			for (int i = 0; i < 350; i++) {
 				var e = new Sprite();
 				e.name = "child";
 				main.addChild(e);
 				var gfx = e.graphics;
 				gfx.beginFill(0x00FF00, 0.2);
-				var s = r.Next(5, 50);
+				var s = r.Next(5, 15);
 				var w = s; var h = s;
 				gfx.lineTo(w, 0);
 				gfx.lineTo(w, h);

@@ -88,7 +88,7 @@ namespace WpfDNet {
 
 		public IMicroGraphics2D beginFill(IFillPiece fill) {
 			if(fill is com.audionysos.Color c)
-				return beginFill(c.rgb, c.a);
+				return beginFill(c.rgb, c.a / 255d);
 			this.fill = fillPorovider.getFill(fill.fillID);
 			startNewFigure();
 			return this;
