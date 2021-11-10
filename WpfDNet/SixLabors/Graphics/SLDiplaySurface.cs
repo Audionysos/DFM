@@ -7,6 +7,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Advanced;
 using com.audionysos.text.render;
+using audioysos.geom;
 
 namespace WpfDNet {
 	public class SLDiplaySurface : DisplaySurface {
@@ -21,15 +22,23 @@ namespace WpfDNet {
 		}
 
 		private void drawBackground() {
-			var p = new Star(100f, 100f, 5, 20f, 50f);
 			image.Mutate(x => 
 				x.Fill(SixLabors.ImageSharp.Color.LightGray));
 		}
 
-		public override Graphics createGraphics() {
+		public override IMicroGraphics2D createGraphics() {
 			var sg = new SharpGraphics(image);
-			var g = new com.audionysos.Graphics(sg);
-			return g;
+			//var g = new com.audionysos.Graphics(sg);
+			return sg;
+		}
+
+		public override void renderGraphics(IMicroGraphics2D graphics) {
+			var sg = (SharpGraphics)graphics;
+			sg.render(image);
+		}
+
+		public override void clear<P>(IRect<P> rect = null) {
+			if (rect == null) drawBackground();
 		}
 	}
 

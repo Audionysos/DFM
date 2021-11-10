@@ -22,4 +22,14 @@
 		}
 	}
 
+	public class Rect : IRect<Point2> {
+		public Point2 postion { get; }
+		public Point2 size { get; }
+
+		public Rect(Point2 pos, Point2 size) {
+			postion = pos.copy() as Point2;
+			size = size.copy() as Point2;
+		}
+	}
+
 }

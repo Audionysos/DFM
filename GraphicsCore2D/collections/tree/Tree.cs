@@ -236,6 +236,14 @@ namespace audioysos.collections.tree {
 		public void removeChild(TreePoint<T> leaf)
 			=> bass.removeChild(leaf.bass);
 
+		public void forDescendants(Action<T> a) {
+			for (int i = 0; i < _chs.Count; i++) {
+				var c = _chs[i];
+				a(c.data);
+				if (c is TreeNode<T> n) n.forDescendants(a);
+			}
+		}
+
 		/// <inheritdoc/>
 		public override string ToString() {
 			return $@"TN<{typeof(T).Name}>";
@@ -252,12 +260,12 @@ namespace audioysos.collections.tree {
 
 		public int Count => points.Count;
 		public TreePoint<T> this[int index]
-			=> points[index] as TreePoint<T>;
+			=> points[index].data as TreePoint<T>;
 
 		/// <inheritdoc/>
 		public IEnumerator<TreePoint<T>> GetEnumerator() {
 			foreach (var tp in points) {
-				yield return tp as TreePoint<T>;
+				yield return tp.data as TreePoint<T>;
 			}
 		}
 

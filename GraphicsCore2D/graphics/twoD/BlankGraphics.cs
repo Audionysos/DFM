@@ -1,4 +1,6 @@
-﻿namespace com.audionysos {
+﻿using audioysos.display;
+
+namespace com.audionysos {
 	/// <summary>Blank <see cref="IMicroGraphics2D"/> implementation to act as a placeholder when no proper instance could be provided.</summary>
 	public class BlankGraphics : IMicroGraphics2D {
 		public static readonly BlankGraphics instance = new BlankGraphics();
@@ -22,6 +24,8 @@
 		public IMicroGraphics2D lineTo(double x, double y) => this;
 		/// <summary><see cref="BlankGraphics"/> doesn't do anything.</summary>
 		public IMicroGraphics2D moveTo(double x, double y) => this;
+		/// <summary><see cref="BlankGraphics"/> doesn't do anything.</summary>
+		public IMicroGraphics2D transform(Transform t) => this;
 		/// <summary><see cref="BlankGraphics"/> doesn't do anything.</summary>
 		public IMicroGraphics2D wait() => this;
 	}

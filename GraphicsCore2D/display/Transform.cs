@@ -1,5 +1,8 @@
 ﻿//skatching
 
+using audioysos.geom;
+using System;
+
 namespace audioysos.display {
 	public class Transform {
 		public double x { get; set; }
@@ -30,6 +33,10 @@ namespace audioysos.display {
 			this.y = t.y;
 			this.z = t.z;
 			return this;
+		}
+
+		public void transform(IPoint2 p) {
+			p.x += x; p.y += y;
 		}
 	}
 

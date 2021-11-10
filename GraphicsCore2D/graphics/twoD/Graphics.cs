@@ -1,13 +1,16 @@
-﻿using audioysos.geom;
+﻿using audioysos.display;
+using audioysos.geom;
 using cnc.geom;
 using System;
 using System.Collections.Generic;
 
 namespace com.audionysos {
 
+	//TODO: Return "this" everywhere insted of baseDrawer
 	public class Graphics : IGraphics2D, IPoint2 {
 
 		private IMicroGraphics2D m;
+		internal IMicroGraphics2D baseGraphics => m;
 		private IBasicGraphics2D b;
 		private IGraphics2D g;
 
@@ -136,6 +139,10 @@ namespace com.audionysos {
 		public IMicroGraphics2D close() => m.close();
 
 		public IMicroGraphics2D wait() => m.wait();
+
+		public IMicroGraphics2D transform(Transform t) {
+			m.transform(t); return this;
+		}
 
 		#endregion
 

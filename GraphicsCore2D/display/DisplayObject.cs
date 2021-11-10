@@ -6,6 +6,7 @@ namespace audioysos.display {
 	public abstract class DisplayObject : ITransformProvier, ITreeLeafClient<DisplayObject> {
 		public event Action<DisplayObject> ADDED_TO_SURFACE;
 		public event Action<DisplayObject> REMOVED_FROM_SURFACE;
+		public event Action<DisplayObject> ENTER_FRAME;
 		
 		public string name { get; set; }
 		public Transform transform { get; } = new Transform();
@@ -15,8 +16,11 @@ namespace audioysos.display {
 			get => _surf;
 			internal set {
 				_surf = value;
-				if (_surf) ADDED_TO_SURFACE?.Invoke(this);
-				else REMOVED_FROM_SURFACE?.Invoke(this);
+				if (_surf) {
+					if (this is DisplayObjectContainer c)
+						c.tree.forDescendants(d => d.surface = _surf);
+					ADDED_TO_SURFACE?.Invoke(this);
+				} else REMOVED_FROM_SURFACE?.Invoke(this);
 			}
 		}
 		public TreePoint<DisplayObject> tree { get; private set; }
@@ -42,13 +46,20 @@ namespace audioysos.display {
 			return t;
 		}
 
+		internal void update() {
+			ENTER_FRAME?.Invoke(this);
+			render();
+		}
+
+		internal virtual void render() { }
+
 		/// <inheritdoc/>
 		public override string ToString() {
 			return $@"{name} [{GetType().Name}]";	
 		}
 	}
 
-	public class DisplayObjectContainer : DisplayObject, ITreeNodeClient<DisplayObject> {
+	public abstract class DisplayObjectContainer : DisplayObject, ITreeNodeClient<DisplayObject> {
 		//new public TreeNode<DisplayObject> tree { get; private set; }
 		/// <summary>Return tree point which is associated with this node.</summary>
 		new public TreeNode<DisplayObject> tree => base.tree as TreeNode<DisplayObject>;
@@ -91,6 +102,13 @@ namespace audioysos.display {
 				currGraphics,
 				currGraphics = BlankGraphics.instance
 			);
+		}
+
+		internal override void render() {
+			getGlobaTransform();
+			graphics.transform(globalTransform);
+			surface.renderGraphics(graphics.baseGraphics);
+			tree.forDescendants(d => d.update());
 		}
 	}
 

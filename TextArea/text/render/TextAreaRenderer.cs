@@ -61,6 +61,7 @@ namespace com.audionysos.text.render {
 		//private Sprite carrets = new Sprite();
 		private Sprite carret = new Sprite();
 		private void renderCarrets() {
+			return;
 			var cts = ctx.manipulator.carets;
 			var gfx = carret.graphics;
 			gfx.clear();

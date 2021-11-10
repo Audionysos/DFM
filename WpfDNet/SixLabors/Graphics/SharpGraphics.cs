@@ -19,6 +19,7 @@ namespace WpfDNet {
 		public double y { get; }
 
 		private List<Figure> figures = new List<Figure>();
+		private List<Figure> tFigures = new List<Figure>();
 
 		private Figure currFigure = new Figure();
 		private IFill fill;
@@ -30,13 +31,13 @@ namespace WpfDNet {
 			this.img = img;
 		}
 
-		private void render() {
+		public void render(Image<Bgra32> img) {
 			img.Mutate(x => {
 				var polys = new List<Polygon>();
 				S.Color lfill = S.Color.Transparent;
 				IPen lpen = null;
-				for (int i = 0; i < figures.Count; i++) {
-					var f = figures[i];
+				for (int i = 0; i < tFigures.Count; i++) {
+					var f = tFigures[i];
 					var so = new ShapeGraphicsOptions();
 					PointF[] pts = null;
 					Polygon p = null;
@@ -53,7 +54,7 @@ namespace WpfDNet {
 						lpen = cpen;
 					}
 					if(lfill == cfill && lpen == cpen
-						&& i < figures.Count -1) {
+						&& i < tFigures.Count -1) {
 						continue;
 					}
 					FINISH:
@@ -80,7 +81,8 @@ namespace WpfDNet {
 		}
 
 		public IMicroGraphics2D beginFill(uint rgb, double a = 1) {
-			fill = (com.audionysos.Color)((rgb << 8) | 0xFF);
+			var av = (uint)(a * 255) & 0xFF;
+			fill = (com.audionysos.Color)((rgb << 8) | av);
 			return this;
 		}
 
@@ -99,7 +101,7 @@ namespace WpfDNet {
 
 		public IMicroGraphics2D close() {
 			startNewFigure();
-			render();
+			//render();
 			return this;
 		}
 
@@ -139,6 +141,32 @@ namespace WpfDNet {
 		public IMicroGraphics2D wait() {
 			return this;
 		}
+
+		public IMicroGraphics2D transform(audioysos.display.Transform t) {
+			tFigures.Clear(); Figure tf = null;
+			for (int i = 0; i < figures.Count; i++) {
+				var f = figures[i];
+				tf = transformFigure(f, t);
+				tFigures.Add(tf);
+			}
+			if (currFigure.points.Count == 0) return this;
+			tf = transformFigure(currFigure, t);
+			tf.fill = fill; tf.stroke = stroke;
+			tFigures.Add(tf);
+			return this;
+		}
+
+		private Figure transformFigure(Figure f, audioysos.display.Transform t) {
+			var gp = new Point2();
+			var tf = new Figure() { fill = f.fill, stroke = f.stroke };
+			for (int i = 0; i < f.points.Count; i++) {
+				var p = f.points[i];
+				gp.set(p.X, p.Y);
+				t.transform(gp);
+				tf.points.Add(new PointF((float)gp.x, (float)gp.y));
+			}
+			return tf;
+		}
 	}
 
 	internal class Figure {
@@ -153,13 +181,13 @@ namespace WpfDNet {
 		internal SixLabors.ImageSharp.Color getBrush() {
 			var c = (com.audionysos.Color)fill;
 			return SixLabors.ImageSharp.Color
-				.FromRgb((byte)c.r, (byte)c.g, (byte)c.b);
+				.FromRgba((byte)c.r, (byte)c.g, (byte)c.b, (byte)c.a);
 		}
 
 		internal IPen getPen() {
 			var ac = (com.audionysos.Color)stroke.stroke;
 			var sc = SixLabors.ImageSharp.Color
-				.FromRgb((byte)ac.r, (byte)ac.g, (byte)ac.b);
+				.FromRgba((byte)ac.r, (byte)ac.g, (byte)ac.b, (byte)ac.a);
 			var p = new SixLabors.ImageSharp.Drawing.Processing
 				.Pen(sc, (float)stroke.size);
 			return p;

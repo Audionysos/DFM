@@ -1,4 +1,5 @@
-﻿using audioysos.geom;
+﻿using audioysos.display;
+using audioysos.geom;
 using System.Collections.Generic;
 
 namespace com.audionysos {
@@ -52,6 +53,11 @@ namespace com.audionysos {
 		IMicroGraphics2D close();
 		/// <summary>Clears all graphics constructed from previous drawing calls.</summary>
 		IMicroGraphics2D clear();
+
+		/// <summary>Transform all produced graphics based on given object.</summary>
+		/// <param name="t"></param>
+		/// <returns></returns>
+		IMicroGraphics2D transform(Transform t);
 
 		/// <summary>Waits for rendering thread and returns when the graphics is rendered and visible on the screen.
 		/// This method is not required to be implemented as it's used only for debuggin.</summary>

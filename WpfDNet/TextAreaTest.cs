@@ -13,7 +13,7 @@ namespace WpfDNet {
 			ta.text =
 				"Chrząszcz brzmi w trzcinie w trzebżeszynie" +
 				"\n\tŹaba daba doom";
-			adapter.transferBitmap();
+			//adapter.transferBitmap();
 		}
 
 	}

@@ -23,12 +23,26 @@ namespace audioysos.display {
 		}
 
 		public void Add(DisplayObject d) {
+			if (d.surface != null) throw new Exception("The object is already added to some display surface.");
 			_displayed.Add(d);
 			d.surface = this;
 		}
 
+		public void update() {
+			clear();
+			for (int i = 0; i < _displayed.Count; i++) {
+				_displayed[i].update();
+			}
+		}
+
+		public void clear() => clear<IPoint2>();
+		public abstract void clear<P>(IRect<P> rect = null) where P : IPoint2;
+
 		/// <summary>Create graphics that this sufrace will display.</summary>
-		public abstract Graphics createGraphics();
+		public abstract IMicroGraphics2D createGraphics();
+
+		/// <summary>Render graphics onto the surface. Given object is the one created with <see cref="createGraphics"/> method.</summary>
+		public abstract void renderGraphics(IMicroGraphics2D graphics);
 
 		/// <summary>False if null.</summary>
 		public static implicit operator bool(DisplaySurface s) => s!=null;

@@ -1,4 +1,5 @@
-﻿using audioysos.geom;
+﻿using audioysos.display;
+using audioysos.geom;
 using System.Collections.Generic;
 
 namespace com.audionysos {
@@ -60,6 +61,10 @@ namespace com.audionysos {
 		}
 
 		public IMicroGraphics2D moveTo(double x, double y) {
+			throw new System.NotImplementedException();
+		}
+
+		public IMicroGraphics2D transform(Transform t) {
 			throw new System.NotImplementedException();
 		}
 

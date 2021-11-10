@@ -36,6 +36,15 @@
 		public static P mul(this P a, double n) {
 			a.x *= n; a.y *= n; return a;
 		}
+
+		public static P set(this P a, double x, double y) {
+			a.x = x; a.y = y; return a;
+		}
+	}
+
+	public interface IRect<T> where T : P {
+		T postion { get; }
+		T size { get; }
 	}
 
 }
