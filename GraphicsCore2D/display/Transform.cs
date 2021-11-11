@@ -13,8 +13,8 @@ namespace audioysos.display {
 
 		public Transform append(Transform t) {
 			sX *= t.sX; sY *= t.sY;
-			x = x * sX + t.x;
-			y = y * sY + t.y;
+			x = x * t.sX + t.x;
+			y = y * t.sY + t.y;
 			//z = t.z;
 			return this;
 		}
@@ -32,10 +32,13 @@ namespace audioysos.display {
 			this.x = t.x;
 			this.y = t.y;
 			this.z = t.z;
+			sX = t.sX;
+			sY = t.sY;
 			return this;
 		}
 
 		public void transform(IPoint2 p) {
+			p.x *= sX; p.y *= sY;
 			p.x += x; p.y += y;
 		}
 	}

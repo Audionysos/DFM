@@ -12,9 +12,44 @@ namespace WpfDNet {
 		public DisplayTest(SixLaborsToWPFAdapter adapter) {
 			main = new Sprite();
 			adapter.displaySurface.Add(main);
-			test2();
+			test3();
+			//test2();
 			//adapter.transferBitmap();
-			counter();
+			//counter();
+		}
+
+		private void test3() {
+			var x = rectSprite("A", 250, 250, 0x00FF00, 0.3);
+			main.addChild(x);
+			x.transform.x = 125;
+			x.transform.y = 125;
+			x.transform.sX = 0.5;
+			x.transform.sY = 0.5;
+
+			var y = rectSprite("B",125, 125, 0xFF0000, 0.3);
+			y.transform.x = 125;
+			x.addChild(y);
+			
+			var z = rectSprite("C", 62.5, 62.5, 0x0000FF, 0.3);
+			z.transform.x = 187.5;
+			z.transform.y = 62.5;
+			x.addChild(z);
+
+			var d = rectSprite("D", 62.5, 62.5, 0xFFFFFF, 0.3);
+			d.transform.x = 62.5;
+			y.addChild(d);
+		}
+
+		private Sprite rectSprite(string name, double w, double h, uint color = 0xFFFFFF, double a = 1) {
+			var s = new Sprite();
+			s.name = name;
+			var g = s.graphics;
+			g.beginFill(color, a);
+			g.lineTo(w, 0);
+			g.lineTo(w, h);
+			g.lineTo(0, h);
+			g.lineTo(0, 0);
+			return s;
 		}
 
 		private TextAreaView ta;

@@ -25,6 +25,8 @@ namespace WpfDNet {
 
 		public MainWindow() {
 			InitializeComponent();
+			//new WPFComparision(this); return;
+
 			adapter = new SixLaborsToWPFAdapter(img);
 			Left = 1800;
 			new DisplayTest(adapter);

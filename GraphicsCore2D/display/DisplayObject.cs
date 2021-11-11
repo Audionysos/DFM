@@ -81,7 +81,7 @@ namespace audioysos.display {
 
 	public class Sprite : DisplayObjectContainer {
 		public Graphics graphics { get; private set; }
-		private IMicroGraphics2D currGraphics = BlankGraphics.instance;
+		private IMicroGraphics2D currGraphics = new CachedGraphics();
 
 		public Sprite() {
 			graphics = new Graphics(currGraphics);
@@ -90,10 +90,12 @@ namespace audioysos.display {
 		}
 
 		private void onSurface(DisplayObject obj) {
+			var cached = currGraphics as CachedGraphics;
 			graphics.changeBaseDrawer(
 				currGraphics,
-				surface.createGraphics()
+				currGraphics = surface.createGraphics() 
 			);
+			cached?.transferTo(graphics);
 		}
 
 		private void onSurfaceLost(DisplayObject obj) {
