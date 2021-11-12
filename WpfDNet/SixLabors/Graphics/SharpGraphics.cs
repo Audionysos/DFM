@@ -127,6 +127,35 @@ namespace WpfDNet {
 		}
 		#endregion
 
+		#region Hit testing
+		public bool pointInShape(IPoint2 p) {
+			for (int i = 0; i < tFigures.Count; i++) {
+				var f = tFigures[i];
+				pointInShape(f, p);
+			}
+			return false;
+		}
+
+		private bool pointInShape(Figure f, IPoint2 tp) {
+			IPoint2 pp = null;
+			//TODO: Store figures bounds
+			IRect<IPoint2> totalBounds = null;//of all figures
+			var tbp = totalBounds.postion;
+			var il = new Line2(tbp - (Point2)(10, 10), tp);
+			var ic = 0;
+			for (int i = 0; i < f.points.Count; i++) {
+				var p = f.points[i];
+				if (pp != null) {
+					//TODO: implement intersection method
+					var ir = Line2.intersection(il, new Line2(p, pp));
+					if (ir != null) ic++;
+				}
+				pp = p;
+			}
+			return ic % 2 == 1;
+		}
+		#endregion
+
 		#region Image sharp rendering
 		/// <summary>ImageSharp ready figures</summary>
 		private List<SharpFigure> sFigures = new List<SharpFigure>();

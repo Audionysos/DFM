@@ -7,12 +7,12 @@ namespace GraphicsCore2DTest {
 	public class DisplayTreeTests {
 		[TestMethod]
 		public void Basics() {
-			var c = new DisplayObjectContainer() { name = "root" };
-			var o2 = new DisplayObjectContainer() { name = "o2"};
-			var o3 = new DisplayObjectContainer() { name = "o3" };
+			var c = new Sprite() { name = "root" };
+			var o2 = new Sprite() { name = "o2"};
+			var o3 = new Sprite() { name = "o3" };
 			c.addChild(o2);
 			c.addChild(o3);
-			var o4 = new DisplayObjectContainer() { name = "o4" };
+			var o4 = new Sprite() { name = "o4" };
 			o2.addChild(o4);
 			var o5 = new Der() { name = "o5" };
 			o4.addChild(o5);

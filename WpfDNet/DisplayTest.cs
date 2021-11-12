@@ -12,8 +12,8 @@ namespace WpfDNet {
 		public DisplayTest(SixLaborsToWPFAdapter adapter) {
 			main = new Sprite();
 			adapter.displaySurface.Add(main);
-			test3();
-			//test2();
+			//test3();
+			test2();
 			//adapter.transferBitmap();
 			counter();
 		}
