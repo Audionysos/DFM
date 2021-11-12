@@ -13,12 +13,15 @@ using SixLabors.ImageSharp.Drawing;
 using S = SixLabors.ImageSharp;
 
 namespace WpfDNet {
+
 	/// <summary>Implements <see cref="IMicroGraphics2D"/> interface utilizing <see cref="SixLabors.ImageSharp"/> library.</summary>
 	public class SharpGraphics : IMicroGraphics2D {
 		public double x { get; }
 		public double y { get; }
 
+		/// <summary>Original (raw) firgures prodeced by drawing methods.</summary>
 		private List<Figure> figures = new List<Figure>();
+		/// <summary>Transformed figures.</summary>
 		private List<Figure> tFigures = new List<Figure>();
 
 		private Figure currFigure = new Figure();
@@ -31,55 +34,7 @@ namespace WpfDNet {
 			this.img = img;
 		}
 
-		public void render(Image<Bgra32> img) {
-			img.Mutate(x => {
-				var polys = new List<Polygon>();
-				S.Color lfill = S.Color.Transparent;
-				IPen lpen = null;
-				for (int i = 0; i < tFigures.Count; i++) {
-					var f = tFigures[i];
-					var so = new ShapeGraphicsOptions();
-					PointF[] pts = null;
-					Polygon p = null;
-					if (f.points.Count < 2) goto FINISH;
-					pts = f.points.ToArray();
-					var ls = new LinearLineSegment(f.points.ToArray());
-					p = new Polygon(ls);
-					//so.GraphicsOptions.
-					var cfill = f.fill != null ? f.getBrush() : S.Color.Transparent;
-					var cpen = f.stroke != null ? f.getPen() : null;
-					polys.Add(p);
-					if(polys.Count == 1) {
-						lfill = cfill;
-						lpen = cpen;
-					}
-					if(lfill == cfill && lpen == cpen
-						&& i < tFigures.Count -1) {
-						continue;
-					}
-					FINISH:
-					if(polys.Count == 1) {
-						if (lfill != S.Color.Transparent) {
-							x.Fill(lfill, polys[0]);
-						}
-						if(lpen != null) {
-							x.DrawLines(lpen, pts);
-						}
-					}else {
-						var cp = new ComplexPolygon(polys);
-						if(lfill != S.Color.Transparent)
-							x.Fill(f.getBrush(), cp);
-						if(lpen != null)
-							x.DrawLines(f.getPen(), pts);
-
-						polys.Clear();
-						lfill = S.Color.Transparent;
-						lpen = null;
-					}
-				}
-			});
-		}
-
+		#region Figures creation
 		public IMicroGraphics2D beginFill(uint rgb, double a = 1) {
 			var av = (uint)(a * 255) & 0xFF;
 			fill = (com.audionysos.Color)((rgb << 8) | av);
@@ -106,8 +61,8 @@ namespace WpfDNet {
 		}
 
 		public IMicroGraphics2D endFill() {
-			fill = null;
 			startNewFigure();
+			fill = null;
 			return this;
 		}
 
@@ -120,13 +75,13 @@ namespace WpfDNet {
 		}
 
 		public IMicroGraphics2D lineTo(double x, double y) {
-			currFigure.points.Add(new PointF((float)x, (float)y));
+			currFigure.points.Add(new Point2(x, y));
 			return this;
 		}
 
 		public IMicroGraphics2D moveTo(double x, double y) {
 			startNewFigure();
-			currFigure.points.Add(new PointF((float)x, (float)y));
+			currFigure.points.Add(new Point2(x, y));
 			return this;
 		}
 
@@ -137,54 +92,118 @@ namespace WpfDNet {
 			figures.Add(currFigure);
 			currFigure = new Figure();
 		}
+		#endregion
 
 		public IMicroGraphics2D wait() {
 			return this;
 		}
 
+		#region Transform
 		public IMicroGraphics2D transform(audioysos.display.Transform t) {
+			//return this;
 			tFigures.Clear(); Figure tf = null;
 			for (int i = 0; i < figures.Count; i++) {
 				var f = figures[i];
 				tf = transformFigure(f, t);
 				tFigures.Add(tf);
 			}
-			if (currFigure.points.Count == 0) return this;
-			tf = transformFigure(currFigure, t);
-			tf.fill = fill; tf.stroke = stroke;
-			tFigures.Add(tf);
+			if (currFigure.points.Count > 0) {
+				tf = transformFigure(currFigure, t);
+				tf.fill = fill; tf.stroke = stroke;
+				tFigures.Add(tf);
+			}
+			covertToSharpFigures();
 			return this;
 		}
 
 		private Figure transformFigure(Figure f, audioysos.display.Transform t) {
-			var gp = new Point2();
 			var tf = new Figure() { fill = f.fill, stroke = f.stroke };
 			for (int i = 0; i < f.points.Count; i++) {
-				var p = f.points[i];
-				gp.set(p.X, p.Y);
-				t.transform(gp);
-				tf.points.Add(new PointF((float)gp.x, (float)gp.y));
+				var p = f.points[i].copy();
+				t.transform(p);
+				tf.points.Add(p);
 			}
 			return tf;
 		}
+		#endregion
+
+		#region Image sharp rendering
+		/// <summary>ImageSharp ready figures</summary>
+		private List<SharpFigure> sFigures = new List<SharpFigure>();
+		private void covertToSharpFigures() {
+			sFigures.Clear();
+			var joined = new List<Figure>(); //figures with the same brush are joined so the ImageSharp will create holes (rendering glyphs)
+			Figure last = null;
+			for (int i = 0; i < tFigures.Count; i++) {
+				var tf = tFigures[i];
+				if (last == null || tf.sameStyle(last)) {
+					joined.Add(tf);
+					last = tf;
+					continue;
+				}
+				var sf = new SharpFigure(joined, last.fill, last.stroke);
+				sFigures.Add(sf);
+				joined.Clear(); last = null;
+			}
+			if (joined.Count == 0) return;
+			sFigures.Add(new SharpFigure(joined, last.fill, last.stroke));
+		}
+
+		public void render(Image<Bgra32> img) {
+			img.Mutate(x => {
+				for (int i = 0; i < sFigures.Count; i++) {
+					var f = sFigures[i];
+					if (f.brush != null)
+						x.Fill(f.brush, f.path);
+					if (f.pen == null) continue;
+					for (int j = 0; j < f.points.Length; j++) {
+						x.DrawLines(f.pen, f.points[j]);
+					}
+				}
+			});
+		}
+		#endregion
+
 	}
 
-	internal class Figure {
-		public List<PointF> points { get; set; } = new List<PointF>();
-		public IFill fill { get; set; }
-		public Stroke stroke { get; set; }
+	public class SharpFigure {
+		public IPath path;
+		public PointF[][] points;
+		public IBrush brush;
+		public IPen pen;
 
-		public Figure() {
-
+		public SharpFigure(List<Figure> figures, IFill fill, Stroke stroke) {
+			brush = getBrush(fill);
+			pen = getPen(stroke);
+			Polygon[] polys = null;
+			if(figures.Count > 1) polys = new Polygon[figures.Count];
+			points = new PointF[figures.Count][];
+			for (int i = 0; i < figures.Count; i++) {
+				var f = figures[i]; var pts = new PointF[f.points.Count];
+				for (int j = 0; j < f.points.Count; j++) {
+					var p = f.points[j];
+					pts[j] = new PointF((float)p.x, (float)p.y);
+				}
+				var ls = new LinearLineSegment(pts);
+				var pol = new Polygon(ls);
+				points[i] = pts;
+				if (polys != null) polys[i] = pol;
+				else path = pol;
+			}
+			if (polys != null) path = new ComplexPolygon(polys);
 		}
 
-		internal SixLabors.ImageSharp.Color getBrush() {
+		#region Styling conversion
+		internal IBrush getBrush(IFill fill) {
+			if (fill == null) return null;
 			var c = (com.audionysos.Color)fill;
-			return SixLabors.ImageSharp.Color
+			var sc = SixLabors.ImageSharp.Color
 				.FromRgba((byte)c.r, (byte)c.g, (byte)c.b, (byte)c.a);
+			return new SolidBrush(sc);
 		}
 
-		internal IPen getPen() {
+		internal IPen getPen(Stroke stroke) {
+			if (stroke == null) return null;
 			var ac = (com.audionysos.Color)stroke.stroke;
 			var sc = SixLabors.ImageSharp.Color
 				.FromRgba((byte)ac.r, (byte)ac.g, (byte)ac.b, (byte)ac.a);
@@ -192,9 +211,26 @@ namespace WpfDNet {
 				.Pen(sc, (float)stroke.size);
 			return p;
 		}
+		#endregion
+
 	}
 
-	internal class Stroke {
+	public class Figure {
+		public List<IPoint2> points { get; set; } = new List<IPoint2>();
+		public IFill fill { get; set; }
+		public Stroke stroke { get; set; }
+
+		public Figure() {
+
+		}
+
+		//TODO: Compare stroke properly
+		public bool sameStyle(Figure f)
+			=> f.fill?.Equals(fill) ?? false && f.stroke == stroke; 
+
+	}
+
+	public class Stroke {
 		public double size { get; set; }
 		public IFill stroke { get; set; }
 	}

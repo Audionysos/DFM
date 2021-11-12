@@ -15,29 +15,29 @@ namespace WpfDNet {
 			test3();
 			//test2();
 			//adapter.transferBitmap();
-			//counter();
+			counter();
 		}
 
 		private void test3() {
-			var x = rectSprite("A", 250, 250, 0x00FF00, 0.3);
-			main.addChild(x);
-			x.transform.x = 125;
-			x.transform.y = 125;
-			x.transform.sX = 0.5;
-			x.transform.sY = 0.5;
+			var a = rectSprite("A", 250, 250, 0x00FF00, 0.3);
+			main.addChild(a);
+			a.transform.x = 125;
+			a.transform.y = 125;
+			a.transform.sX = 0.5;
+			a.transform.sY = 0.5;
 
-			var y = rectSprite("B",125, 125, 0xFF0000, 0.3);
-			y.transform.x = 125;
-			x.addChild(y);
+			var b = rectSprite("B",125, 125, 0xFF0000, 0.3);
+			b.transform.x = 125;
+			a.addChild(b);
 			
-			var z = rectSprite("C", 62.5, 62.5, 0x0000FF, 0.3);
-			z.transform.x = 187.5;
-			z.transform.y = 62.5;
-			x.addChild(z);
+			var c = rectSprite("C", 62.5, 62.5, 0x0000FF, 0.3);
+			c.transform.x = 187.5;
+			c.transform.y = 62.5;
+			a.addChild(c);
 
 			var d = rectSprite("D", 62.5, 62.5, 0xFFFFFF, 0.3);
 			d.transform.x = 62.5;
-			y.addChild(d);
+			b.addChild(d);
 		}
 
 		private Sprite rectSprite(string name, double w, double h, uint color = 0xFFFFFF, double a = 1) {
@@ -89,7 +89,7 @@ namespace WpfDNet {
 		private void test2() {
 			var r = new Random();
 			vels.Clear();
-			for (int i = 0; i < 350; i++) {
+			for (int i = 0; i < 950; i++) {
 				var e = new Sprite();
 				e.name = "child";
 				main.addChild(e);

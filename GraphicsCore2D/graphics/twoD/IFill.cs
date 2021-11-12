@@ -5,6 +5,7 @@
 		public int width { get; }
 		public int height { get; }
 		public uint getSample(double u, double v);
+
 	}
 
 	public interface IFillPorovider {
@@ -44,6 +45,25 @@
 
 		public static implicit operator Color(uint rgba)
 			=> new Color(rgba);
+
+		//NOTE: not tested
+		public static bool operator ==(Color a, Color b)
+			=> (!(a is null)) && a.Equals(b)
+				|| (a is null && b is null);
+
+		public static bool operator !=(Color a, Color b)
+			=> (!(a is null)) && !a.Equals(b)
+				|| (a is null && !(b is null));
+
+		/// <inheritdoc/>
+		public override bool Equals(object obj) {
+			if (!(obj is Color oc)) return false;
+			return rgba == oc.rgba;
+		}
+
+		/// <inheritdoc/>
+		public override int GetHashCode()
+			=> rgba.GetHashCode();
 
 		public override string ToString() {
 			return rgba.ToString("X8");

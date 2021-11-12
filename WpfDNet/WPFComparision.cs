@@ -34,7 +34,7 @@ namespace WpfDNet {
 		private void test() {
 			var r = new Random();
 			vels.Clear();
-			for (int i = 0; i < 350; i++) {
+			for (int i = 0; i < 950; i++) {
 				var e = new Grid();
 				e.Name = "child" + i;
 				main.Children.Add(e);

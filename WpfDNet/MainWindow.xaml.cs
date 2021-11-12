@@ -30,12 +30,8 @@ namespace WpfDNet {
 			adapter = new SixLaborsToWPFAdapter(img);
 			Left = 1800;
 			new DisplayTest(adapter);
-			//textarea();
+			//new TextAreaTest(adapter);
 			//previous();
-		}
-
-		private void textarea() {
-			var ta = new TextAreaTest(adapter);
 		}
 
 		#region Old

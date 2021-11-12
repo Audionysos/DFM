@@ -1,6 +1,9 @@
 ﻿using audioysos.collections.tree;
+using audioysos.geom;
 using com.audionysos;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace audioysos.display {
 	public abstract class DisplayObject : ITransformProvier, ITreeLeafClient<DisplayObject> {
@@ -56,6 +59,13 @@ namespace audioysos.display {
 		/// <inheritdoc/>
 		public override string ToString() {
 			return $@"{name} [{GetType().Name}]";	
+		}
+	}
+
+	public class HitTester {
+
+		public IList Test(DisplayObject o, IPoint2 p) {
+			return null;
 		}
 	}
 
