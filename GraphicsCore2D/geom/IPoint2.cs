@@ -40,6 +40,18 @@
 		public static P set(this P a, double x, double y) {
 			a.x = x; a.y = y; return a;
 		}
+
+		public static P set(this P a, IPoint2 o) {
+			a.x = o.x; a.y = o.y; return a;
+		}
+
+		public static bool isMin(this P p) {
+			return p.x == double.MinValue && p.y == double.MinValue;
+		}
+
+		public static bool isZero(this P a) {
+			return a.x == 0 && a.y == 0;
+		}
 	}
 
 	public interface IRect<T> where T : P {

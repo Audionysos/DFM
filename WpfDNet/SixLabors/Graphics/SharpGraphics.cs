@@ -99,9 +99,12 @@ namespace WpfDNet {
 		}
 
 		#region Transform
+
+		private Rect bounds = new Rect(); 
 		public IMicroGraphics2D transform(audioysos.display.Transform t) {
 			//return this;
 			tFigures.Clear(); Figure tf = null;
+			bounds.clear();
 			for (int i = 0; i < figures.Count; i++) {
 				var f = figures[i];
 				tf = transformFigure(f, t);
@@ -122,6 +125,7 @@ namespace WpfDNet {
 				var p = f.points[i].copy();
 				t.transform(p);
 				tf.points.Add(p);
+				bounds.grow(p);
 			}
 			return tf;
 		}
@@ -138,8 +142,7 @@ namespace WpfDNet {
 
 		private bool pointInShape(Figure f, IPoint2 tp) {
 			IPoint2 pp = null;
-			//TODO: Store figures bounds
-			IRect<IPoint2> totalBounds = null;//of all figures
+			IRect<IPoint2> totalBounds = (IRect<IPoint2>)bounds;//of all figures
 			var tbp = totalBounds.postion;
 			var il = new Line2(tbp - (Point2)(10, 10), tp);
 			var ic = 0;

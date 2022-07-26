@@ -8,12 +8,14 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Advanced;
 using com.audionysos.text.render;
 using audioysos.geom;
+using System.Collections.Generic;
+using audioysos.input;
 
 namespace WpfDNet {
 	public class SLDiplaySurface : DisplaySurface {
 		public (int x, int y) size { get; private set; } = (500, 500);
 		public Image<Bgra32> image { get; private set; }
-		
+
 
 		public SLDiplaySurface() {
 			image = new Image<Bgra32>(size.x, size.y);
@@ -22,7 +24,7 @@ namespace WpfDNet {
 		}
 
 		private void drawBackground() {
-			image.Mutate(x => 
+			image.Mutate(x =>
 				x.Fill(SixLabors.ImageSharp.Color.LightGray));
 		}
 
@@ -39,6 +41,22 @@ namespace WpfDNet {
 
 		public override void clear<P>(IRect<P> rect = null) {
 			if (rect == null) drawBackground();
+		}
+	}
+
+	public class WPFInputProcessor : InputProcessor {
+		private InputListener il;
+
+		public WPFInputProcessor() {
+
+		}
+
+		public override void registerInputListener(InputListener il) {
+			throw new System.NotImplementedException();
+		}
+
+		public override IPoint2 getSurfacePosition(DisplayPointer p, DisplaySurface s) {
+			throw new System.NotImplementedException();
 		}
 	}
 

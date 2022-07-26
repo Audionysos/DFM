@@ -30,6 +30,31 @@
 			postion = pos.copy() as Point2;
 			size = size.copy() as Point2;
 		}
+
+		public Rect() {
+			postion = new Point2(double.MinValue, double.MinValue);
+			size = new Point2(0, 0);
+		}
+
+		public Rect clear() {
+			postion.set(double.MinValue, double.MinValue);
+			size.set(0, 0);
+			return this;
+		}
+
+		public Rect grow(IPoint2 p) {
+			if (size.isZero()) { postion.set(p); return this; }
+			if (postion.isMin()) { postion.set(p); return this; }
+
+			var dx = p.x - postion.x;
+			if (dx < 0) p.x = dx;
+			else if (dx > size.x) size.x = dx;
+
+			var dy = p.y - postion.y;
+			if (dy < 0) p.y = dy;
+			else if (dy > size.y) size.y = dy;
+			return this;
+		}
 	}
 
 }
