@@ -53,6 +53,7 @@ namespace WpfDNet {
 		}
 
 		private TextAreaView ta;
+		/// <summary>FPS counter display.</summary>
 		private void counter() {
 			ta = new TextAreaView();
 			main.addChild(ta.view);

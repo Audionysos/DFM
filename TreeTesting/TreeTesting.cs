@@ -8,9 +8,9 @@ namespace TreeTesting {
 
 		[TestMethod]
 		public void TestMethod1() {
-			var c = new DisplayObjectContainer();
+			var c = new Sprite();
 			c.name = "root";
-			var ch = new DisplayObjectContainer();
+			var ch = new Sprite();
 			ch.name = "ch1";
 			c.addChild(ch);
 
@@ -22,7 +22,7 @@ namespace TreeTesting {
 			c.transform.sX = 2;
 			Assert.IsTrue(ch.getGlobaTransform().x == 140);
 
-			var ch2 = new DisplayObjectContainer();
+			var ch2 = new Sprite();
 			ch2.name = "ch2";
 			ch.addChild(ch2);
 			Assert.AreSame(c, ch.parent);

@@ -35,7 +35,7 @@ namespace audioysos.display {
 			tree.ADDED += onAdded;
 		}
 
-		/// <summary>Indicate if this object suppose to be container that is able to to store children and thus <see cref="TreeNode{T}"/> should be created for it as oppose to <see cref="TreePoint{T}"/>.</summary>
+		/// <summary>Indicate if this object suppose to be container that is able to store children and thus <see cref="TreeNode{T}"/> should be created for it as oppose to <see cref="TreePoint{T}"/>.</summary>
 		protected virtual bool isContainer() => false;
 
 
@@ -109,7 +109,7 @@ namespace audioysos.display {
 		}
 
 		private void onSurfaceLost(DisplayObject obj) {
-			//TODO: Need to figure out how make sure chached graphics don't crash.
+			//TODO: Need to figure out how make sure cached graphics don't crash.
 			graphics.changeBaseDrawer(
 				currGraphics,
 				currGraphics = BlankGraphics.instance

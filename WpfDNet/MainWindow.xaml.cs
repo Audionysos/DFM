@@ -28,7 +28,7 @@ namespace WpfDNet {
 			//new WPFComparision(this); return;
 
 			adapter = new SixLaborsToWPFAdapter(img);
-			Left = 1800;
+			//Left = 1800;
 			new DisplayTest(adapter);
 			//new TextAreaTest(adapter);
 			//previous();
