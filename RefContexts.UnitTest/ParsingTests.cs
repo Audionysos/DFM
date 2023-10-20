@@ -2,7 +2,7 @@ using com.audionysos.text.parsing;
 using com.audionysos.text.parsing.expression;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
-using static com.audionysos.text.parsing.BasicMathcers;
+using static com.audionysos.text.parsing.BasicMatchers;
 using static com.audionysos.text.parsing.patterns.BasicPatterns;
 
 namespace RefContexts.UnitTest {

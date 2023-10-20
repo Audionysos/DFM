@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using C = com.audionysos.text.parsing.LanguageConstruct;
-using static com.audionysos.text.parsing.BasicMathcers;
+using static com.audionysos.text.parsing.BasicMatchers;
 using System.Collections;
 using com.audionysos.text.parsing.expression;
 using System.Diagnostics;

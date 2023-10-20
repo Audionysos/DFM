@@ -5,9 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 using C = com.audionysos.text.parsing.LanguageConstruct;
-using static com.audionysos.text.parsing.BasicMathcers;
+using static com.audionysos.text.parsing.BasicMatchers;
 using static com.audionysos.text.parsing.patterns.GenericConstructs;
 //using com.audionysos.text.parsing.expression;
+using Range = com.audionysos.text.parsing.BasicMatchers.Range;
 
 namespace com.audionysos.text.parsing.patterns {
 	public class GenericConstructs {

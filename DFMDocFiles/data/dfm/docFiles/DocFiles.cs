@@ -1,4 +1,6 @@
-﻿using com.audionysos.data.items;
+﻿// Ignore Spelling: Pah dfm
+
+using com.audionysos.data.items;
 using com.audionysos.files;
 using System;
 using System.Collections.Generic;
@@ -18,7 +20,7 @@ namespace com.audionysos.data.dfm.docFiles {
 
 		public override ItemProvider itemProvider => new SDocItemsProvider();
 
-		public DocFiles(DFM sytem) : base(sytem) {
+		public DocFiles(DFM system) : base(system) {
 
 		}
 
@@ -33,7 +35,7 @@ namespace com.audionysos.data.dfm.docFiles {
 			return iss;
 		}
 
-		public void GenrateDocs() {
+		public void GenerateDocs() {
 			foreach (var t in top.Enum<Topic>()) {
 				t.ToHTML();
 			}
@@ -44,7 +46,7 @@ namespace com.audionysos.data.dfm.docFiles {
 
 
 	public class Topic : ItemInterface {
-		public static MarkdownPipeline mdPipie = new MarkdownPipelineBuilder()
+		public static MarkdownPipeline mdPipe = new MarkdownPipelineBuilder()
 			.UseAdvancedExtensions().Build();
 
 		/// <summary>Documentation folder for DFM.</summary>
@@ -73,7 +75,7 @@ namespace com.audionysos.data.dfm.docFiles {
 		}
 
 		public void ToHTML() {
-			var rawHtml = Markdown.ToHtml(doc.mainMd.text(), mdPipie);
+			var rawHtml = Markdown.ToHtml(doc.mainMd.text(), mdPipe);
 			embedInBasePage(rawHtml).Save(doc.mainHTML);
 			//File.WriteAllText(doc.mainHTML, rawHtml);
 		}
@@ -127,7 +129,7 @@ namespace com.audionysos.data.dfm.docFiles {
 
 		public static bool isDocScheme(string dir) {
 			if (!Directory.Exists(dir)) return false;
-			if (!Exists(Combine(dir, "doc", "dfm_System"))) return false;
+			if (!Directory.Exists(Combine(dir, "doc", "dfm_System"))) return false;
 			return true;
 		}
 

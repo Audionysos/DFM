@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using static com.audionysos.text.parsing.BasicMathcers;
+using static com.audionysos.text.parsing.BasicMatchers;
+using Range = com.audionysos.text.parsing.BasicMatchers.Range;
+
 
 namespace com.audionysos.text.parsing.expression {
 	public class SCSExpressionParser {

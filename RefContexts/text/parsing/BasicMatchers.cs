@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace com.audionysos.text.parsing {
 
-	public class BasicMathcers {
+	public class BasicMatchers {
 
 		/// <summary>Match any identifier name. Can only contain letters and digits and "_". Cannot start with digit</summary>
 		public class Name : SequenceMatcher {
@@ -25,7 +25,7 @@ namespace com.audionysos.text.parsing {
 		}
 
 		/// <summary>Matches all spaces or tabs in a row.</summary>
-		public class Whtiespace : SequenceMatcher {
+		public class Whitespace : SequenceMatcher {
 			protected override bool isCharOk(char c) => charIsAnyOF(WHITES); 
 		}
 
@@ -48,7 +48,7 @@ namespace com.audionysos.text.parsing {
 			private char[] open;
 			private char[] close;
 
-			/// <summary>Inclusively matches ranges between <paramref name="open"/> and <paramref name="close"/> seqences.</summary>
+			/// <summary>Inclusively matches ranges between <paramref name="open"/> and <paramref name="close"/> sequences.</summary>
 			public Range(string open, string close) {
 				double d = -.1456e-35;
 				multiOut = true;

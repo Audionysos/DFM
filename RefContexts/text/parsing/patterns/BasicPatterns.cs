@@ -1,5 +1,5 @@
 ﻿using C = com.audionysos.text.parsing.LanguageConstruct;
-using static com.audionysos.text.parsing.BasicMathcers;
+using static com.audionysos.text.parsing.BasicMatchers;
 
 namespace com.audionysos.text.parsing.patterns {
 	public class BasicPatterns {
@@ -7,7 +7,7 @@ namespace com.audionysos.text.parsing.patterns {
 		/// <summary>Mathes floting point and int numbers in decimal system.</summary>
 		public class Number : C {
 			public Number() {
-				OPT("+").or("-").OPT<Whtiespace>().OPT<UnDigits>()
+				OPT("+").or("-").OPT<Whitespace>().OPT<UnDigits>()
 					.OPT(".").REQ<UnDigits>().OPT<NExponent>();
 			}
 		}
