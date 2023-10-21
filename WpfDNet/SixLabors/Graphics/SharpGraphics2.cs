@@ -36,7 +36,7 @@ namespace WpfDNet {
 			img.Mutate(x => {
 				var polys = new List<Polygon>();
 				S.Color lfill = S.Color.Transparent;
-				IPen lpen = null;
+				Pen lpen = null;
 				for (int i = 0; i < tFigures.Count; i++) {
 					var f = tFigures[i];
 					//var so = new ShapeGraphicsOptions();
@@ -64,14 +64,14 @@ namespace WpfDNet {
 							x.Fill(lfill, polys[0]);
 						}
 						if(lpen != null) {
-							x.DrawLines(lpen, pts);
+							x.DrawLine(lpen, pts);
 						}
 					}else {
 						var cp = new ComplexPolygon(polys);
 						if(lfill != S.Color.Transparent)
 							x.Fill(f.getBrush(), cp);
 						if(lpen != null)
-							x.DrawLines(f.getPen(), pts);
+							x.DrawLine(f.getPen(), pts);
 
 						polys.Clear();
 						lfill = S.Color.Transparent;
@@ -185,12 +185,12 @@ namespace WpfDNet {
 				.FromRgba((byte)c.r, (byte)c.g, (byte)c.b, (byte)c.a);
 		}
 
-		internal IPen getPen() {
+		internal Pen getPen() {
 			var ac = (com.audionysos.Color)stroke.stroke;
 			var sc = SixLabors.ImageSharp.Color
 				.FromRgba((byte)ac.r, (byte)ac.g, (byte)ac.b, (byte)ac.a);
-			var p = new SixLabors.ImageSharp.Drawing.Processing
-				.Pen(sc, (float)stroke.size);
+			var p = //new SixLabors.ImageSharp.Drawing.Processing
+				Pens.Solid(sc, (float)stroke.size);
 			return p;
 		}
 	}

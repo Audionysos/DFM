@@ -189,7 +189,8 @@ namespace WpfDNet {
 						x.Fill(f.brush, f.path);
 					if (f.pen == null) continue;
 					for (int j = 0; j < f.points.Length; j++) {
-						x.DrawLines(f.pen, f.points[j]);
+						//x.DrawLines(f.pen, f.points[j]);
+						x.DrawLine(f.pen, f.points[j]);
 					}
 				}
 			});
@@ -201,8 +202,8 @@ namespace WpfDNet {
 	public class SharpFigure {
 		public IPath path;
 		public PointF[][] points;
-		public IBrush brush;
-		public IPen pen;
+		public Brush brush;
+		public Pen pen;
 
 		public SharpFigure(List<Figure> figures, IFill fill, Stroke stroke) {
 			brush = getBrush(fill);
@@ -226,7 +227,7 @@ namespace WpfDNet {
 		}
 
 		#region Styling conversion
-		internal IBrush getBrush(IFill fill) {
+		internal Brush getBrush(IFill fill) {
 			if (fill == null) return null;
 			var c = (com.audionysos.Color)fill;
 			var sc = SixLabors.ImageSharp.Color
@@ -234,13 +235,14 @@ namespace WpfDNet {
 			return new SolidBrush(sc);
 		}
 
-		internal IPen getPen(Stroke stroke) {
+		internal Pen getPen(Stroke stroke) {
 			if (stroke == null) return null;
 			var ac = (com.audionysos.Color)stroke.stroke;
 			var sc = SixLabors.ImageSharp.Color
 				.FromRgba((byte)ac.r, (byte)ac.g, (byte)ac.b, (byte)ac.a);
-			var p = new SixLabors.ImageSharp.Drawing.Processing
-				.Pen(sc, (float)stroke.size);
+			var p = //new //SixLabors.ImageSharp.Drawing.Processing
+				//.
+				Pens.Solid(sc, (float)stroke.size);
 			return p;
 		}
 		#endregion

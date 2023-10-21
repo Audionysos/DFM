@@ -22,10 +22,11 @@ namespace com.audionysos.text.render {
 			rendered.Clear();
 			var man = ctx.manipulator;
 			var grc = new GlyphRenderingContext();
-			ctx.fromat.size = 11; 
+			ctx.fromat.size = 80; 
 			grc.gfx = ctx.gfx;
 			grc.gfx.clear();
-			var w = 7; //char width
+			var dw = 10d; //default width
+			var w = 0d; //char width
 			var linesSpacing = 4; var tabSize = 4;
 			var lns = man.text.lines;
 			for (int i = 0; i < lns.Count; i++) {
@@ -34,11 +35,13 @@ namespace com.audionysos.text.render {
 					var chi = man.getCharInfo(l.start + j);
 					if (chi.character == '\n') continue;
 					if (chi.character == '\t') {
-						grc.position.x += w * tabSize;
+						grc.position.x += dw * tabSize;
 						continue;
 					}
+					var rg = renderCharacter(chi, grc);
+					w = (rg == null) ? dw : rg.template.width;
 					grc.position.x += w;
-					rendered.Add(renderCharacter(chi, grc));
+					rendered.Add(rg);
 				}
 				grc.position.x = 0;
 				grc.position.y += ctx.fromat.size + linesSpacing;

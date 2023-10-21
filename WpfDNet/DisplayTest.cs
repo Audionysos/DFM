@@ -90,7 +90,7 @@ namespace WpfDNet {
 		private void test2() {
 			var r = new Random();
 			vels.Clear();
-			for (int i = 0; i < 950; i++) {
+			for (int i = 0; i < 1; i++) {
 				var e = new Sprite();
 				e.name = "child";
 				main.addChild(e);
