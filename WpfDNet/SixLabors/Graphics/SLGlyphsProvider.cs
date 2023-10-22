@@ -7,55 +7,53 @@ using System.Windows.Media.Media3D;
 using F = SixLabors.Fonts;
 using X = com.audionysos.text.render;
 
-namespace WpfDNet {
-	public class SLGlyphsProvider : GlyphsProvider {
+namespace WpfDNet; 
+public class SLGlyphsProvider : GlyphsProvider {
 
-		public X.Glyph get2(char ch, ITextFormat f) {
-			if (ch == ' ') return missingGlyph;
-			var font = F.SystemFonts.CreateFont(f.font.name, (float)f.size);
-			font.TryGetGlyphs(new F.Unicode.CodePoint(ch), out var glyphs);
-			var g = glyphs[0];
-			var b = new bla();
-			TextRenderer.RenderTextTo(b,  ch.ToString(), new TextOptions(font) { 
-				
-			});
-			var rc = g.BoundingBox(GlyphLayoutMode.Horizontal
-				,new System.Numerics.Vector2(), 128);
-			var width = rc.Width; var height = 0;
-			var r = new X.Glyph(width, height, b.phs);
-			return r;
-		}
-
-		public override X.Glyph get(char ch, ITextFormat f) {
-			if (ch == ' ') return missingGlyph;
-			var font = F.SystemFonts.CreateFont(f.font.name, (float)f.size);
-
-			var phs = SixLabors.ImageSharp.Drawing.TextBuilder
-				.GenerateGlyphs(ch.ToString(), new TextOptions(font)
-			);
-			var paths = new List<Path>();
-			foreach (var ph in phs) {
-				var fp = ph.Flatten();
-				foreach (var sp in fp) {
-					var points = sp.Points.ToArray();
-					var path = new Path();
-					foreach (var p in points)
-						path.Add(p.X, p.Y);
-					paths.Add(path);
-				}
-			}
-
-			font.TryGetGlyphs(new F.Unicode.CodePoint(ch), out var glyphs);
-			var g = glyphs[0];
-			var rc = g.BoundingBox(GlyphLayoutMode.Horizontal
-				, new System.Numerics.Vector2(), 128);
-			var width = rc.Width; var height = 0;
-
-			var r = new X.Glyph(width, height, paths);
-			return r;
-		}
+	public X.Glyph get2(char ch, ITextFormat f) {
+		if (ch == ' ') return missingGlyph;
+		var font = F.SystemFonts.CreateFont(f.font.name, (float)f.size);
+		font.TryGetGlyphs(new F.Unicode.CodePoint(ch), out var glyphs);
+		var g = glyphs[0];
+		var b = new bla();
+		TextRenderer.RenderTextTo(b,  ch.ToString(), new TextOptions(font) { 
+			
+		});
+		var rc = g.BoundingBox(GlyphLayoutMode.Horizontal
+			,new System.Numerics.Vector2(), 128);
+		var width = rc.Width; var height = 0;
+		var r = new X.Glyph(width, height, b.phs);
+		return r;
 	}
 
+	public override X.Glyph get(char ch, ITextFormat f) {
+		if (ch == ' ') return missingGlyph;
+		var font = F.SystemFonts.CreateFont(f.font.name, (float)f.size);
+
+		var phs = SixLabors.ImageSharp.Drawing.TextBuilder
+			.GenerateGlyphs(ch.ToString(), new TextOptions(font)
+		);
+		var paths = new List<Path>();
+		foreach (var ph in phs) {
+			var fp = ph.Flatten();
+			foreach (var sp in fp) {
+				var points = sp.Points.ToArray();
+				var path = new Path();
+				foreach (var p in points)
+					path.Add(p.X, p.Y);
+				paths.Add(path);
+			}
+		}
+
+		font.TryGetGlyphs(new F.Unicode.CodePoint(ch), out var glyphs);
+		var g = glyphs[0];
+		var rc = g.BoundingBox(GlyphLayoutMode.Horizontal
+			, new System.Numerics.Vector2(), 128);
+		var width = rc.Width; var height = 0;
+
+		var r = new X.Glyph(width, height, paths);
+		return r;
+	}
 }
 
 
