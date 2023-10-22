@@ -1,5 +1,5 @@
-﻿using audioysos.display;
-using audioysos.geom;
+﻿using audionysos.display;
+using audionysos.geom;
 using com.audionysos.text.edit;
 using com.audionysos.text.utils;
 using System;
@@ -69,7 +69,7 @@ namespace com.audionysos.text.render {
 			var cts = ctx.manipulator.carets;
 			var gfx = carret.graphics;
 			gfx.clear();
-			gfx.lineSyle(1);
+			gfx.lineStyle(1);
 			gfx.lineTo(0, ctx.fromat.size);
 			gfx.close();
 			if (rendered.Count <= cts.ch) return;

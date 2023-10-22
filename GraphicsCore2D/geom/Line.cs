@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace audioysos.geom {
+namespace audionysos.geom {
 	public interface ILine2 {
 		public IPoint2 a { get; }
 		public IPoint2 b { get; }

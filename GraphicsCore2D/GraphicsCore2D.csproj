@@ -1,8 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <RootNamespace>audioysos</RootNamespace>
+    <TargetFramework>net7.0</TargetFramework>
+    <RootNamespace>audionysos</RootNamespace>
   </PropertyGroup>
-
 </Project>

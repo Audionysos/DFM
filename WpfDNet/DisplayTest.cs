@@ -1,4 +1,4 @@
-﻿using audioysos.display;
+﻿using audionysos.display;
 using com.audionysos.text.render;
 using System;
 using System.Collections.Generic;

@@ -1,9 +1,9 @@
 ﻿//skatching
 
-using audioysos.geom;
+using audionysos.geom;
 using System;
 
-namespace audioysos.display {
+namespace audionysos.display {
 	public class Transform {
 		public double x { get; set; }
 		public double y { get; set; }

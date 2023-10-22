@@ -1,11 +1,12 @@
-﻿using audioysos.collections.tree;
-using audioysos.geom;
+﻿using audionysos.collections.tree;
+using audionysos.geom;
 using com.audionysos;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace audioysos.display {
+namespace audionysos.display {
 	public abstract class DisplayObject : ITransformProvier, ITreeLeafClient<DisplayObject> {
 		public event Action<DisplayObject> ADDED_TO_SURFACE;
 		public event Action<DisplayObject> REMOVED_FROM_SURFACE;
@@ -43,7 +44,7 @@ namespace audioysos.display {
 			surface = parent.surface;
 		}
 
-		public Transform getGlobaTransform() {
+		public Transform getGlobalTransform() {
 			var t = globalTransform.setTo(transform);
 			tree.forAncestors(d => t.append(d.transform));
 			return t;
@@ -56,10 +57,14 @@ namespace audioysos.display {
 
 		internal virtual void render() { }
 
+		/// <summary>Returns true if there are any graphics drawn at given position.</summary>
+		public virtual bool hitTest(IPoint2 p) => false;
+
 		/// <inheritdoc/>
 		public override string ToString() {
 			return $@"{name} [{GetType().Name}]";	
 		}
+
 	}
 
 	public class HitTester {
@@ -87,6 +92,23 @@ namespace audioysos.display {
 		public void addChild(DisplayObject child) => tree.addChild(child.tree);
 		public void removeChild(DisplayObject child) => tree.removeChild(child.tree);
 
+		/// <summary>Returns list of all objects in the branch for which <see cref="DisplayObject.hitTest(IPoint2)"/> returned true at given position (including this one).</summary>
+		/// <param name="p">Position for hit testing.</param>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public bool rayCast(IPoint2 p, IList<DisplayObject> output) {
+			tree.forDescendants(bool (o) => {
+				if (o is DisplayObjectContainer c) {
+					if (c.rayCast(p, output)) return true;
+				} else if (o.hitTest(p)) return true;
+				return false;
+			}, backward: true);
+			if (hitTest(p)) {
+				output.Add(this);
+				return false;
+			}
+			return false;
+		}
 	}
 
 	public class Sprite : DisplayObjectContainer {
@@ -117,10 +139,16 @@ namespace audioysos.display {
 		}
 
 		internal override void render() {
-			getGlobaTransform();
+			getGlobalTransform();
 			graphics.transform(globalTransform);
 			surface.renderGraphics(graphics.baseGraphics);
 			tree.forDescendants(d => d.update());
+		}
+
+		public override bool hitTest(IPoint2 p) {
+			if (graphics is IInteractiveGraphics2D ig)
+				return ig.pointInShape(p);
+			return false;
 		}
 	}
 

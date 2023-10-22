@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using audioysos.geom;
+using audionysos.geom;
 using com.audionysos;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -15,7 +15,7 @@ using S = SixLabors.ImageSharp;
 namespace WpfDNet {
 
 	/// <summary>Implements <see cref="IMicroGraphics2D"/> interface utilizing <see cref="SixLabors.ImageSharp"/> library.</summary>
-	public class SharpGraphics : IMicroGraphics2D {
+	public class SharpGraphics : IMicroGraphics2D, IInteractiveGraphics2D {
 		public double x { get; }
 		public double y { get; }
 
@@ -66,7 +66,7 @@ namespace WpfDNet {
 			return this;
 		}
 
-		public IMicroGraphics2D lineSyle(double w = 0, uint rgb = 0, double a = 1) {
+		public IMicroGraphics2D lineStyle(double w = 0, uint rgb = 0, double a = 1) {
 			stroke = new Stroke() {
 				size = w,
 				stroke = (com.audionysos.Color)0xFF0000,
@@ -101,7 +101,7 @@ namespace WpfDNet {
 		#region Transform
 
 		private Rect bounds = new Rect(); 
-		public IMicroGraphics2D transform(audioysos.display.Transform t) {
+		public IMicroGraphics2D transform(audionysos.display.Transform t) {
 			//return this;
 			tFigures.Clear(); Figure tf = null;
 			bounds.clear();
@@ -119,7 +119,7 @@ namespace WpfDNet {
 			return this;
 		}
 
-		private Figure transformFigure(Figure f, audioysos.display.Transform t) {
+		private Figure transformFigure(Figure f, audionysos.display.Transform t) {
 			var tf = new Figure() { fill = f.fill, stroke = f.stroke };
 			for (int i = 0; i < f.points.Count; i++) {
 				var p = f.points[i].copy();
@@ -135,7 +135,8 @@ namespace WpfDNet {
 		public bool pointInShape(IPoint2 p) {
 			for (int i = 0; i < tFigures.Count; i++) {
 				var f = tFigures[i];
-				pointInShape(f, p);
+				var hit = pointInShape(f, p);
+				if (hit) return true;
 			}
 			return false;
 		}

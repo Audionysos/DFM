@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using static System.Math;
 
-namespace audioysos.math {
+namespace audionysos.math {
 	public static class NumbersExtensions {
 
 		/// <summary>Return true if this number equals given other number with some tolerance.</summary>

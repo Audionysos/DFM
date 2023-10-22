@@ -1,4 +1,4 @@
-﻿using audioysos.display;
+﻿using audionysos.display;
 using com.audionysos.text.edit;
 using com.audionysos.text.utils;
 using System;

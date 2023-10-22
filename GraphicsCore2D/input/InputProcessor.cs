@@ -1,8 +1,8 @@
-﻿using audioysos.display;
-using audioysos.geom;
+﻿using audionysos.display;
+using audionysos.geom;
 using System.Collections.Generic;
 
-namespace audioysos.input {
+namespace audionysos.input {
 	public abstract class InputProcessor {
 
 		public abstract void registerInputListener(InputListener il);
@@ -24,19 +24,25 @@ namespace audioysos.input {
 			for (int i = 0; i < _surfs.Count; i++) {
 				var s = _surfs[i];
 				var sp = ip.getSurfacePosition(dp, s);
+				s.hitTest(sp + dp.position);
 			}
 		}
 
 	}
 
 	public class DisplayPointer {
-		public int id { get; }
-		public DisplayPoiterType type { get; }
-		public IPoint2 position;
+		public int id { get; init; }
+		public DisplayPointerType type { get; init; }
+		public IPoint2 position { get; set; }
 
 	}
 
-	public class DisplayPoiterType {
+	public enum DisplayPointerType {
+		UNKNOWN,
+		MOUSE,
+		FINGER,
+		PEN,
+		OTHER
 
 	}
 

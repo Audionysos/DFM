@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace audioysos.collections.tree {
+namespace audionysos.collections.tree {
 
 	public interface ITreeNodeClient<T> where T : class {
 		TreeNode<T> tree { get; }
@@ -97,7 +97,7 @@ namespace audioysos.collections.tree {
 			ADDED?.Invoke(this);
 		}
 
-		#region emnumerations / searchin etc.
+		#region enumerations / searching etc.
 		public void forAncestorNodes(Action<TreeNode> a) {
 			var p = _parent;
 			while (p != null) {
@@ -242,6 +242,35 @@ namespace audioysos.collections.tree {
 				a(c.data);
 				if (c is TreeNode<T> n) n.forDescendants(a);
 			}
+		}
+
+		/// <summary></summary>
+		/// <param name="a"></param>
+		/// <param name="backward">Last child object of this node will invoked first.</param>
+		public void forDescendants(Action<T> a, bool backward) {
+			if (!backward) { forDescendants(a); return; }
+			for (int i = _chs.Count -1; i > -1; i--) {
+				var c = _chs[i];
+				a(c.data);
+				if (c is TreeNode<T> n) n.forDescendants(a, backward: true);
+			}
+		}
+
+		/// <summary></summary>
+		/// <param name="a"></param>
+		/// <param name="backward">Last child object of this node will invoked first. [Warning: false not implemented]</param>
+		public bool forDescendants(Func<T, bool> a, bool backward) {
+			if (!backward) throw new NotImplementedException("forward traversing with breaking is not implemented.");
+			for (int i = _chs.Count - 1; i > -1; i--) {
+				var c = _chs[i];
+				var brk = a(c.data);
+				if (brk) return true;
+				if (c is TreeNode<T> n) {
+					if (n.forDescendants(a, backward: true))
+						return true;
+				}
+			}
+			return false;
 		}
 
 		/// <inheritdoc/>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using audioysos.geom;
+using audionysos.geom;
 using com.audionysos;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -112,7 +112,7 @@ namespace WpfDNet {
 			return this;
 		}
 
-		public IMicroGraphics2D lineSyle(double w = 0, uint rgb = 0, double a = 1) {
+		public IMicroGraphics2D lineStyle(double w = 0, uint rgb = 0, double a = 1) {
 			stroke = new Stroke2() {
 				size = w,
 				stroke = (com.audionysos.Color)0xFF0000,
@@ -143,7 +143,7 @@ namespace WpfDNet {
 			return this;
 		}
 
-		public IMicroGraphics2D transform(audioysos.display.Transform t) {
+		public IMicroGraphics2D transform(audionysos.display.Transform t) {
 			tFigures.Clear(); Figure2 tf = null;
 			for (int i = 0; i < figures.Count; i++) {
 				var f = figures[i];
@@ -157,7 +157,7 @@ namespace WpfDNet {
 			return this;
 		}
 
-		private Figure2 transformFigure(Figure2 f, audioysos.display.Transform t) {
+		private Figure2 transformFigure(Figure2 f, audionysos.display.Transform t) {
 			var gp = new Point2();
 			var tf = new Figure2() { fill = f.fill, stroke = f.stroke };
 			for (int i = 0; i < f.points.Count; i++) {

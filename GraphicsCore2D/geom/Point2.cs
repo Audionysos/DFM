@@ -1,4 +1,4 @@
-﻿namespace audioysos.geom {
+﻿namespace audionysos.geom {
 	public class Point2 : IPoint2 {
 		public double x { get; set; }
 		public double y { get; set; }

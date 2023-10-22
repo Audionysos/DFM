@@ -1,4 +1,5 @@
-﻿using audioysos.display;
+﻿using audionysos.display;
+using audionysos.input;
 using com.audionysos.text.render;
 using SixLabors.ImageSharp.Advanced;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using W = System.Windows;
@@ -15,14 +17,16 @@ using WMI = System.Windows.Media.Imaging;
 namespace WpfDNet.SLtoWPF {
 	public class SixLaborsToWPFAdapter {
 		public WMI.WriteableBitmap wpfBitmap { get; private set; }
-		public SLDiplaySurface displaySurface;
+		public SLDisplaySurface displaySurface;
 		public W.Controls.Image image { get; private set; }
 		private DispatcherTimer timer;
+		private WPFInputProcessor input;
+		private InputListener inputListener;
 
 		public SixLaborsToWPFAdapter(W.Controls.Image image) {
 			this.image = image;
 
-			var ds = new SLDiplaySurface();
+			var ds = new SLDisplaySurface();
 			displaySurface = ds;
 			wpfBitmap = new WMI.WriteableBitmap(ds.size.x, ds.size.y,
 				96, 96,
@@ -32,6 +36,11 @@ namespace WpfDNet.SLtoWPF {
 			image.Source = wpfBitmap;
 			image.Stretch = WM.Stretch.None;
 			image.UseLayoutRounding = true;
+			
+			inputListener = new InputListener();
+			inputListener.registerSurface(ds);
+			input = new WPFInputProcessor(image);
+			input.registerInputListener(inputListener);
 
 			timer = new DispatcherTimer(DispatcherPriority.Normal);
 			timer.Interval = TimeSpan.FromMilliseconds(15);

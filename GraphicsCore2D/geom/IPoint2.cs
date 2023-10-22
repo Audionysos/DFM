@@ -1,6 +1,6 @@
-﻿namespace audioysos.geom {
+﻿namespace audionysos.geom {
 
-	using P = audioysos.geom.IPoint2;
+	using P = audionysos.geom.IPoint2;
 
 	public interface IPoint2 {
 		double x { get; set; }

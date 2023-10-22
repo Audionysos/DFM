@@ -1,22 +1,32 @@
-﻿using audioysos.display;
-using audioysos.geom;
+﻿using audionysos.display;
+using audionysos.geom;
 using cnc.geom;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace com.audionysos {
 
-	//TODO: Return "this" everywhere insted of baseDrawer
+	/// <summary>Provides general interface for creating simple 2D graphics through given base drawer (other graphics object).
+	/// The library specifies three main interfaces for the graphics implementation that correspond to levels of capabilities which they may provide.
+	/// Those are as follows: <see cref="IMicroGraphics2D"/>, <see cref="IBasicGraphics2D"/> and <see cref="IGraphics2D"/>.
+	/// This class is essentially a wrapper for other types implementing those interfaces, while itself implementing the most complex one.
+	/// Depending on capabilities of the base drawer, this class uses methods implemented by the base drawer or otherwise uses it's own, generic/standard implementations.
+	/// Apart from providing default implementation for more basic implementors this class may be adopted for more specialized scenarios, caching of instruction (see <see cref="CachedGraphics"/>) context switching etc.
 	public class Graphics : IGraphics2D, IPoint2 {
 
 		private IMicroGraphics2D m;
+		/// <summary>Underlaying graphics on which actual drawing is performed.</summary>
 		internal IMicroGraphics2D baseGraphics => m;
 		private IBasicGraphics2D b;
 		private IGraphics2D g;
 
 		#region Position
+		/// <summary>Current position from which next figure will be drawn.</summary>
 		public IPoint2 p => this;
+		/// <summary>See <see cref="IMicroGraphics2D.x"/>/y. Setter is not doing anything (only for <see cref="IPoint2"/> implementation).</summary>
 		public double x { get => m.x; set { } }
+		/// <summary>See <see cref="IMicroGraphics2D.x"/>/y. Setter is not doing anything (only for <see cref="IPoint2"/> implementation).</summary>
 		public double y { get => m.y; set { } }
 
 		#region Stupid point implementation
@@ -28,21 +38,30 @@ namespace com.audionysos {
 
 		#endregion
 
+		/// <summary></summary>
+		/// <param name="baseDrawer">Graphics object to be wrapped.
+		/// This object will not be exposed externally but you may changed it later using <see cref="changeBaseDrawer(IMicroGraphics2D, IMicroGraphics2D)"/> method.</param>
+		/// <exception cref="ArgumentNullException"></exception>
 		public Graphics(IMicroGraphics2D baseDrawer) {
 			m = baseDrawer ?? throw new ArgumentNullException();
 			b = baseDrawer as IBasicGraphics2D;
 			g = baseDrawer as IGraphics2D;
 		}
 
-		public void changeBaseDrawer(IMicroGraphics2D old, IMicroGraphics2D nev) {
-			if (m != old) throw new InvalidOperationException("Old base drawer is a differen instance.");
+		/// <summary></summary>
+		/// <param name="old">Object that was previous base drawer for this graphics.</param>
+		/// <param name="nev">New base drawer to replace old one with.</param>
+		/// <exception cref="InvalidOperationException">You must provide old drawer as a proof that you "own" the graphics object.</exception>
+		/// <exception cref="ArgumentNullException"></exception>
+		public void changeBaseDrawer(IMicroGraphics2D old, [DisallowNull]IMicroGraphics2D nev) {
+			if (m != old) throw new InvalidOperationException("Old base drawer is a different instance.");
 			m = nev ?? throw new ArgumentNullException();
 			b = nev as IBasicGraphics2D;
 			g = nev as IGraphics2D;
 		}
 
-		public IMicroGraphics2D lineSyle(double w = 0, uint rgb = 0, double a = 1)
-			=> m.lineSyle(w, rgb, a);
+		public IMicroGraphics2D lineStyle(double w = 0, uint rgb = 0, double a = 1)
+			=> m.lineStyle(w, rgb, a);
 
 		#region Fill
 		public IMicroGraphics2D beginFill(uint rgb, double a = 1) => m.beginFill(rgb, a);
@@ -69,7 +88,7 @@ namespace com.audionysos {
 		#endregion
 
 		#region Bezier
-		/// <summary>Number of straigt edges of wich a single bezier segment is composed if base drawer does not implement it's own method.</summary>
+		/// <summary>Number of straight edges of which a single bezier segment is composed if base drawer does not implement it's own method.</summary>
 		private int bezierEdges = 30;
 
 		public IBasicGraphics2D bezierTo(IPoint2 p1, IPoint2 p2, IPoint2 p3) {
@@ -91,7 +110,7 @@ namespace com.audionysos {
 		}
 		#endregion
 
-		#region Circural
+		#region Circular
 
 		public IGraphics2D drawCircle(double x = 0, double y = 0, double r = 5) {
 			if (g != null) return g.drawCircle(x, y, r);
@@ -129,7 +148,7 @@ namespace com.audionysos {
 		}
 		#endregion
 
-		public IGraphics2D drawTraingles(IPoint2[] points, IPoint2[] uv, IFillPiece fill) {
+		public IGraphics2D drawTriangles(IPoint2[] points, IPoint2[] uv, IFillPiece fill) {
 			throw new NotImplementedException();
 		}
 

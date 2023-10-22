@@ -1,4 +1,4 @@
-﻿using audioysos.display;
+﻿using audionysos.display;
 
 namespace com.audionysos {
 	/// <summary>Blank <see cref="IMicroGraphics2D"/> implementation to act as a placeholder when no proper instance could be provided.</summary>
@@ -19,7 +19,7 @@ namespace com.audionysos {
 		/// <summary><see cref="BlankGraphics"/> doesn't do anything.</summary>
 		public IMicroGraphics2D endFill() => this;
 		/// <summary><see cref="BlankGraphics"/> doesn't do anything.</summary>
-		public IMicroGraphics2D lineSyle(double w = 0, uint rgb = 0, double a = 1) => this;
+		public IMicroGraphics2D lineStyle(double w = 0, uint rgb = 0, double a = 1) => this;
 		/// <summary><see cref="BlankGraphics"/> doesn't do anything.</summary>
 		public IMicroGraphics2D lineTo(double x, double y) => this;
 		/// <summary><see cref="BlankGraphics"/> doesn't do anything.</summary>

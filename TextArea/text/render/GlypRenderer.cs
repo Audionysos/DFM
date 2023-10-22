@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using V = audioysos.geom.IPoint2;
+using V = audionysos.geom.IPoint2;
 using com.audionysos;
-using audioysos.geom;
+using audionysos.geom;
 using com.audionysos.text.edit;
 
 namespace com.audionysos.text.render {

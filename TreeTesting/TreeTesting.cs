@@ -1,4 +1,4 @@
-using audioysos.display;
+using audionysos.display;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TreeTesting {
@@ -18,9 +18,9 @@ namespace TreeTesting {
 			Assert.AreSame(c, ch.parent);
 			c.transform.x = 100;
 			ch.transform.x = 20;
-			Assert.IsTrue(ch.getGlobaTransform().x == 120);
+			Assert.IsTrue(ch.getGlobalTransform().x == 120);
 			c.transform.sX = 2;
-			Assert.IsTrue(ch.getGlobaTransform().x == 140);
+			Assert.IsTrue(ch.getGlobalTransform().x == 140);
 
 			var ch2 = new Sprite();
 			ch2.name = "ch2";
@@ -28,7 +28,7 @@ namespace TreeTesting {
 			Assert.AreSame(c, ch.parent);
 
 			ch2.transform.x = 10;
-			Assert.AreEqual(160, ch2.getGlobaTransform().x);
+			Assert.AreEqual(160, ch2.getGlobalTransform().x);
 		}
 	}
 }

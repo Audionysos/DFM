@@ -1,7 +1,7 @@
-﻿using audioysos.math;
+﻿using audionysos.math;
 using System;
-using P = audioysos.geom.IPoint2;
-using PE = audioysos.geom.IPoint2Extensions;
+using P = audionysos.geom.IPoint2;
+using PE = audionysos.geom.IPoint2Extensions;
 
 namespace cnc.geom {
 	/// <summary>Provides some methods to work on bezier curves.</summary>

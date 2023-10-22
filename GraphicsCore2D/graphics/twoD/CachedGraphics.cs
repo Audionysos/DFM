@@ -1,9 +1,14 @@
-﻿using audioysos.display;
-using audioysos.geom;
+﻿using audionysos.display;
+using audionysos.geom;
 using System;
 using System.Collections.Generic;
 
 namespace com.audionysos {
+
+	//TODO: Make sure are references are copied
+	/// <summary>Stores any calls with their arguments on a list.
+	/// This may be used as temp storage, when no actual surface is provided where the graphics could be drawn.
+	/// Stored calls can be later invoked on any other graphics object <see cref="transferTo(IGraphics2D)"/>.</summary>
 	public class CachedGraphics : IGraphics2D {
 		public IPoint2 p { get; }
 		public double x { get; }
@@ -11,6 +16,9 @@ namespace com.audionysos {
 
 		private List<Action<IGraphics2D>> calls = new List<Action<IGraphics2D>>();
 
+		/// <summary>Invokes all previous calls on given other graphics object.</summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
 		public IGraphics2D transferTo(IGraphics2D other) {
 			for (int i = 0; i < calls.Count; i++) {
 				calls[i](other);
@@ -62,8 +70,8 @@ namespace com.audionysos {
 			return this;
 		}
 
-		public IGraphics2D drawTraingles(IPoint2[] points, IPoint2[] uv, IFillPiece fill) {
-			calls.Add(g => g.drawTraingles(points, uv, fill));
+		public IGraphics2D drawTriangles(IPoint2[] points, IPoint2[] uv, IFillPiece fill) {
+			calls.Add(g => g.drawTriangles(points, uv, fill));
 			return this;
 		}
 
@@ -72,8 +80,8 @@ namespace com.audionysos {
 			return this;
 		}
 
-		public IMicroGraphics2D lineSyle(double w = 0, uint rgb = 0, double a = 1) {
-			calls.Add(g => g.lineSyle(w, rgb, a));
+		public IMicroGraphics2D lineStyle(double w = 0, uint rgb = 0, double a = 1) {
+			calls.Add(g => g.lineStyle(w, rgb, a));
 			return this;
 		}
 
@@ -88,7 +96,8 @@ namespace com.audionysos {
 		}
 
 		public IMicroGraphics2D transform(Transform t) {
-			calls.Add(g => g.transform(t));
+			var tc = t.copy();
+			calls.Add(g => g.transform(tc));
 			return this;
 		}
 

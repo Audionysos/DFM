@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using static System.Math;
-using V = audioysos.geom.IPoint2;
+using V = audionysos.geom.IPoint2;
 
-namespace audioysos.geom {
+namespace audionysos.geom {
 
 	/// <summary>Provides copied dirty method for producing an ellipse, hopefully I did't broke it.</summary>
 	public class Ellipse {

@@ -1,4 +1,4 @@
-using audioysos.display;
+using audionysos.display;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GraphicsCore2DTest {

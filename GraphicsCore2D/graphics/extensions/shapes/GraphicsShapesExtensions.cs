@@ -1,10 +1,10 @@
-﻿using audioysos.geom;
+﻿using audionysos.geom;
 using com.audionysos;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace audioysos.graphics.extensions.shapes {
+namespace audionysos.graphics.extensions.shapes {
 
 	public static class GraphicsShapesExtensions {
 
