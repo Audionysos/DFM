@@ -22,7 +22,7 @@ namespace com.audionysos.text.render {
 			rendered.Clear();
 			var man = ctx.manipulator;
 			var grc = new GlyphRenderingContext();
-			ctx.fromat.size = 80; 
+			ctx.fromat.size = 12; 
 			grc.gfx = ctx.gfx;
 			grc.gfx.clear();
 			var dw = 10d; //default width

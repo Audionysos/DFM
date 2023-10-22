@@ -19,7 +19,7 @@ namespace WpfDNet {
 		public double x { get; }
 		public double y { get; }
 
-		/// <summary>Original (raw) firgures prodeced by drawing methods.</summary>
+		/// <summary>Original (raw) figures produced by drawing methods.</summary>
 		private List<Figure> figures = new List<Figure>();
 		/// <summary>Transformed figures.</summary>
 		private List<Figure> tFigures = new List<Figure>();
