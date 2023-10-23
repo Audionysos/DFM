@@ -1,5 +1,6 @@
 ﻿using audionysos.collections.tree;
 using audionysos.geom;
+using audionysos.input;
 using com.audionysos;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Text;
 namespace audionysos.display; 
 public abstract class DisplaySurface {
 	private List<DisplayObject> _displayed = new List<DisplayObject>(); 
+	public event Action<DisplaySurface, DisplayPointer> POINTER_MOVED;
 
 	public DisplaySurface() {
 		//var c = new DisplayObjectContainer();
@@ -44,10 +46,23 @@ public abstract class DisplaySurface {
 	/// <summary>Render graphics onto the surface. Given object is the one created with <see cref="createGraphics"/> method.</summary>
 	public abstract void renderGraphics(IMicroGraphics2D graphics);
 
-	public void hitTest(IPoint2 p) {
+	public void pointerMove(DisplayPointer p) {
+		POINTER_MOVED?.Invoke(this, p);
+	}
+
+	private List<DisplayObject> hitTestCache = new();
+	public IReadOnlyList<DisplayObject> hitTest(IPoint2 p) {
+		hitTestCache.Clear();
 		foreach (DisplayObject d in _displayed) {
-			d.hitTest(p);
+			if (d is DisplayObjectContainer c) {
+				if(c.rayCast(p, hitTestCache))
+					return hitTestCache;
+			} else if (d.hitTest(p)) {
+				hitTestCache.Add(d);
+				return hitTestCache;
+			}
 		}
+		return null;
 	}
 
 	/// <summary>False if null.</summary>

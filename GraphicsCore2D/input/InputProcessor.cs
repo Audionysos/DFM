@@ -1,5 +1,6 @@
 ﻿using audionysos.display;
 using audionysos.geom;
+using audionysos.graphics.extensions.shapes;
 using System.Collections.Generic;
 
 namespace audionysos.input; 
@@ -20,11 +21,24 @@ public class InputListener {
 		_surfs.Add(surface);
 	}
 
+	#region Temp/debug
+	private IReadOnlyList<DisplayObject> noHit = new DisplayObject[0];
+	public IReadOnlyList<DisplayObject> hit = new DisplayObject[0];
+	#endregion
+
 	public void pointerMove(InputProcessor ip, DisplayPointer dp) {
+		hit = noHit;
 		for (int i = 0; i < _surfs.Count; i++) {
 			var s = _surfs[i];
 			var sp = ip.getSurfacePosition(dp, s);
-			s.hitTest(sp + dp.position);
+			dp.position.add(sp);
+			var ht = hit = s.hitTest(dp.position);
+			if (ht != null) {
+				var f = ht[0] as Sprite;
+				//f.graphics.beginFill(0xFF0000);
+				//f.graphics.drawRect(0, 0, 5, 5);
+			} else hit = noHit;
+			s.pointerMove(dp);
 		}
 	}
 

@@ -11,6 +11,7 @@ using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Drawing;
 using S = SixLabors.ImageSharp;
+using System.Diagnostics;
 
 namespace WpfDNet; 
 
@@ -133,8 +134,10 @@ public class SharpGraphics : IMicroGraphics2D, IInteractiveGraphics2D {
 
 	#region Hit testing
 	public bool pointInShape(IPoint2 p) {
+		//IRect<IPoint2> r = new Rect(new Point2(155, 155), new Point2(40, 40));
 		for (int i = 0; i < tFigures.Count; i++) {
 			var f = tFigures[i];
+			//if (r.isInside(p)) Debugger.Break();
 			var hit = pointInShape(f, p);
 			if (hit) return true;
 		}
@@ -143,15 +146,16 @@ public class SharpGraphics : IMicroGraphics2D, IInteractiveGraphics2D {
 
 	private bool pointInShape(Figure f, IPoint2 tp) {
 		IPoint2 pp = null;
-		IRect<IPoint2> totalBounds = (IRect<IPoint2>)bounds;//of all figures
-		var tbp = totalBounds.postion;
-		var il = new Line2(tbp - (Point2)(10, 10), tp);
+		IRect<IPoint2> totalBounds = bounds;//of all figures
+		var tbp = totalBounds.position;
+		if (!totalBounds.isInside(tp)) return false;
+		var il = new Line2(tbp - (Point2)(50, 50), tp);
 		var ic = 0;
 		for (int i = 0; i < f.points.Count; i++) {
 			var p = f.points[i];
 			if (pp != null) {
 				//TODO: implement intersection method
-				var ir = Line2.intersection(il, new Line2(p, pp));
+				var ir = Line2.intersection(il, new Line2(pp, p));
 				if (ir != null) ic++;
 			}
 			pp = p;

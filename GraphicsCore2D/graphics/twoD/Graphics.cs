@@ -3,6 +3,7 @@ using audionysos.geom;
 using cnc.geom;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace com.audionysos; 
@@ -13,7 +14,7 @@ namespace com.audionysos;
 /// This class is essentially a wrapper for other types implementing those interfaces, while itself implementing the most complex one.
 /// Depending on capabilities of the base drawer, this class uses methods implemented by the base drawer or otherwise uses it's own, generic/standard implementations.
 /// Apart from providing default implementation for more basic implementors this class may be adopted for more specialized scenarios, caching of instruction (see <see cref="CachedGraphics"/>) context switching etc.
-public class Graphics : IGraphics2D, IPoint2 {
+public class Graphics : IGraphics2D, IInteractiveGraphics2D, IPoint2 {
 
 	private IMicroGraphics2D m;
 	/// <summary>Underlaying graphics on which actual drawing is performed.</summary>
@@ -161,6 +162,16 @@ public class Graphics : IGraphics2D, IPoint2 {
 
 	public IMicroGraphics2D transform(Transform t) {
 		m.transform(t); return this;
+	}
+
+	[DebuggerNonUserCode]
+	/// <summary>This works only if underlaying graphics actually implement <see cref=" IInteractiveGraphics2D"/>.</summary>
+	/// <param name="p"></param>
+	/// <returns></returns>
+	public bool pointInShape(IPoint2 p) {
+		if(m is IInteractiveGraphics2D ig)
+			return ig.pointInShape(p);
+		return false;
 	}
 
 	#endregion

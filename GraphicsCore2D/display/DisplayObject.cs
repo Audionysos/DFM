@@ -4,6 +4,7 @@ using com.audionysos;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace audionysos.display; 
@@ -97,15 +98,16 @@ public abstract class DisplayObjectContainer : DisplayObject, ITreeNodeClient<Di
 	/// <param name="output"></param>
 	/// <returns></returns>
 	public bool rayCast(IPoint2 p, IList<DisplayObject> output) {
-		tree.forDescendants(bool (o) => {
+		//if (name == "Child") Debugger.Break();
+		var chh = tree.forDescendants(bool (o) => {
 			if (o is DisplayObjectContainer c) {
-				if (c.rayCast(p, output)) return true;
+				return c.rayCast(p, output);
 			} else if (o.hitTest(p)) return true;
 			return false;
 		}, backward: true);
-		if (hitTest(p)) {
+		if (chh || hitTest(p)) {
 			output.Add(this);
-			return false;
+			return true;
 		}
 		return false;
 	}
@@ -145,9 +147,8 @@ public class Sprite : DisplayObjectContainer {
 		tree.forDescendants(d => d.update());
 	}
 
+	//[DebuggerNonUserCode]
 	public override bool hitTest(IPoint2 p) {
-		if (graphics is IInteractiveGraphics2D ig)
-			return ig.pointInShape(p);
-		return false;
+		return graphics.pointInShape(p);
 	}
 }

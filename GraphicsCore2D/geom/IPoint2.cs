@@ -41,7 +41,8 @@ public static class IPoint2Extensions {
 		a.x = x; a.y = y; return a;
 	}
 
-	public static P set(this P a, IPoint2 o) {
+	/// <summary>Sets coordinates and returns this point.</summary>
+	public static P set(this P a, P o) {
 		a.x = o.x; a.y = o.y; return a;
 	}
 
@@ -55,6 +56,22 @@ public static class IPoint2Extensions {
 }
 
 public interface IRect<T> where T : P {
-	T postion { get; }
+	T position { get; }
 	T size { get; }
+
+	double right => position.x + size.x;
+	double bottom => position.y + size.y;
+
+	
+}
+
+public static class IRectExtensions {
+	/// <summary>Returns true if given point lays inside or on the edge of the rectangle.</summary>
+	public static bool isInside<T>(this IRect<T> r, T p) where T : P {
+		if (p.x < r.position.x) return false;
+		if (p.y < r.position.y) return false;
+		if (p.x > r.right) return false;
+		if (p.y > r.bottom) return false;
+		return true;
+	}
 }

@@ -256,6 +256,7 @@ public class TreeNode<T> : TreePoint<T> where T : class {
 		}
 	}
 
+	//[DebuggerNonUserCode]
 	/// <summary></summary>
 	/// <param name="a"></param>
 	/// <param name="backward">Last child object of this node will invoked first. [Warning: false not implemented]</param>

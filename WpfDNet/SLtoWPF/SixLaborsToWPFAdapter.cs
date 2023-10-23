@@ -20,8 +20,8 @@ public class SixLaborsToWPFAdapter {
 	public SLDisplaySurface displaySurface;
 	public W.Controls.Image image { get; private set; }
 	private DispatcherTimer timer;
-	private WPFInputProcessor input;
-	private InputListener inputListener;
+	public WPFInputProcessor inputProcessor;
+	public InputListener inputListener;
 
 	public SixLaborsToWPFAdapter(W.Controls.Image image) {
 		this.image = image;
@@ -39,8 +39,8 @@ public class SixLaborsToWPFAdapter {
 		
 		inputListener = new InputListener();
 		inputListener.registerSurface(ds);
-		input = new WPFInputProcessor(image);
-		input.registerInputListener(inputListener);
+		inputProcessor = new WPFInputProcessor(image);
+		inputProcessor.registerInputListener(inputListener);
 
 		timer = new DispatcherTimer(DispatcherPriority.Normal);
 		timer.Interval = TimeSpan.FromMilliseconds(15);
