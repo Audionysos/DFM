@@ -1,8 +1,12 @@
-﻿namespace audionysos.geom; 
+﻿namespace audionysos.geom;
 
+using System;
+using System.Globalization;
+using System.Runtime.CompilerServices;
 using P = audionysos.geom.IPoint2;
 
-public interface IPoint2 {
+
+public interface IPoint2  {
 	double x { get; set; }
 	double y { get; set; }
 
@@ -13,6 +17,10 @@ public interface IPoint2 {
 
 	public static P operator -(P a, P b) => a.copy().sub(b);
 	public static P operator +(P a, P b) => a.copy().add(b);
+
+	public string ToRawString() {
+		return $@"{x.ToString(CultureInfo.InvariantCulture)}, {y.ToString(CultureInfo.InvariantCulture)}";
+	}
 }
 
 public static class IPoint2Extensions {
@@ -21,12 +29,19 @@ public static class IPoint2Extensions {
 		return v2.copy().sub(v1).mul(d).add(v1);
 	}
 
+	public static T copy<T>(this T p) where T : P
+		=> (T)p.copy();
+
 	/// <summary>Adds coordinates of some other point to this point and returns this point.</summary>
 	/// <param name="a"></param>
 	/// <param name="b">Other point which coordinates to add.</param>
 	/// <returns></returns>
 	public static P add(this P a, P b) {
 		a.x += b.x; a.y += b.y; return a;
+	}
+
+	public static T add<T>(this T a, double x, double y) where T : P {
+		a.x += x; a.y += y; return a;
 	}
 
 	public static P sub(this P a, P b) {

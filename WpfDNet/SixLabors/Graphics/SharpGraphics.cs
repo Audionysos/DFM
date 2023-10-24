@@ -144,6 +144,13 @@ public class SharpGraphics : IMicroGraphics2D, IInteractiveGraphics2D {
 		return false;
 	}
 
+	//TODO: Make sure that if intersection crosses on the ends of two edges it is not treated as in-out
+	//For example when tested point creates perfectly diagonal line and shape is a rectangle.
+	/// <summary>
+	/// </summary>
+	/// <param name="f"></param>
+	/// <param name="tp"></param>
+	/// <returns></returns>
 	private bool pointInShape(Figure f, IPoint2 tp) {
 		IPoint2 pp = null;
 		IRect<IPoint2> totalBounds = bounds;//of all figures
@@ -154,7 +161,6 @@ public class SharpGraphics : IMicroGraphics2D, IInteractiveGraphics2D {
 		for (int i = 0; i < f.points.Count; i++) {
 			var p = f.points[i];
 			if (pp != null) {
-				//TODO: implement intersection method
 				var ir = Line2.intersection(il, new Line2(pp, p));
 				if (ir != null) ic++;
 			}
@@ -266,6 +272,16 @@ public class Figure {
 	//TODO: Compare stroke properly
 	public bool sameStyle(Figure f)
 		=> f.fill?.Equals(fill) ?? false && f.stroke == stroke; 
+
+	public string printedPoints {
+		get {
+			var s = "";
+			foreach (var p in points) {
+				s += p.ToRawString() + "\n";
+			}
+			return s;
+		}
+	}
 
 }
 

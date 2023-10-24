@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Runtime.Serialization;
 
 namespace audionysos.geom; 
@@ -12,7 +13,8 @@ public class Point2 : IPoint2 {
 		this.x = x; this.y = y;
 	}
 
-	public IPoint2 copy() => new Point2(x, y);
+	IPoint2 IPoint2.copy() => new Point2(x, y);
+	//public Point2 copy() => new Point2(x, y);
 
 	public IPoint2 create(double x, double y) => new Point2(x, y);
 
@@ -21,8 +23,9 @@ public class Point2 : IPoint2 {
 
 	/// <inheritdoc/>
 	public override string ToString() {
-		return $@"({x}, {y})";
+		return $@"({x.ToString(CultureInfo.InvariantCulture)}, {y.ToString(CultureInfo.InvariantCulture)})";
 	}
+
 }
 
 public class Rect : IRect<IPoint2> {

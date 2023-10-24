@@ -90,7 +90,7 @@ public class DisplayTest {
 	private void test2() {
 		var r = new Random();
 		vels.Clear();
-		for (int i = 0; i < 96; i++) {
+		for (int i = 0; i < 950; i++) {
 			var e = new Sprite();
 			e.name = "child";
 			main.addChild(e);

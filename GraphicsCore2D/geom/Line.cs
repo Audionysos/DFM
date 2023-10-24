@@ -54,22 +54,23 @@ public class Line2 : ILine2 {
 		c2.a.x = 0;
 		y = c2.a.y;
 
-		if (double.IsInfinity(s1)) s1 = 0; //Y-Axis aligned
-		if (double.IsInfinity(s2)) s2 = 0;
-		s = Math.Abs(s1) + Math.Abs(s2);
+		//if (double.IsInfinity(s1)) s1 = 0; //Y-Axis aligned
+		//if (double.IsInfinity(s2)) s2 = 0;
+		s = Math.Abs(s2 - s1);
 
 		//sliding on second line
-		if (s != 0) { //will be 0 if lines are perpendicular in which case start point is actual intersection
+		if (s != 0 && !double.IsInfinity(s)) { //will be 0 if lines are perpendicular in which case start point is actual intersection
 			var dy = Math.Abs(c2.a.y - c1.a.y);
 			var dx = dy / s;
 			x = c2.a.x + dx;
 			y = c2.a.y + dx * s2;
 		}
-		x -= xMove; 
+		x -= xMove;
 		var ip = l1.a.create(x, y);
+		//c1.moveX(-xMove); c2.moveX(-xMove);
 		//check if result is in the actual lines bounds (at this point "ip" may be far outside on infinite lines, the input lines are part of).
-		if(!new Rect(c1.moveX(-xMove)).isInside(ip)) return null;
-		if(!new Rect(c2.moveX(-xMove)).isInside(ip)) return null;
+		if(!new Rect(c1.set(l1)).isInside(ip)) return null;
+		if(!new Rect(c2.set(l2)).isInside(ip)) return null;
 		return ip;
 	}
 
@@ -135,5 +136,17 @@ public static class ILine2Extensions {
 		l.a.y += y; l.b.y += y;
 		return l;
 	}
+
+	/// <summary>Copies coordinates form given points returns this line.</summary>
+	public static T set<T>(this T l, IPoint2 a, IPoint2 b) where T : ILine2 {
+		l.a.x = a.x; l.b.x = b.x;
+		l.a.y = a.y; l.b.y = b.y;
+		return l;
+	}
+
+	/// <summary>Copies coordinates form given line returns this line.</summary>
+	public static T set<T>(this T l, ILine2 o) where T : ILine2
+		=> l.set(o.a, o.b);
+		
 
 }
