@@ -82,6 +82,7 @@ internal class HitTestTests {
 		g.clear();
 		g.beginFill(0x0000FF);
 		g.drawRect(-25, -25, 50, 50);
+		//g.drawDiamond((P)(0, 0), 25, 25);
 	}
 
 	private void onPointEnter(DisplayObject o) {

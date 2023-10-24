@@ -53,6 +53,7 @@ public class SharpGraphics : IMicroGraphics2D, IInteractiveGraphics2D {
 	}
 
 	public IMicroGraphics2D clear() {
+		startNewFigure();
 		figures.Clear();
 		return this;
 	}
@@ -110,6 +111,7 @@ public class SharpGraphics : IMicroGraphics2D, IInteractiveGraphics2D {
 		bounds.clear();
 		for (int i = 0; i < figures.Count; i++) {
 			var f = figures[i];
+			if (f == currFigure) continue;
 			tf = transformFigure(f, t);
 			tFigures.Add(tf);
 		}
