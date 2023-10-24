@@ -31,10 +31,14 @@ public abstract class DisplayObject : ITransformProvier, ITreeLeafClient<Display
 	public TreePoint<DisplayObject> tree { get; private set; }
 	public DisplayObjectContainer parent => tree.parent?.data as DisplayObjectContainer;
 
+	public DisplayObjectInputEvents input { get; private set; }
+	protected internal EventsDispatcher dispatcher { get; private set; }
+
 	public DisplayObject() {
 		tree = !isContainer() ? new TreePoint<DisplayObject>(this)
 			: new TreeNode<DisplayObject>(this);
 		tree.ADDED += onAdded;
+		input = new DisplayObjectInputEvents(this, d => dispatcher = d);
 	}
 
 	/// <summary>Indicate if this object suppose to be container that is able to store children and thus <see cref="TreeNode{T}"/> should be created for it as oppose to <see cref="TreePoint{T}"/>.</summary>

@@ -12,6 +12,8 @@ using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.Drawing;
 using S = SixLabors.ImageSharp;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.ComponentModel.DataAnnotations;
 
 namespace WpfDNet; 
 
@@ -144,6 +146,7 @@ public class SharpGraphics : IMicroGraphics2D, IInteractiveGraphics2D {
 		return false;
 	}
 
+	private List<IPoint2> hits = new List<IPoint2>();
 	//TODO: Make sure that if intersection crosses on the ends of two edges it is not treated as in-out
 	//For example when tested point creates perfectly diagonal line and shape is a rectangle.
 	/// <summary>
@@ -158,11 +161,17 @@ public class SharpGraphics : IMicroGraphics2D, IInteractiveGraphics2D {
 		if (!totalBounds.isInside(tp)) return false;
 		var il = new Line2(tbp - (Point2)(50, 50), tp);
 		var ic = 0;
+		hits.Clear();
 		for (int i = 0; i < f.points.Count; i++) {
 			var p = f.points[i];
 			if (pp != null) {
 				var ir = Line2.intersection(il, new Line2(pp, p));
-				if (ir != null) ic++;
+				if (ir != null) {
+					//TODO: Probably should give some tolerance
+					if (hits.Find(p => p.x == ir.x && p.y == ir.y) != null)
+						continue;
+					ic++; hits.Add(ir);
+				}
 			}
 			pp = p;
 		}

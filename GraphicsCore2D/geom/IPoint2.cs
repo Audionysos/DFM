@@ -1,6 +1,7 @@
 ﻿namespace audionysos.geom;
 
 using System;
+using System.Collections;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using P = audionysos.geom.IPoint2;

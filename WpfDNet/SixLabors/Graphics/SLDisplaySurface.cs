@@ -53,7 +53,22 @@ public class WPFInputProcessor : InputProcessor {
 
 	public WPFInputProcessor(FrameworkElement root) {
 		root.MouseMove += onMouseMove;
+		root.MouseDown += onMouseDown;
+		root.MouseUp += onMouseUp;
 		this.root = root;
+	}
+
+
+	private void onMouseDown(object sender, MouseButtonEventArgs e) {
+		var m = e.GetPosition(root);
+		dp.position = new Point2(m.X, m.Y);
+		il.pointerDown(this, dp);
+	}
+
+	private void onMouseUp(object sender, MouseButtonEventArgs e) {
+		var m = e.GetPosition(root);
+		dp.position = new Point2(m.X, m.Y);
+		il.pointerUp(this, dp);
 	}
 
 	private DisplayPointer dp = new() {

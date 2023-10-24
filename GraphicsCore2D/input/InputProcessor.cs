@@ -1,6 +1,7 @@
 ﻿using audionysos.display;
 using audionysos.geom;
 using audionysos.graphics.extensions.shapes;
+using System;
 using System.Collections.Generic;
 
 namespace audionysos.input; 
@@ -24,6 +25,7 @@ public class InputListener {
 	#region Temp/debug
 	private IReadOnlyList<DisplayObject> noHit = new DisplayObject[0];
 	public IReadOnlyList<DisplayObject> hit = new DisplayObject[0];
+	private IReadOnlyList<DisplayObject> prevHit = new DisplayObject[0];
 	#endregion
 
 	public void pointerMove(InputProcessor ip, DisplayPointer dp) {
@@ -33,15 +35,35 @@ public class InputListener {
 			var sp = ip.getSurfacePosition(dp, s);
 			dp.position.add(sp);
 			var ht = hit = s.hitTest(dp.position);
+
 			if (ht != null) {
 				var f = ht[0] as Sprite;
-				//f.graphics.beginFill(0xFF0000);
-				//f.graphics.drawRect(0, 0, 5, 5);
-			} else hit = noHit;
+				var p = prevHit.Count > 0 ? prevHit[0] : null;
+				if (p != f) {
+					p?.dispatcher.firePointerLeft();
+					prevHit = new List<DisplayObject>(hit);
+				}
+				f.dispatcher.firePointerEnter();
+			} else {
+				if (prevHit.Count > 0) {
+					prevHit[0].dispatcher.firePointerLeft();
+					prevHit = noHit;
+				}
+				hit = noHit;
+			}
 			s.pointerMove(dp);
 		}
 	}
 
+	public void pointerDown(InputProcessor ip, DisplayPointer dp) {
+		var h = hit.Count > 0 ? hit[0] : null;
+		h?.dispatcher.firePointerDown();
+	}
+
+	public void pointerUp(InputProcessor ip, DisplayPointer dp) {
+		var h = hit.Count > 0 ? hit[0] : null;
+		h?.dispatcher.firePointerUp();
+	}
 }
 
 public class DisplayPointer {

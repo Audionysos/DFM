@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using WpfDNet.SLtoWPF;
+using P = audionysos.geom.Point2;
 
 namespace WpfDNet;
 internal class HitTestTests {
@@ -26,9 +27,15 @@ internal class HitTestTests {
 	private void onPointerMoved(DisplaySurface s, DisplayPointer dp) {
 		//return;
 		var p = dp.position;
-		ta.text = 
+		var hit = adapter.inputListener.hit;
+		var t  = 
 			$"Pos: ({p.x:####.0} : {p.y:####.0})\n" +
-			$"Hits = {adapter.inputListener.hit.Count}";
+			$"Hits = {hit.Count}";
+		if (hit.Count > 0) t += "\n";
+		foreach (var o in hit) {
+			t += o + "\n";
+		}
+		ta.text = t;
 	}
 
 	private TextAreaView ta;
@@ -37,8 +44,8 @@ internal class HitTestTests {
 		ta = new TextAreaView();
 		ta.view.name = "text";
 		ta.view.transform.y = 5;
-		ta.view.transform.sX = 2;
-		ta.view.transform.sY = 2;
+		ta.view.transform.sX = 1;
+		ta.view.transform.sY = 1;
 		main.addChild(ta.view);
 		//ta.context.fromat.size = 40;
 		ta.text = "Hello\nWorld";
@@ -54,5 +61,36 @@ internal class HitTestTests {
 		ch.transform.x = 150;
 		ch.transform.y = 150;
 		main.addChild(ch);
+
+		var ch2 = new Sprite();
+		ch2.name = "Child 2";
+		g = ch2.graphics;
+		g.beginFill(0xAA0000);
+		g.drawRect(-25,-25, 50, 50);
+		ch2.transform.x = 50;
+		ch2.transform.y = 50;
+		ch.addChild(ch2);
+
+		ch2.input.POINTER_ENTER += onPointEnter;
+		ch2.input.POINTER_LEFT += onPointLeft;
+		ch2.input.POINTER_DOWN += onPointerDown;
+	}
+
+	private void onPointerDown(DisplayObject o) {
+		var s = o as Sprite;
+		var g = s.graphics;
+		g.clear();
+		g.beginFill(0x0000FF);
+		g.drawRect(-25, -25, 50, 50);
+	}
+
+	private void onPointEnter(DisplayObject o) {
+		o.transform.sX = 1.3;
+		o.transform.sY = 1.3;
+	}
+
+	private void onPointLeft(DisplayObject o) {
+		o.transform.sX = 1;
+		o.transform.sY = 1;
 	}
 }
