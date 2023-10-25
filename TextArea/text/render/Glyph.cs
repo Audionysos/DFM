@@ -14,6 +14,10 @@ public class Glyph {
 		this.paths = paths;
 	}
 
+	public override string ToString() {
+		return base.ToString();
+	}
+
 	/// <summary>False if null.</summary>
 	/// <param name="g"></param>
 	public static implicit operator bool(Glyph g) => g!=null;

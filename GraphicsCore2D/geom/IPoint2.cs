@@ -18,6 +18,8 @@ public interface IPoint2  {
 
 	public static P operator -(P a, P b) => a.copy().sub(b);
 	public static P operator +(P a, P b) => a.copy().add(b);
+	public static P operator +(P a, (double x, double y)t)
+		=> a.copy().add(t.x, t.y);
 
 	public string ToRawString() {
 		return $@"{x.ToString(CultureInfo.InvariantCulture)}, {y.ToString(CultureInfo.InvariantCulture)}";
@@ -28,6 +30,12 @@ public static class IPoint2Extensions {
 
 	public static P interpolate(P v1, P v2, double d) {
 		return v2.copy().sub(v1).mul(d).add(v1);
+	}
+
+	public static bool equal(this P p, P o) {
+		if (p == null && o == null) return true;
+		if (p == null || o == null) return false;
+		return p.x == o.x && p.y == o.y;
 	}
 
 	public static T copy<T>(this T p) where T : P

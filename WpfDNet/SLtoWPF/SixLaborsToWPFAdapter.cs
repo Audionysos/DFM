@@ -41,6 +41,7 @@ public class SixLaborsToWPFAdapter {
 		inputListener.registerSurface(ds);
 		inputProcessor = new WPFInputProcessor(image);
 		inputProcessor.registerInputListener(inputListener);
+		inputProcessor.focus.tack(ds);
 
 		timer = new DispatcherTimer(DispatcherPriority.Normal);
 		timer.Interval = TimeSpan.FromMilliseconds(15);

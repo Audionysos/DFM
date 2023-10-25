@@ -15,6 +15,7 @@ internal class HitTestTests {
 	private readonly SixLaborsToWPFAdapter adapter;
 
 	public HitTestTests(SixLaborsToWPFAdapter adapter) {
+
 		main = new Sprite() { name = "Main" };
 		adapter.displaySurface.Add(main);
 		adapter.displaySurface.POINTER_MOVED += onPointerMoved;
@@ -74,6 +75,7 @@ internal class HitTestTests {
 		ch2.input.POINTER_ENTER += onPointEnter;
 		ch2.input.POINTER_LEFT += onPointLeft;
 		ch2.input.POINTER_DOWN += onPointerDown;
+
 	}
 
 	private void onPointerDown(DisplayObject o) {

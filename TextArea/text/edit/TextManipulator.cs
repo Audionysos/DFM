@@ -11,9 +11,9 @@ public class TextManipulator {
 	public Text text { get; private set; }
 	/// <summary>Sores information about currently selected text.</summary>
 	public TextSelection selection { get; private set; }
-	/// <summary>Contains information about curret caret(s) placement.</summary>
+	/// <summary>Contains information about current caret(s) placement.</summary>
 	public TextCarets carets { get; private set; }
-	/// <summary>Stores infomration about all distingushable text regions.</summary>
+	/// <summary>Stores information about all distinguishable text regions.</summary>
 	public TextSpans regions { get; private set; }
 	/// <summary>Given access to information associated with each character of <see cref="text"/>.</summary>
 	public IReadOnlyList<CharInfo> infos { get; private set; }
@@ -92,7 +92,7 @@ public class TextFormat : ITextFormat, ITextFormatProvider {
 	/// <inheritdoc/>
 	public double size { get; set; } = 11;
 	public IFill foreground { get; set; } = (Color)0x000000FF;
-	public IFill bacground { get; set; } = (Color)0xFFFFFFFF;
+	public IFill background { get; set; } = (Color)0xFFFFFFFF;
 	public ITextFont font { get; set; } = new NamedFont("Consolas");
 }
 
@@ -101,7 +101,7 @@ public interface ITextFormatProvider {
 	ITextFormat textFormat { get; }
 }
 
-/// <summary>Specifies format that could be applied specifically to text, texs spans, or a single characters.</summary>
+/// <summary>Specifies format that could be applied specifically to text, texts spans, or a single characters.</summary>
 public interface ITextFormat {
 	ITextFont font { get; set; }
 	/// <summary>Font size.</summary>
@@ -109,7 +109,7 @@ public interface ITextFormat {
 	/// <summary>A fill that is applied to text.</summary>
 	IFill foreground { get; set; }
 	/// <summary>Fill that is applied to what is behind the text.</summary>
-	IFill bacground { get; set; }
+	IFill background { get; set; }
 }
 
 public class NamedFont : ITextFont {

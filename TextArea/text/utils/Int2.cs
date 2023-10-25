@@ -4,7 +4,7 @@ namespace com.audionysos.text.utils;
 
 /// <summary>Represents bounds in quantized 2d grid.</summary>
 public class Int4 {
-	/// <summary>Initial posion of the in the grid.</summary>
+	/// <summary>Initial position of the in the grid.</summary>
 	public Int2 pos;
 	/// <summary>Dimensions of the (width-height).</summary>
 	public Int2 size;
@@ -12,7 +12,7 @@ public class Int4 {
 	public Int4() { }
 }
 
-/// <summary>Represents trackable position withn some quantized 2d space.</summary>
+/// <summary>Represents trackable position within some quantized 2d space.</summary>
 public class Int2 {
 	/// <summary>Dispatched when one of object's properties were changed.
 	/// First handler argument is this instance, second argument is difference from previous state.</summary>
@@ -40,7 +40,7 @@ public class Int2 {
 		}
 	}
 
-	public int lenght => (int)Math.Sqrt(x * x + y * y);
+	public int length => (int)Math.Sqrt(x * x + y * y);
 
 	public Int2(int x = 0, int y = 0) {
 		_x = x;
@@ -49,7 +49,7 @@ public class Int2 {
 
 	public Int2 set(int x, int y) {
 		var d = this - (x, y);
-		if (d.lenght == 0) return this;
+		if (d.length == 0) return this;
 		_x = x; _y = y;
 		CHANGED?.Invoke(this, d);
 		return this;

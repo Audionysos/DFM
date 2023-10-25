@@ -23,7 +23,7 @@ public class TextCaret {
 	}
 
 	private Int2 _pos = new Int2();
-	/// <summary>Characters-columts coordinates of current caret position.</summary>
+	/// <summary>Characters-columns coordinates of current caret position.</summary>
 	public Int2 pos {
 		get => _pos;
 		set => _pos.set(value);

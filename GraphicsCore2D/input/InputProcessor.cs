@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace audionysos.input; 
 public abstract class InputProcessor {
+	public FocusManager focus { get; private set; } = new FocusManager();
 
 	public abstract void registerInputListener(InputListener il);
 	public abstract IPoint2 getSurfacePosition(DisplayPointer p, DisplaySurface s);
@@ -63,6 +64,20 @@ public class InputListener {
 	public void pointerUp(InputProcessor ip, DisplayPointer dp) {
 		var h = hit.Count > 0 ? hit[0] : null;
 		h?.dispatcher.firePointerUp();
+	}
+
+	public void keyDown(InputProcessor ip, Keyboard.Key k) {
+		var f = ip.focus.current as DisplayObject;
+		f?.dispatcher.fireKeyDown(new KeyboardEvent() {
+			target = f, key = k,
+		});
+	}
+
+	public void keyUp(InputProcessor ip, Keyboard.Key k) {
+		var f = ip.focus.current as DisplayObject;
+		f?.dispatcher.fireKeyUp(new KeyboardEvent() {
+			target = f, key = k,
+		});
 	}
 }
 

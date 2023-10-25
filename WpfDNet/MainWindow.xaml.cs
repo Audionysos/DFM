@@ -30,9 +30,9 @@ public partial class MainWindow : W.Window {
 
 		adapter = new SixLaborsToWPFAdapter(img);
 		//Left = 1800;
-		new HitTestTests(adapter);
+		//new HitTestTests(adapter);
 		//new DisplayTest(adapter);
-		//new TextAreaTest(adapter);
+		new TextAreaTest(adapter);
 		//previous();
 	}
 

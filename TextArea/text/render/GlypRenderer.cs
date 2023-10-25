@@ -6,10 +6,12 @@ using V = audionysos.geom.IPoint2;
 using com.audionysos;
 using audionysos.geom;
 using com.audionysos.text.edit;
+using System.Runtime.CompilerServices;
 
 namespace com.audionysos.text.render; 
 /// <summary>Abstract glyph rendering from SixLabors in WpfDNet project.</summary>
 public class GlypRenderer : IGlyphRenderer {
+
 
 	public RenderedGlyph render(IGlyphRenderingContext ctx) {
 		var g = ctx.g;
@@ -74,6 +76,10 @@ public class RenderedGlyph {
 		this.position = position;
 		this.size = size;
 		this.data = data;
+	}
+
+	public override string ToString() {
+		return $"{template}";
 	}
 }
 

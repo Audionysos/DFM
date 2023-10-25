@@ -30,6 +30,7 @@ public abstract class DisplayObject : ITransformProvier, ITreeLeafClient<Display
 	}
 	public TreePoint<DisplayObject> tree { get; private set; }
 	public DisplayObjectContainer parent => tree.parent?.data as DisplayObjectContainer;
+	public bool isVisible { get; set; } = true;
 
 	public DisplayObjectInputEvents input { get; private set; }
 	protected internal EventsDispatcher dispatcher { get; private set; }
@@ -57,7 +58,7 @@ public abstract class DisplayObject : ITransformProvier, ITreeLeafClient<Display
 
 	internal void update() {
 		ENTER_FRAME?.Invoke(this);
-		render();
+		if (isVisible) render();
 	}
 
 	internal virtual void render() { }
@@ -87,16 +88,23 @@ public abstract class DisplayObjectContainer : DisplayObject, ITreeNodeClient<Di
 	/// <summary>Number of children present in this container.</summary>
 	public int Count => tree.children.Count;
 
+	public event Action<DisplayObjectContainer, DisplayObject> CHILD_ADD;
+	public event Action<DisplayObjectContainer, DisplayObject> CHILD_REMOVED;
+
 	public DisplayObjectContainer() {
 		//tree = new TreeNode<DisplayObject>(this);
-
 	}
 
 	protected override bool isContainer() => true;
 
-	public void addChild(DisplayObject child) => tree.addChild(child.tree);
-	public void removeChild(DisplayObject child) => tree.removeChild(child.tree);
-
+	public void addChild(DisplayObject child) {
+		tree.addChild(child.tree);
+		CHILD_ADD?.Invoke(this, child);
+	}
+	public void removeChild(DisplayObject child) {
+		tree.removeChild(child.tree);
+		CHILD_REMOVED?.Invoke(this, child);
+	}
 	/// <summary>Returns list of all objects in the branch for which <see cref="DisplayObject.hitTest(IPoint2)"/> returned true at given position (including this one).</summary>
 	/// <param name="p">Position for hit testing.</param>
 	/// <param name="output"></param>

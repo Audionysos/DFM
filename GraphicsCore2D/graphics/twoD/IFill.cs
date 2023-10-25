@@ -39,6 +39,11 @@ public class Color : IFill {
 		this.rgba = rgba;
 	}
 
+	public Color(uint rgb, double a) {
+		var av = (uint)(a * 255) & 0xFF;
+		this.rgba = (rgb << 8) | av;
+	}
+
 	public uint getSample(double u, double v) {
 		return rgba;
 	}

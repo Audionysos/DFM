@@ -73,12 +73,14 @@ public class SharpGraphics : IMicroGraphics2D, IInteractiveGraphics2D {
 	public IMicroGraphics2D lineStyle(double w = 0, uint rgb = 0, double a = 1) {
 		stroke = new Stroke() {
 			size = w,
-			stroke = (com.audionysos.Color)0xFF0000,
+			stroke = new com.audionysos.Color(rgb, a),
 		};
 		return this;
 	}
 
 	public IMicroGraphics2D lineTo(double x, double y) {
+		if (currFigure.points.Count == 0)
+			currFigure.points.Add(new Point2(0, 0));
 		currFigure.points.Add(new Point2(x, y));
 		return this;
 	}

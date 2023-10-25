@@ -12,13 +12,13 @@ public class TextAreaRenderer {
 
 	public TextAreaRenderer(TextDisplayContext ctx) {
 		this.ctx = ctx;
+		ctx.view.view.addChild(caret.view);
 	}
 
 	private List<RenderedGlyph> rendered = new List<RenderedGlyph>();
 
 	private Graphics g;
 	public void render() {
-		renderCarrets();
 		rendered.Clear();
 		var man = ctx.manipulator;
 		var grc = new GlyphRenderingContext();
@@ -39,15 +39,16 @@ public class TextAreaRenderer {
 					continue;
 				}
 				var rg = renderCharacter(chi, grc);
-				w = (rg == null) ? dw : rg.template.width;
+				w = (rg == null) ? dw : rg.size.x;
+				if(rg != null) rendered.Add(rg);
 				grc.position.x += w;
-				rendered.Add(rg);
 			}
 			grc.position.x = 0;
 			grc.position.y += ctx.fromat.size + linesSpacing;
 		}
 
 		ctx.gfx.close();
+		renderCarets();
 	}
 
 	private RenderedGlyph renderCharacter(CharInfo chi, GlyphRenderingContext grc) {
@@ -59,22 +60,33 @@ public class TextAreaRenderer {
 		var gf = ctx.glyphs.get(chi.character, tf);
 		grc.g = gf;
 		grc.format = tf;
-		return r.render(grc);
+		return r.render(grc) ?? missingGlyph(grc, chi.character);
 	}
 
-	//private Sprite carrets = new Sprite();
-	private Sprite carret = new Sprite();
-	private void renderCarrets() {
-		return;
+	private RenderedGlyph missingGlyph(GlyphRenderingContext grc, char character) {
+		return new RenderedGlyph(null,
+			grc.position.copy(),
+			new Point2(grc.format.size, 0)
+			, character);
+	}
+
+	//private Sprite carets = new Sprite();
+	private CaretView caret = new CaretView();
+	public void renderCarets() {
+		//return;
 		var cts = ctx.manipulator.carets;
-		var gfx = carret.graphics;
-		gfx.clear();
-		gfx.lineStyle(1);
-		gfx.lineTo(0, ctx.fromat.size);
-		gfx.close();
-		if (rendered.Count <= cts.ch) return;
-		var cp = rendered[cts.ch];
-		cts.pos = new Int2((int)cp.position.x, (int)cp.position.y);
+		if (cts.ch < 0) return;
+		if (rendered.Count < cts.ch) return;
+		RenderedGlyph rg; IPoint2 pos;
+		if (rendered.Count == cts.ch) {
+			rg = rendered[^1];
+			pos = rg.position + (rg.size.x, 0);
+		}else {
+			rg = rendered[cts.ch];
+			pos = rg.position;
+		}
+		//cts.pos = new Int2((int)cp.position.x, (int)cp.position.y);
+		caret.postion(pos);
 	}
 }
 

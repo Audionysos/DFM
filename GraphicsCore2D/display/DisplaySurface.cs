@@ -11,23 +11,15 @@ namespace audionysos.display;
 public abstract class DisplaySurface {
 	private List<DisplayObject> _displayed = new List<DisplayObject>(); 
 	public event Action<DisplaySurface, DisplayPointer> POINTER_MOVED;
+	public event Action<DisplaySurface, DisplayObject> OBJECT_ADD;
 
-	public DisplaySurface() {
-		//var c = new DisplayObjectContainer();
-		//var d = new Der();
-		//var o = d as DisplayObject;
-		//c.addChild(o);
-		//c.addChild(d);
-		////d.
-		////c.
-		//c.tree.addChild(c.tree);
-		//graphics = new Graphics();
-	}
+	public DisplaySurface() {}
 
 	public void Add(DisplayObject d) {
 		if (d.surface != null) throw new Exception("The object is already added to some display surface.");
 		_displayed.Add(d);
 		d.surface = this;
+		OBJECT_ADD?.Invoke(this, d);
 	}
 
 	public void update() {
