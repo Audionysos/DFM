@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace com.audionysos.text.edit; 
 
 /// <summary>Represents raw text data as set of logically connected chains (like lines) or characters.
-/// This does not inculde any other no-data information such as related to text rendering, or formatting.</summary>
+/// This does not include any other no-data information such as related to text rendering, or formatting.</summary>
 public class Text : IReadOnlyList<char> {
 	private string chars;
 
@@ -55,6 +55,25 @@ public class Text : IReadOnlyList<char> {
 		if (i < 0) return 0;
 		if (i > chars.Length) return chars.Length;
 		return i;
+	}
+
+	/// <summary>Returns new, proper position where any excess of x position is carried to next lines.</summary>
+	public Int2 clipPosition(Int2 p) {
+		var y = p.y; var x = p.x;
+		if (y < 0) y = 0;
+		if(y >= _lines.Count) y = _lines.Count -1;
+		var l = _lines[y]; 
+		while (x >= l.length && y < _lines.Count -1) {
+			x -= l.length;
+			l = _lines[++y];
+		}
+		while (x < 0 && y > 0) {
+			l = _lines[--y];
+			x += l.length;
+		}
+		if (x < 0) x = 0;
+		if (x > l.length) x = l.length;
+		return (x, y);
 	}
 
 	/// <summary>Returns character index at given column-line position.</summary>

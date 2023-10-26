@@ -33,11 +33,11 @@ public class TextAreaRenderer {
 			var l = lns[i];
 			for (int j = 0; j < l.length; j++) {
 				var chi = man.getCharInfo(l.start + j);
-				if (chi.character == '\n') continue;
-				if (chi.character == '\t') {
-					grc.position.x += dw * tabSize;
-					continue;
-				}
+				//if (chi.character == '\n') continue;
+				//if (chi.character == '\t') {
+				//	grc.position.x += dw * tabSize;
+				//	continue;
+				//}
 				var rg = renderCharacter(chi, grc);
 				w = (rg == null) ? dw : rg.size.x;
 				if(rg != null) rendered.Add(rg);
@@ -52,6 +52,9 @@ public class TextAreaRenderer {
 	}
 
 	private RenderedGlyph renderCharacter(CharInfo chi, GlyphRenderingContext grc) {
+		if (chi.character == ' ') return spaceGlyph(grc);
+		if (chi.character == '\t') return tabGlyph(grc);
+		if (chi.character == '\n') return newLineGlyph(grc);
 		var r = ctx.glyphsRenderer;
 		var fp = chi.spans[0].attributes.get<ITextFormatProvider>();
 		var tf = fp?.textFormat ?? ctx.fromat;
@@ -63,12 +66,42 @@ public class TextAreaRenderer {
 		return r.render(grc) ?? missingGlyph(grc, chi.character);
 	}
 
+	#region Special characters
 	private RenderedGlyph missingGlyph(GlyphRenderingContext grc, char character) {
-		return new RenderedGlyph(null,
+		return new RenderedGlyph(
+			new Glyph($"missing '{character}'",0,0,null),
 			grc.position.copy(),
 			new Point2(grc.format.size, 0)
-			, character);
+			, null);
 	}
+
+	private Glyph space = new Glyph("' ' (space)", 0, 0, null);
+	private RenderedGlyph spaceGlyph(GlyphRenderingContext grc) {
+		return new RenderedGlyph(
+			space,
+			grc.position.copy(),
+			new Point2(grc.format.size, 0)
+			, null);
+	}
+
+	private Glyph tab = new Glyph(@"'\t' (tab)", 0, 0, null);
+	private RenderedGlyph tabGlyph(GlyphRenderingContext grc) {
+		return new RenderedGlyph(
+			tab,
+			grc.position.copy(),
+			new Point2(grc.format.size * 4, 0)
+			, null);
+	}
+
+	private Glyph newLine = new Glyph(@"'\n' (newLine)", 0, 0, null);
+	private RenderedGlyph newLineGlyph(GlyphRenderingContext grc) {
+		return new RenderedGlyph(
+			newLine,
+			grc.position.copy(),
+			new Point2(0, 0)
+			, null);
+	}
+	#endregion
 
 	//private Sprite carets = new Sprite();
 	private CaretView caret = new CaretView();

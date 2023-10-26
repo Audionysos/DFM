@@ -52,6 +52,10 @@ public class TextAreaView : IDisplayable<Sprite> {
 			manipulator.carets.pos.x += 1;
 		else if (e.key == Keyboard.Key.Left)
 			manipulator.carets.pos.x -= 1;
+		else if(e.key == Keyboard.Key.Down)
+			manipulator.carets.pos.y += 1;
+		else if(e.key == Keyboard.Key.Up)
+			manipulator.carets.pos.y -= 1;
 
 
 		renderer.renderCarets();

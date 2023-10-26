@@ -22,7 +22,7 @@ public class SLGlyphsProvider : GlyphsProvider {
 		var rc = g.BoundingBox(GlyphLayoutMode.Horizontal
 			,new System.Numerics.Vector2(), 128);
 		var width = rc.Width; var height = 0;
-		var r = new X.Glyph(width, height, b.phs);
+		var r = new X.Glyph(ch.ToString(), width, height, b.phs);
 		return r;
 	}
 
@@ -51,7 +51,7 @@ public class SLGlyphsProvider : GlyphsProvider {
 			, new System.Numerics.Vector2(), 128);
 		var width = rc.Width; var height = 0;
 
-		var r = new X.Glyph(width, height, paths);
+		var r = new X.Glyph(ch.ToString(), width, height, paths);
 		return r;
 	}
 }

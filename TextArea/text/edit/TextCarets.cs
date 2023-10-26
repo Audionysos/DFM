@@ -23,10 +23,12 @@ public class TextCaret {
 	}
 
 	private Int2 _pos = new Int2();
-	/// <summary>Characters-columns coordinates of current caret position.</summary>
+	/// <summary>Line-character coordinates of current caret position.</summary>
 	public Int2 pos {
 		get => _pos;
-		set => _pos.set(value);
+		set {
+			_pos.set(value);
+		}
 	}
 
 	public TextCaret(Text text) {
@@ -34,8 +36,14 @@ public class TextCaret {
 		_pos.CHANGED += onPositionChanged;
 	}
 
+	private bool correcting;
 	private void onPositionChanged(Int2 p, Int2 ch) {
+		if (correcting) return;
+		correcting = true;
+		pos = text.clipPosition(pos);
+		correcting = false;
 		_c = text.getIndex(p);
+		CHANGED?.Invoke(this);
 	}
 
 }

@@ -79,7 +79,7 @@ public class RenderedGlyph {
 	}
 
 	public override string ToString() {
-		return $"{template}";
+		return $@"""{template.name}"", RenderedGlyph";
 	}
 }
 

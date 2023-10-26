@@ -1,6 +1,7 @@
 ﻿using com.audionysos.text.utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace com.audionysos.text.edit; 
@@ -35,7 +36,15 @@ public class TextManipulator {
 	private void init() {
 		selection = new TextSelection(text);
 		carets = new TextCarets(text);
+		carets.CHANGED += onCaretsChanged;
 		createInfos();
+	}
+
+	private void onCaretsChanged(TextCaret caret) {
+		//if(caret.ch >= text.Count) {
+		//	var i = text.getIndex(caret.pos);
+		//	Debug.WriteLine(text.lines);
+		//}
 	}
 
 	private void createInfos() {

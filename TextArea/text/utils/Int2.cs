@@ -67,6 +67,10 @@ public class Int2 {
 	public static implicit operator Int2((int x, int y) t)
 		=> new Int2(t.x, t.y);
 
+	public override string ToString() {
+		return $"({x}, {y})";
+	}
+
 	/// <summary>False if null.</summary>
 	public static implicit operator bool(Int2 i) => i != null;
 }
