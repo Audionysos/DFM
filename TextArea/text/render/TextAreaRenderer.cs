@@ -18,11 +18,11 @@ public class TextAreaRenderer {
 	private List<RenderedGlyph> rendered = new List<RenderedGlyph>();
 
 	private Graphics g;
-	public void render() {
+	public void render2() {
 		rendered.Clear();
 		var man = ctx.manipulator;
 		var grc = new GlyphRenderingContext();
-		ctx.fromat.size = 12; 
+		ctx.format.size = 12; 
 		grc.gfx = ctx.gfx;
 		grc.gfx.clear();
 		var dw = 10d; //default width
@@ -44,11 +44,51 @@ public class TextAreaRenderer {
 				grc.position.x += w;
 			}
 			grc.position.x = 0;
-			grc.position.y += ctx.fromat.size + linesSpacing;
+			grc.position.y += ctx.format.size + linesSpacing;
 		}
 
 		ctx.gfx.close();
 		renderCarets();
+	}
+
+	private List<TextLineLayout> _lines = new();
+	public IReadOnlyList<TextLineLayout> lines => _lines;
+
+	public void render() {
+		foreach (var r in rendered) {
+			ctx.container.removeChild(r.data as Shape);
+		}
+
+		rendered.Clear();
+		_lines.Clear();
+		var man = ctx.manipulator;
+		var grc = new GlyphRenderingContext();
+		ctx.format.size = 12;
+		//grc.gfx = ctx.gfx;
+		//grc.gfx.clear();
+		var linesSpacing = 4;
+
+		var txt = man.text;
+		var lc = txt.lines.Count;
+		for (int i = 0; i < lc; i++) {
+			var tl = txt.lines[i];
+			var l = new TextLineLayout(tl, man);
+			_lines.Add(l);
+
+			for (int j = 0; j < tl.length; j++) {
+				var chi = man.getCharInfo(tl.start + j);
+				var rg = renderCharacter(chi, grc);
+				var v = rg.data as Shape;
+				v.transform.pos = grc.position;
+				rendered.Add(rg);
+				l.Add(rg);
+				grc.position.x += rg.size.x;
+				ctx.container.addChild(v);
+			}
+
+			grc.position.x = 0;
+			grc.position.y += ctx.format.size + linesSpacing;
+		}
 	}
 
 	private RenderedGlyph renderCharacter(CharInfo chi, GlyphRenderingContext grc) {
@@ -57,7 +97,7 @@ public class TextAreaRenderer {
 		if (chi.character == '\n') return newLineGlyph(grc);
 		var r = ctx.glyphsRenderer;
 		var fp = chi.spans[0].attributes.get<ITextFormatProvider>();
-		var tf = fp?.textFormat ?? ctx.fromat;
+		var tf = fp?.textFormat ?? ctx.format;
 		//Maybe it would be better to do per/span rendering. Need to think about that...
 		//g.beginFill(tf.foreground);
 		var gf = ctx.glyphs.get(chi.character, tf);
@@ -72,7 +112,7 @@ public class TextAreaRenderer {
 			new Glyph($"missing '{character}'",0,0,null),
 			grc.position.copy(),
 			new Point2(grc.format.size, 0)
-			, null);
+			, new Shape());
 	}
 
 	private Glyph space = new Glyph("' ' (space)", 0, 0, null);
@@ -81,16 +121,17 @@ public class TextAreaRenderer {
 			space,
 			grc.position.copy(),
 			new Point2(grc.format.size, 0)
-			, null);
+			, new Shape());
 	}
 
-	private Glyph tab = new Glyph(@"'\t' (tab)", 0, 0, null);
+	private Glyph tab = new Glyph(@"'\t' (tab)", 0, 0, null)
+		{ columnWidth = 4 };
 	private RenderedGlyph tabGlyph(GlyphRenderingContext grc) {
 		return new RenderedGlyph(
 			tab,
 			grc.position.copy(),
 			new Point2(grc.format.size * 4, 0)
-			, null);
+			, new Shape());
 	}
 
 	private Glyph newLine = new Glyph(@"'\n' (newLine)", 0, 0, null);
@@ -99,7 +140,7 @@ public class TextAreaRenderer {
 			newLine,
 			grc.position.copy(),
 			new Point2(0, 0)
-			, null);
+			, new Shape());
 	}
 	#endregion
 
@@ -139,20 +180,53 @@ public class TextLineLayout {
 	/// <summary>Text this is been layed out.</summary>
 	public TextLine line { get; set; }
 	public TextManipulator man { get; set; }
-	public Int4 bounds { get; private set; } = new Int4();
-	public Int4[] chars { get; private set; }
+	public int columns { get; private set; }
+	private RenderedGlyph[] _glyphs;
+	public IReadOnlyList<RenderedGlyph> glyphs => _glyphs;
+	private int Count;
 
 	public TextLineLayout(TextLine l, TextManipulator man) {
 		line = l;
-		produce();
+		_glyphs = new RenderedGlyph[line.length];
+		//produce();
 	}
 
-	private void produce() {
-		chars = new Int4[line.length];
-		for (int i = line.start; i < line.end; i++) {
-			var ch = man.getCharInfo(i);
-			//ch.
-		}
-
+	public void Add(RenderedGlyph r) {
+		_glyphs[Count++] = r;
+		columns += r.template.columnWidth;
 	}
+
+	/// <summary>Outs glyph at given column and returns index of that glyph.
+	/// This method considers the fact that a single character/glyph may occupy multiple columns (for example tabs).
+	/// Returned value is an index of glyph at given column.</summary>
+	/// <param name="column"></param>
+	/// <returns></returns>
+	public int glyphAt(int column, out RenderedGlyph? glyph) {
+		var cc = 0; glyph = null;
+		for (int i = 0; i < _glyphs.Length; i++) {
+			var ch = _glyphs[i];
+			cc += ch.template.columnWidth;
+			if (column < cc) {
+				glyph = ch; return i;
+			}
+		}return _glyphs.Length;
+	}
+
+	/// <summary>Returns column at given glyph position.</summary>
+	public int columnAt(int ch) {
+		var c = 0;
+		for (int i = 0; i < _glyphs.Length; i++) {
+			if (i == ch) break;
+			c += glyphs[i].template.columnWidth;
+		}return c;
+	}
+
+	//private void produce() {
+	//	//chars = new RenderedGlyph[line.length];
+	//	for (int i = line.start; i < line.end; i++) {
+	//		var ch = man.getCharInfo(i);
+	//		//ch.
+	//	}
+
+	//}
 }

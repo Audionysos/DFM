@@ -7,43 +7,96 @@ namespace com.audionysos.text.edit;
 /// Any modification of master caret will be also relatively applied to it's children.</summary>
 public class TextCarets : TextCaret {
 
-	public TextCarets(Text text) : base(text) {
+	public TextCarets(TextManipulator man) : base(man) {
 
 	}
+
+	public static TextCarets operator ++(TextCarets c)
+		{ c.move(1); return c;}
+
+	public static TextCarets operator --(TextCarets c)
+		{ c.move(-1); return c; }
+
 }
 
 public class TextCaret {
 	public event Action<TextCaret> CHANGED;
 	private Text text { get; set; }
+	public TextManipulator man { get; }
 
 	private int _c;
 	/// <summary>Absolute index of character within the text before which the caret is placed.</summary>
 	public int ch {
 		get => _c;
+		private set => _c = value;
 	}
 
-	private Int2 _pos = new Int2();
-	/// <summary>Line-character coordinates of current caret position.</summary>
-	public Int2 pos {
+	/// <summary>Index of the character in current line before which the caret is placed.</summary>
+	public int lCh { get; private set; }
+
+	//private Int2 _ap = new Int2();
+	private ColumnLine _pos = new ColumnLine();
+	/// <summary>Column-line coordinates of current caret position.</summary>
+	public ColumnLine pos {
 		get => _pos;
 		set {
 			_pos.set(value);
 		}
 	}
-
-	public TextCaret(Text text) {
-		this.text = text;
-		_pos.CHANGED += onPositionChanged;
-	}
+	public ColumnLine actualPos => man.clipPosition(pos);
 
 	private bool correcting;
 	private void onPositionChanged(Int2 p, Int2 ch) {
 		if (correcting) return;
 		correcting = true;
-		pos = text.clipPosition(pos);
+		pos = man.clipLine(pos);
 		correcting = false;
-		_c = text.getIndex(p);
+		var chl = man.toCharLine(pos);
+		lCh = chl.x;
+		_c = text.getIndex(chl);
 		CHANGED?.Invoke(this);
 	}
 
+	public static TextCaret operator ++(TextCaret c)
+		=> c.move(1);
+	public static TextCaret operator --(TextCaret c)
+		=> c.move(-1);
+
+	public TextCaret move(int v) {
+		ch += v;
+		if(ch > text.Count) ch = text.Count;
+		if (ch < 0) ch = 0;
+		var p = text.getPos(ch);
+		lCh = p.ch;
+		var np = man.getPosition(p);
+		pos = np;
+		return this;
+
+	}
+
+	public TextCaret(TextManipulator man) {
+		this.man = man;
+		text = man.text;
+		_pos.CHANGED += onPositionChanged;
+	}
+
+
+}
+
+/// <summary>Represents position withing a text view/editor.
+/// Note that <see cref="ColumnLine"/> and <see cref="CharLine"/> are different classes because a character may occupy different number of columns.</summary>
+public class ColumnLine : Int2 {
+	public ColumnLine(int x = 0, int y = 0) : base(x, y) {}
+
+	public static implicit operator ColumnLine((int x, int y) t)
+		=> new ColumnLine(t.x, t.y);
+}
+
+/// <summary>Represents position within a text.
+/// Note that <see cref="ColumnLine"/> and <see cref="CharLine"/> are different classes because a character may occupy different number of columns.</summary>
+public class CharLine : Int2 {
+	public CharLine(int x = 0, int y = 0) : base(x, y) { }
+
+	public static implicit operator CharLine((int x, int y) t)
+		=> new CharLine(t.x, t.y);
 }

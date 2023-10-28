@@ -17,12 +17,16 @@ public class FocusManager {
 	}
 
 	private void onNewObject(DisplaySurface surface, DisplayObject o) {
+		if (o is not InteractiveObject i || !i.isFocusable)
+			return;
 		current = o;
 		if (o is DisplayObjectContainer c)
 			c.CHILD_ADD += onNewChild;
 	}
 
 	private void onNewChild(DisplayObjectContainer container, DisplayObject o) {
+		if (o is not InteractiveObject i || !i.isFocusable)
+			return;
 		current = o;
 		if (o is DisplayObjectContainer c)
 			c.CHILD_ADD += onNewChild;

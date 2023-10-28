@@ -1,4 +1,6 @@
-﻿using com.audionysos.text.utils;
+﻿using audionysos.math;
+using com.audionysos.text.render;
+using com.audionysos.text.utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,18 +14,35 @@ public class TextManipulator {
 	public Text text { get; private set; }
 	/// <summary>Sores information about currently selected text.</summary>
 	public TextSelection selection { get; private set; }
+	private TextCarets _carets;
 	/// <summary>Contains information about current caret(s) placement.</summary>
-	public TextCarets carets { get; private set; }
+	public TextCarets carets {
+		get => _carets;
+		set {
+			if(value == null) throw new ArgumentNullException(nameof(value));
+			if (value.man != this) throw new ArgumentException("Cannot set carets with a different manipulator.");
+			_carets = value;
+		}
+	}
 	/// <summary>Stores information about all distinguishable text regions.</summary>
 	public TextSpans regions { get; private set; }
 	/// <summary>Given access to information associated with each character of <see cref="text"/>.</summary>
 	public IReadOnlyList<CharInfo> infos { get; private set; }
+	public TextDisplayContext context { get; }
+	private TextDisplayContext ctx => context;
 
 	#region Initialization
 
 	#region Constructors
-	public TextManipulator() {
+	public TextManipulator(render.TextDisplayContext context) {
 		text = new Text();
+		init();
+		this.context = context;
+	}
+
+	public TextManipulator(string text, render.TextDisplayContext context) {
+		this.text = text;
+		this.context = context;
 		init();
 	}
 
@@ -35,16 +54,12 @@ public class TextManipulator {
 
 	private void init() {
 		selection = new TextSelection(text);
-		carets = new TextCarets(text);
-		carets.CHANGED += onCaretsChanged;
+		carets = new TextCarets(this);
 		createInfos();
 	}
 
-	private void onCaretsChanged(TextCaret caret) {
-		//if(caret.ch >= text.Count) {
-		//	var i = text.getIndex(caret.pos);
-		//	Debug.WriteLine(text.lines);
-		//}
+	public void insert(char c) {
+		//text[0].
 	}
 
 	private void createInfos() {
@@ -54,6 +69,40 @@ public class TextManipulator {
 			lst.Add(i);
 		}
 		infos = lst;
+	}
+	#endregion
+
+	#region Navigation/Positioning
+	public ColumnLine clipPosition(ColumnLine p) {
+		var y = p.y; var x = p.x;
+		y = y.clip(0, text.lines.Count-1);
+		if (ctx.renderer.lines.Count == 0) return (0, 0);
+		var rl = ctx.renderer.lines[y];
+		x = x.clip(0, rl.columns);
+		return (x, y);
+	}
+
+	public ColumnLine clipLine(ColumnLine p) {
+		var y = p.y;
+		y = y.clip(0, text.lines.Count - 1);
+		if (ctx.renderer.lines.Count == 0) return (0, p.x);
+		return (p.x, y);
+	}
+
+	public CharLine toCharLine(ColumnLine p) {
+		var y = p.y; var x = p.x;
+		y = y.clip(0, text.lines.Count - 1);
+		var rl = ctx.renderer.lines[y];
+		x = rl.glyphAt(x, out _);
+		return (x, y);
+	}
+
+	public ColumnLine getPosition(CharLine p) {
+		var y = p.y; var x = p.x;
+		y = y.clip(0, text.lines.Count - 1);
+		var rl = ctx.renderer.lines[y];
+		x = rl.columnAt(x);
+		return (x, y);
 	}
 	#endregion
 
@@ -77,12 +126,10 @@ public class CharInfo {
 	}
 }
 
-
-
 #region Attributes
 /// <summary>Sores dynamic composition of attributes.</summary>
 public class Attributes {
-	public static readonly NoAttributes none;
+	public static readonly NoAttributes none = NoAttributes.instance;
 
 	public T get<T>() { return default; }
 
@@ -92,7 +139,8 @@ public class Attributes {
 }
 
 public class NoAttributes : Attributes {
-
+	public static readonly NoAttributes instance = new NoAttributes();
+	private NoAttributes() { }
 }
 
 public class TextFormat : ITextFormat, ITextFormatProvider {

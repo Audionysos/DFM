@@ -32,14 +32,10 @@ public abstract class DisplayObject : ITransformProvier, ITreeLeafClient<Display
 	public DisplayObjectContainer parent => tree.parent?.data as DisplayObjectContainer;
 	public bool isVisible { get; set; } = true;
 
-	public DisplayObjectInputEvents input { get; private set; }
-	protected internal EventsDispatcher dispatcher { get; private set; }
-
 	public DisplayObject() {
 		tree = !isContainer() ? new TreePoint<DisplayObject>(this)
 			: new TreeNode<DisplayObject>(this);
 		tree.ADDED += onAdded;
-		input = new DisplayObjectInputEvents(this, d => dispatcher = d);
 	}
 
 	/// <summary>Indicate if this object suppose to be container that is able to store children and thus <see cref="TreeNode{T}"/> should be created for it as oppose to <see cref="TreePoint{T}"/>.</summary>
@@ -73,6 +69,54 @@ public abstract class DisplayObject : ITransformProvier, ITreeLeafClient<Display
 
 }
 
+public abstract class InteractiveObject : DisplayObject {
+	public bool isFocusable { get; set; }
+	public DisplayObjectInputEvents input { get; private set; }
+	protected internal EventsDispatcher dispatcher { get; private set; }
+
+	public InteractiveObject() {
+		input = new DisplayObjectInputEvents(this, d => dispatcher = d);
+	}
+}
+
+public class Shape : DisplayObject {
+	public Graphics graphics { get; private set; }
+	private IMicroGraphics2D currGraphics = new CachedGraphics();
+
+	public Shape() {
+		graphics = new Graphics(currGraphics);
+		ADDED_TO_SURFACE += onSurface;
+		REMOVED_FROM_SURFACE -= onSurfaceLost;
+	}
+
+	private void onSurface(DisplayObject obj) {
+		var cached = currGraphics as CachedGraphics;
+		graphics.changeBaseDrawer(
+			currGraphics,
+			currGraphics = surface.createGraphics()
+		);
+		cached?.transferTo(graphics);
+	}
+
+	private void onSurfaceLost(DisplayObject obj) {
+		graphics.changeBaseDrawer(
+			currGraphics,
+			currGraphics = BlankGraphics.instance
+		);
+	}
+
+	internal override void render() {
+		getGlobalTransform();
+		graphics.transform(globalTransform);
+		surface.renderGraphics(graphics.baseGraphics);
+	}
+
+	//[DebuggerNonUserCode]
+	public override bool hitTest(IPoint2 p) {
+		return graphics.pointInShape(p);
+	}
+}
+
 public class HitTester {
 
 	public IList Test(DisplayObject o, IPoint2 p) {
@@ -80,7 +124,7 @@ public class HitTester {
 	}
 }
 
-public abstract class DisplayObjectContainer : DisplayObject, ITreeNodeClient<DisplayObject> {
+public abstract class DisplayObjectContainer : InteractiveObject, ITreeNodeClient<DisplayObject> {
 	//new public TreeNode<DisplayObject> tree { get; private set; }
 	/// <summary>Return tree point which is associated with this node.</summary>
 	new public TreeNode<DisplayObject> tree => base.tree as TreeNode<DisplayObject>;

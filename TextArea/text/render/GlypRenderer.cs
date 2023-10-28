@@ -7,10 +7,45 @@ using com.audionysos;
 using audionysos.geom;
 using com.audionysos.text.edit;
 using System.Runtime.CompilerServices;
+using audionysos.display;
 
 namespace com.audionysos.text.render; 
 /// <summary>Abstract glyph rendering from SixLabors in WpfDNet project.</summary>
 public class GlypRenderer : IGlyphRenderer {
+
+
+	public RenderedGlyph render(IGlyphRenderingContext ctx) {
+		var g = ctx.g;
+		if (g == null) return null;
+		var phs = g.paths; 
+		//var pos = ctx.position.copy();
+		var s = new Shape();
+		var gfx = s.graphics;
+		gfx.beginFill(ctx.format.foreground);
+		for (int i = 0; i < phs.Count; i++) {
+			var p = phs[i];
+			var cp = p[0];
+			var fp = cp;
+			gfx.moveTo(cp);
+			for (int j = 1; j < p.Count; j++) {
+				cp = p[j];
+				gfx.lineTo(cp);
+			}
+			gfx.lineTo(fp);
+		}
+		var rg = new RenderedGlyph(
+			g,
+			ctx.position.copy(),
+			new Point2(g.width, g.height),
+			s	
+		);
+		return rg;
+	}
+
+}
+
+/// <summary>Abstract glyph rendering from SixLabors in WpfDNet project.</summary>
+public class GlypRenderer2 : IGlyphRenderer {
 
 
 	public RenderedGlyph render(IGlyphRenderingContext ctx) {
@@ -33,7 +68,7 @@ public class GlypRenderer : IGlyphRenderer {
 			g,
 			ctx.position.copy(),
 			new Point2(g.width, g.height),
-			gfx	
+			gfx
 		);
 		return rg;
 	}

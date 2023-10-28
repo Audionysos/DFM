@@ -302,3 +302,12 @@ public class Stroke {
 	public double size { get; set; }
 	public IFill stroke { get; set; }
 }
+
+public static class ColorExtensions {
+
+	public static SixLabors.ImageSharp.Color toSL(this IFill f) {
+		var c = (com.audionysos.Color)f;
+		return SixLabors.ImageSharp.Color
+			.FromRgba((byte)c.r, (byte)c.g, (byte)c.b, (byte)c.a);
+	}
+}

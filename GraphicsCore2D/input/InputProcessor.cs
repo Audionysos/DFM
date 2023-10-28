@@ -29,6 +29,8 @@ public class InputListener {
 	private IReadOnlyList<DisplayObject> prevHit = new DisplayObject[0];
 	#endregion
 
+	private InteractiveObject last => (hit.Count > 0 ? hit[0] : null) as InteractiveObject;
+
 	public void pointerMove(InputProcessor ip, DisplayPointer dp) {
 		hit = noHit;
 		for (int i = 0; i < _surfs.Count; i++) {
@@ -39,15 +41,15 @@ public class InputListener {
 
 			if (ht != null) {
 				var f = ht[0] as Sprite;
-				var p = prevHit.Count > 0 ? prevHit[0] : null;
+				var p = (prevHit.Count > 0 ? prevHit[0] : null) as InteractiveObject;
 				if (p != f) {
 					p?.dispatcher.firePointerLeft();
 					prevHit = new List<DisplayObject>(hit);
 				}
 				f.dispatcher.firePointerEnter();
 			} else {
-				if (prevHit.Count > 0) {
-					prevHit[0].dispatcher.firePointerLeft();
+				if (prevHit.Count > 0 && prevHit[0] is InteractiveObject io) {
+					io.dispatcher.firePointerLeft();
 					prevHit = noHit;
 				}
 				hit = noHit;
@@ -57,24 +59,22 @@ public class InputListener {
 	}
 
 	public void pointerDown(InputProcessor ip, DisplayPointer dp) {
-		var h = hit.Count > 0 ? hit[0] : null;
-		h?.dispatcher.firePointerDown();
+		last?.dispatcher.firePointerDown();
 	}
 
 	public void pointerUp(InputProcessor ip, DisplayPointer dp) {
-		var h = hit.Count > 0 ? hit[0] : null;
-		h?.dispatcher.firePointerUp();
+		last?.dispatcher.firePointerUp();
 	}
 
 	public void keyDown(InputProcessor ip, Keyboard.Key k) {
-		var f = ip.focus.current as DisplayObject;
+		var f = ip.focus.current as InteractiveObject;
 		f?.dispatcher.fireKeyDown(new KeyboardEvent() {
 			target = f, key = k,
 		});
 	}
 
 	public void keyUp(InputProcessor ip, Keyboard.Key k) {
-		var f = ip.focus.current as DisplayObject;
+		var f = ip.focus.current as InteractiveObject;
 		f?.dispatcher.fireKeyUp(new KeyboardEvent() {
 			target = f, key = k,
 		});

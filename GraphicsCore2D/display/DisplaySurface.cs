@@ -13,6 +13,8 @@ public abstract class DisplaySurface {
 	public event Action<DisplaySurface, DisplayPointer> POINTER_MOVED;
 	public event Action<DisplaySurface, DisplayObject> OBJECT_ADD;
 
+	public IFill background { get; set; } = (Color)0xD3D3D3FF;
+
 	public DisplaySurface() {}
 
 	public void Add(DisplayObject d) {

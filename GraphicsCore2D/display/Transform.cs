@@ -5,6 +5,11 @@ using System;
 
 namespace audionysos.display; 
 public class Transform {
+	public IPoint2 pos {
+		set { x = value.x; y = value.y;}
+		get => new Point2(x, y);
+	}
+
 	public double x { get; set; }
 	public double y { get; set; }
 	public double z { get; set; }

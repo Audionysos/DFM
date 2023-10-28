@@ -1,4 +1,5 @@
 ﻿using com.audionysos.text.utils;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,15 +16,15 @@ public class Text : IReadOnlyList<char> {
 	/// <summary>Returns character at given index.</summary>
 	public char this[int index] => chars[index];
 
-	private List<TextSpan> _lines = new List<TextSpan>();
+	private List<TextLine> _lines = new List<TextLine>();
 	/// <summary>List of all lines associated with the text.</summary>
-	public IReadOnlyList<TextSpan> lines => _lines;
+	public IReadOnlyList<TextLine> lines => _lines;
 
 	/// <summary>Span containing whole text.</summary>
 	public TextSpan span { get; }
 
 	/// <summary></summary>
-	/// <param name="text">Source string from which the text will be produces.</param>
+	/// <param name="text">Source string from which the text will be produced.</param>
 	public Text(string text = null) {
 		chars = text ?? "";
 		splitLines(chars, _lines);
@@ -33,8 +34,8 @@ public class Text : IReadOnlyList<char> {
 	/// <summary>Produces <see cref="lines"/> out of source text.</summary>
 	/// <param name="text"></param>
 	/// <param name="lines">List to end of which the lines spans will be add. If not specified, new list will be created.</param>
-	private void splitLines(string text, IList<TextSpan> lines = null) {
-		lines ??= new List<TextSpan>();
+	private void splitLines(string text, IList<TextLine> lines = null) {
+		lines ??= new List<TextLine>();
 		char p, c = default; //current and previous characters;
 		var ls = 0; //line start index
 		for (int i = 0; i < text.Length; i++) {
@@ -42,10 +43,10 @@ public class Text : IReadOnlyList<char> {
 			if (c == '\n') e = i + 1;
 			else if (p == '\r') e = i;
 			if (e < 0) continue;
-			lines.Add(new TextSpan(this, ls, e));
+			lines.Add(new TextLine(this, ls, e));
 			ls = e;
 		}
-		lines.Add(new TextSpan(this, ls, text.Length));
+		lines.Add(new TextLine(this, ls, text.Length));
 	}
 
 	/// <summary>Returns given character index clipped to the range of this text.</summary>
@@ -76,8 +77,8 @@ public class Text : IReadOnlyList<char> {
 		return (x, y);
 	}
 
-	/// <summary>Returns character index at given column-line position.</summary>
-	public int getIndex(Int2 pos) {
+	/// <summary>Returns character index at given character-line position.</summary>
+	public int getIndex(CharLine pos) {
 		return _lines[pos.y].start + pos.x;
 	}
 
@@ -92,6 +93,14 @@ public class Text : IReadOnlyList<char> {
 	/// <inheritdoc/>
 	public override string ToString() {
 		return chars;
+	}
+
+	/// <summary>Returns character-line index at given absolute character index.</summary>
+	public (int ch, int ln) getPos(int ch) {
+		for (int i = 0; i < lines.Count; i++) {
+			var l = lines[i];
+			if (ch < l.end) return (ch - l.start,i);
+		}return (lines[^1].end ,lines.Count - 1);
 	}
 }
 

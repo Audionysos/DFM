@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace com.audionysos.text.edit; 
-/// <summary>Represents a continous sub sequence of characters in a <see cref="Text"/> by stroing boundry indices.</summary>
+/// <summary>Represents a continuous sub sequence of characters in a <see cref="Text"/> by storing boundary indexes.</summary>
 public class TextSpan {
 
 	/// <summary>Source text this span is part of.</summary>

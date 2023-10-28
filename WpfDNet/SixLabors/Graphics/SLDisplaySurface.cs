@@ -24,12 +24,13 @@ public class SLDisplaySurface : DisplaySurface {
 	public SLDisplaySurface() {
 		image = new Image<Bgra32>(size.x, size.y);
 		drawBackground();
-		TextDisplayContext.defaulGlyphsProvider = new SLGlyphsProvider(); //TODO: This should find some better placement in future
+		TextDisplayContext.defaultGlyphsProvider = new SLGlyphsProvider(); //TODO: This should find some better placement in future
 	}
 
 	private void drawBackground() {
 		image.Mutate(x =>
-			x.Fill(SixLabors.ImageSharp.Color.LightGray));
+			x.Fill(background.toSL()));
+			//x.Fill(SixLabors.ImageSharp.Color.LightGray));
 	}
 
 	public override IMicroGraphics2D createGraphics() {

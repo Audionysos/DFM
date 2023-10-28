@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 using static System.Math;
 
@@ -13,5 +14,11 @@ public static class NumbersExtensions {
 	/// <returns></returns>
 	public static bool equalsT(this double n, double o, double t = 0.0000001) {
 		return Abs(n - o) < t;
+	}
+
+	public static N clip<N>(this N n, N min, N max) where N : INumber<N> {
+		if (n < min) return min;
+		if (n > max) return max;
+		return n;
 	}
 }

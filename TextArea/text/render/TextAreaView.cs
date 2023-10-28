@@ -28,17 +28,19 @@ public class TextAreaView : IDisplayable<Sprite> {
 			return manipulator.text.ToString();
 		}
 		set {
-			manipulator = new TextManipulator(value);
+			manipulator = new TextManipulator(value, context);
 			renderer.render();
 		}
 	}
 
 	public TextAreaView() {
+		view.isFocusable = true;
 		var x = context = new TextDisplayContext() {};
+		x.container = view;
 		x.view = this;
-		manipulator = new TextManipulator();
-		renderer = new TextAreaRenderer(context);
-		x.gfx = view.graphics;
+		x.manipulator = manipulator = new TextManipulator(context);
+		x.renderer = renderer = new TextAreaRenderer(context);
+		//x.gfx = view.graphics;
 
 		configureView();
 	}
@@ -49,12 +51,12 @@ public class TextAreaView : IDisplayable<Sprite> {
 
 	private void onKeyDown(KeyboardEvent e) {
 		if (e.key == Keyboard.Key.Right)
-			manipulator.carets.pos.x += 1;
+			manipulator.carets++;
 		else if (e.key == Keyboard.Key.Left)
-			manipulator.carets.pos.x -= 1;
-		else if(e.key == Keyboard.Key.Down)
+			manipulator.carets--;
+		else if (e.key == Keyboard.Key.Down)
 			manipulator.carets.pos.y += 1;
-		else if(e.key == Keyboard.Key.Up)
+		else if (e.key == Keyboard.Key.Up)
 			manipulator.carets.pos.y -= 1;
 
 

@@ -8,6 +8,10 @@ public class Glyph {
 	public double width { get; }
 	public double height { get; }
 	public IReadOnlyList<Path> paths { get; }
+	/// <summary>With of the glyph in columns coordinates.
+	/// By default each glyph have a size of 1 column but some glyphs may have different sizes.
+	/// For example tab character (\t) may have size of 4.</summary>
+	public int columnWidth { get; set; } = 1;
 
 	public Glyph(string name, double width, double height, IReadOnlyList<Path> paths) {
 		this.name = name;

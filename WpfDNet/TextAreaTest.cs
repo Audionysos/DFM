@@ -4,6 +4,7 @@ using System.Text;
 using SixLabors.ImageSharp.Formats;
 using WpfDNet.SLtoWPF;
 using com.audionysos.text.edit;
+using com.audionysos;
 
 namespace WpfDNet; 
 public class TextAreaTest {
@@ -11,6 +12,7 @@ public class TextAreaTest {
 	private TextAreaView pos;
 
 	public TextAreaTest(SixLaborsToWPFAdapter adapter) {
+		adapter.displaySurface.background = (Color)0xFFFFFFFF;
 		ta = new TextAreaView();
 		pos = new TextAreaView();
 		pos.view.transform.y = adapter.displaySurface.size.y - 10;
@@ -32,8 +34,9 @@ public class TextAreaTest {
 	}
 
 	private void displayCaretPosition() {
-		var cp = ta.manipulator.carets.pos;
-		pos.text = $"Ln: {cp.y}	Ch: {cp.x}";
+		//return;
+		var c = ta.manipulator.carets;
+		pos.text = $"Ln: {c.pos.y}\tCh: {c.lCh}\tCol: {c.actualPos.x}";
 	}
 
 }
