@@ -93,7 +93,7 @@ public class TextSpan {
 		}
 		var d = r.subtract(e.range);
 		if(e.type == TextChangeType.ADDED) {
-			if (d.onlyRight) moveTo(d.right.start); //was pushed
+			if (d.onlyRight || d.empty) move(e.size); //was pushed
 			else {
 				if (mutating == MutatingBehavior.CUSTOM)
 					mutate(e, d);
@@ -104,9 +104,9 @@ public class TextSpan {
 			}
 		}else if(e.type == TextChangeType.REMOVED) {
 			if (d.onlyRight) {
-				var rc = length - d.right.length;
+				//var rc = length - d.right.length;
 				start = e.at;
-				end -= e.size - rc;
+				end = start + d.right.length;
 			}else if (d.onlyLeft) {
 				var rc = length - d.left.length;
 				end -= rc;

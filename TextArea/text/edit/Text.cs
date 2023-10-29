@@ -44,6 +44,16 @@ public class Text : IReadOnlyList<char> {
 		CHANGED(e);
 	}
 
+	public void remove(int p, int count) {
+		var x = "";
+		for (int i = p; i < p + count; i++)
+			x += chars[i];
+		chars.Remove(p, count);
+		if (CHANGED == null) return;
+		var e = new TextChangedEvent(this, TextChangeType.REMOVED, p, x);
+		CHANGED(e);
+	}
+
 	/// <summary>Produces <see cref="lines"/> out of source text.</summary>
 	/// <param name="text"></param>
 	/// <param name="lines">List to end of which the lines spans will be add. If not specified, new list will be created.</param>

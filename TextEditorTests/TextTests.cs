@@ -57,6 +57,43 @@ public class TextTests {
 		Assert.AreEqual("sss01234 6XY789 BCDEeee", t.ToString());
 	}
 
+	[TestMethod]
+	public void insertionRemoval() {
+		var t = new Text("01234 6789 BCDE");
+		var s = new TextSpan(t, 6, 10);
+		Assert.AreEqual("6789", s.text);
+
+		t.insert("XYZ", 9);
+		Assert.AreEqual("678XYZ9", s.text);
+		Assert.AreEqual("01234 678XYZ9 BCDE", t.ToString());
+
+		t.insert("ZYX", 5);
+		Assert.AreEqual("678XYZ9", s.text);
+		Assert.AreEqual("01234ZYX 678XYZ9 BCDE", t.ToString());
+
+		t.remove(5, 7);
+		Assert.AreEqual("XYZ9", s.text);
+		Assert.AreEqual("01234XYZ9 BCDE", t.ToString());
+
+		t.remove(6, 8);
+		Assert.AreEqual("X", s.text);
+		Assert.AreEqual("01234X", t.ToString());
+
+		t.remove(0, 5);
+		Assert.AreEqual("X", s.text);
+		Assert.AreEqual("X", t.ToString());
+
+		t.remove(0, 1);
+		Assert.AreEqual("", s.text);
+		Assert.AreEqual("", t.ToString());
+
+		t.insert("abc", 0);
+		Assert.AreEqual("", s.text);
+		Assert.AreEqual(3, s.start);
+		Assert.AreEqual(3, s.end);
+		Assert.AreEqual("abc", t.ToString());
+	}
+
 	private void assertLine(Text t, int l, int s, int e) {
 		Assert.AreEqual(s, t.lines[l].start);
 		Assert.AreEqual(e, t.lines[l].end);

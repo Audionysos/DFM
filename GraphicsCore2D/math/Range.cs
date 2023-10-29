@@ -144,4 +144,8 @@ public struct RangeOperationResult<N> where N : INumber<N> {
 	public static implicit operator bool(RangeOperationResult<N> r)
 		=> !r.empty;
 
+	public override string ToString() {
+		return $"({left}, {right})";
+	}
+
 }
