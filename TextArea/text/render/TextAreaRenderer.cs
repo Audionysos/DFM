@@ -67,6 +67,7 @@ public class TextAreaRenderer {
 		//grc.gfx = ctx.gfx;
 		//grc.gfx.clear();
 		var linesSpacing = 4;
+		var charWidth = ctx.format.size * .5;
 
 		var txt = man.text;
 		var lc = txt.lines.Count;
@@ -82,7 +83,8 @@ public class TextAreaRenderer {
 				v.transform.pos = grc.position;
 				rendered.Add(rg);
 				l.Add(rg);
-				grc.position.x += rg.size.x;
+				grc.position.x += charWidth * rg.template.columnWidth;
+				//grc.position.x += rg.size.x;
 				ctx.container.addChild(v);
 			}
 
@@ -153,8 +155,10 @@ public class TextAreaRenderer {
 		if (rendered.Count < cts.ch) return;
 		RenderedGlyph rg; IPoint2 pos;
 		if (rendered.Count == cts.ch) {
-			rg = rendered[^1];
-			pos = rg.position + (rg.size.x, 0);
+			rg = rendered[^1]; var pg = rendered[^2];
+			var w = rg.position.x - pg.position.x;
+			pos = rg.position + (w, 0); //we use calculated spacing for better alignment in uniform grid
+			//pos = rg.position + (rg.size.x, 0);
 		}else {
 			rg = rendered[cts.ch];
 			pos = rg.position;

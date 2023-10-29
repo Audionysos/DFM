@@ -67,7 +67,7 @@ public class TextCaret {
 		if(ch > text.Count) ch = text.Count;
 		if (ch < 0) ch = 0;
 		var p = text.getPos(ch);
-		lCh = p.ch;
+		lCh = p.x;
 		var np = man.getPosition(p);
 		pos = np;
 		return this;

@@ -40,10 +40,28 @@ public class TextTests {
 		Assert.AreEqual(t.lines[0].fullOrError, "");
 	}
 
+	[TestMethod]
+	public void insertion() {
+		var t = new Text("01234 6789 BCDE");
+		var s = new TextSpan(t, 6, 10);
+		Assert.AreEqual("6789", s.text);
+
+		t.insert("XY", 7);
+		Assert.AreEqual("6XY789", s.text);
+
+		t.insert("sss", 0);
+		Assert.AreEqual("6XY789", s.text);
+
+		t.insert("eee", t.Count);
+		Assert.AreEqual("6XY789", s.text);
+		Assert.AreEqual("sss01234 6XY789 BCDEeee", t.ToString());
+	}
+
 	private void assertLine(Text t, int l, int s, int e) {
 		Assert.AreEqual(s, t.lines[l].start);
 		Assert.AreEqual(e, t.lines[l].end);
 	}
+
 }
 
 [TestClass]

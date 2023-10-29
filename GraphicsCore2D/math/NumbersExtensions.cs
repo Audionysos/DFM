@@ -21,4 +21,8 @@ public static class NumbersExtensions {
 		if (n > max) return max;
 		return n;
 	}
+
+	/// <summary>Creates range from this up to given number.</summary>
+	public static Range<N> to<N>(this N start, N otherEnd) where N : INumber<N>
+		=> new(start, otherEnd);
 }
