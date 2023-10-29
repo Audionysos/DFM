@@ -55,4 +55,5 @@ public delegate void KeyboardEventHandler(KeyboardEvent e);
 public class KeyboardEvent {
 	required public DisplayObject target { get; init; }
 	required public Keyboard.Key key { get; init; }
+	public char character { get; init; }
 }

@@ -9,6 +9,7 @@ namespace com.audionysos.text.render;
 
 public class TextAreaRenderer {
 	TextDisplayContext ctx;
+	private Text tracked;
 
 	public TextAreaRenderer(TextDisplayContext ctx) {
 		this.ctx = ctx;
@@ -18,43 +19,45 @@ public class TextAreaRenderer {
 	private List<RenderedGlyph> rendered = new List<RenderedGlyph>();
 
 	private Graphics g;
-	public void render2() {
-		rendered.Clear();
-		var man = ctx.manipulator;
-		var grc = new GlyphRenderingContext();
-		ctx.format.size = 12; 
-		grc.gfx = ctx.gfx;
-		grc.gfx.clear();
-		var dw = 10d; //default width
-		var w = 0d; //char width
-		var linesSpacing = 4; var tabSize = 4;
-		var lns = man.text.lines;
-		for (int i = 0; i < lns.Count; i++) {
-			var l = lns[i];
-			for (int j = 0; j < l.length; j++) {
-				var chi = man.getCharInfo(l.start + j);
-				//if (chi.character == '\n') continue;
-				//if (chi.character == '\t') {
-				//	grc.position.x += dw * tabSize;
-				//	continue;
-				//}
-				var rg = renderCharacter(chi, grc);
-				w = (rg == null) ? dw : rg.size.x;
-				if(rg != null) rendered.Add(rg);
-				grc.position.x += w;
-			}
-			grc.position.x = 0;
-			grc.position.y += ctx.format.size + linesSpacing;
-		}
+	//public void render2() {
+	//	rendered.Clear();
+	//	var man = ctx.manipulator;
+	//	var grc = new GlyphRenderingContext();
+	//	ctx.format.size = 12; 
+	//	grc.gfx = ctx.gfx;
+	//	grc.gfx.clear();
+	//	var dw = 10d; //default width
+	//	var w = 0d; //char width
+	//	var linesSpacing = 4; var tabSize = 4;
+	//	var lns = man.text.lines;
+	//	for (int i = 0; i < lns.Count; i++) {
+	//		var l = lns[i];
+	//		for (int j = 0; j < l.length; j++) {
+	//			var chi = man.getCharInfo(l.start + j);
+	//			//if (chi.character == '\n') continue;
+	//			//if (chi.character == '\t') {
+	//			//	grc.position.x += dw * tabSize;
+	//			//	continue;
+	//			//}
+	//			var rg = renderCharacter(chi, grc);
+	//			w = (rg == null) ? dw : rg.size.x;
+	//			if(rg != null) rendered.Add(rg);
+	//			grc.position.x += w;
+	//		}
+	//		grc.position.x = 0;
+	//		grc.position.y += ctx.format.size + linesSpacing;
+	//	}
 
-		ctx.gfx.close();
-		renderCarets();
-	}
+	//	ctx.gfx.close();
+	//	renderCarets();
+	//}
 
 	private List<TextLineLayout> _lines = new();
 	public IReadOnlyList<TextLineLayout> lines => _lines;
 
 	public void render() {
+		trackText();
+
 		foreach (var r in rendered) {
 			ctx.container.removeChild(r.data as Shape);
 		}
@@ -91,6 +94,17 @@ public class TextAreaRenderer {
 			grc.position.x = 0;
 			grc.position.y += ctx.format.size + linesSpacing;
 		}
+	}
+
+	private void trackText() {
+		if (tracked == ctx.manipulator.text) return;
+		if (tracked != null) tracked.CHANGED -= onTextChanged;
+		tracked = ctx.manipulator.text;
+		tracked.CHANGED += onTextChanged;
+	}
+
+	private void onTextChanged(TextChangedEvent @event) {
+		render();
 	}
 
 	private RenderedGlyph renderCharacter(CharInfo chi, GlyphRenderingContext grc) {

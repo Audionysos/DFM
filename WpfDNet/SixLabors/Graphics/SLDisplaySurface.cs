@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows;
 using System;
 using AI = audionysos.input;
+using System.Diagnostics;
 
 namespace WpfDNet; 
 public class SLDisplaySurface : DisplaySurface {
@@ -54,6 +55,7 @@ public class WPFInputProcessor : InputProcessor {
 	private readonly FrameworkElement root;
 
 	public WPFInputProcessor(FrameworkElement root) {
+		this.root = root;
 		root.Focusable = true;
 		root.Focus();
 		System.Windows.Input.Keyboard.Focus(root);
@@ -63,9 +65,14 @@ public class WPFInputProcessor : InputProcessor {
 		root.MouseUp += onMouseUp;
 		root.KeyDown += onKeyDown;
 		root.KeyUp += onKeyUp;
-		this.root = root;
+
+		root.TextInput += onTextInput;
 	}
 
+	private void onTextInput(object sender, TextCompositionEventArgs e) {
+		Debug.WriteLine(e.Text);
+		il.keyDown(this, AI.Keyboard.Key.None, e.Text[0]);
+	}
 
 	private void onKeyDown(object sender, KeyEventArgs e) {
 		il.keyDown(this, (AI.Keyboard.Key)e.Key);

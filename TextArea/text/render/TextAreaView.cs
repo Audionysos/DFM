@@ -58,6 +58,12 @@ public class TextAreaView : IDisplayable<Sprite> {
 			manipulator.carets.pos.y += 1;
 		else if (e.key == Keyboard.Key.Up)
 			manipulator.carets.pos.y -= 1;
+		else if (e.key == Keyboard.Key.Tab)
+			manipulator.insert('\t');
+		else if (e.character != '\0') {
+			//var ch = e.key.ToString();
+			manipulator.insert(e.character);
+		}
 
 
 		renderer.renderCarets();

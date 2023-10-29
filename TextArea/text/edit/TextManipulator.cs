@@ -10,8 +10,16 @@ namespace com.audionysos.text.edit;
 
 /// <summary>Provides methods for manipulating <see cref="Text"/> and associated data.</summary>
 public class TextManipulator {
+	private Text _t;
 	/// <summary>Text that is been manipulated.</summary>
-	public Text text { get; private set; }
+	public Text text {
+		get => _t;
+		private set {
+			_t = value;
+			_t.CHANGED += onTextChanged;
+		}
+	}
+
 	/// <summary>Sores information about currently selected text.</summary>
 	public TextSelection selection { get; private set; }
 	private TextCarets _carets;
@@ -26,8 +34,9 @@ public class TextManipulator {
 	}
 	/// <summary>Stores information about all distinguishable text regions.</summary>
 	public TextSpans regions { get; private set; }
+	public List<CharInfo> _infos;
 	/// <summary>Given access to information associated with each character of <see cref="text"/>.</summary>
-	public IReadOnlyList<CharInfo> infos { get; private set; }
+	public IReadOnlyList<CharInfo> infos => _infos;
 	public TextDisplayContext context { get; }
 	private TextDisplayContext ctx => context;
 
@@ -58,19 +67,48 @@ public class TextManipulator {
 		createInfos();
 	}
 
-	public void insert(char c) {
-		//text[0].
-	}
-
 	private void createInfos() {
 		var lst = new List<CharInfo>(text.Count);
 		foreach (var c in text) {
 			var i = new CharInfo(c, text.span);
 			lst.Add(i);
 		}
-		infos = lst;
+		_infos = lst;
 	}
 	#endregion
+
+	public void insert(char c) {
+		if (c == '\b') { remove(); return; }
+		text.insert(c.ToString(), carets.ch);
+		carets++;
+	}
+
+	public void insert(string t) {
+		//return;
+		text.insert(t, carets.ch);
+		carets.move(t.Length);
+	}
+
+	public void remove(int c = 1) {
+		carets.move(-c);
+		text.remove(carets.ch, c);
+	}
+
+	private void onTextChanged(TextChangedEvent e) {
+		if(e.type == TextChangeType.ADDED) {
+			var nfs = createInfos(e.content);
+			_infos.InsertRange(e.at, nfs);
+		}else if(e.type == TextChangeType.REMOVED) {
+			_infos.RemoveRange(e.at, e.size);
+		}
+	}
+
+	private CharInfo[] createInfos(string content) {
+		var a  = new CharInfo[content.Length];
+		for (int i = 0; i < content.Length; i++) {
+			a[i] = new CharInfo(content[i], text.span);
+		}return a;
+	}
 
 	#region Navigation/Positioning
 	public ColumnLine clipPosition(ColumnLine p) {

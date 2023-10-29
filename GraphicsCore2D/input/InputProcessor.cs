@@ -66,17 +66,17 @@ public class InputListener {
 		last?.dispatcher.firePointerUp();
 	}
 
-	public void keyDown(InputProcessor ip, Keyboard.Key k) {
+	public void keyDown(InputProcessor ip, Keyboard.Key k, char ch = '\0') {
 		var f = ip.focus.current as InteractiveObject;
 		f?.dispatcher.fireKeyDown(new KeyboardEvent() {
-			target = f, key = k,
+			target = f, key = k, character = ch
 		});
 	}
 
-	public void keyUp(InputProcessor ip, Keyboard.Key k) {
+	public void keyUp(InputProcessor ip, Keyboard.Key k, char ch = '\0') {
 		var f = ip.focus.current as InteractiveObject;
 		f?.dispatcher.fireKeyUp(new KeyboardEvent() {
-			target = f, key = k,
+			target = f, key = k, character = ch
 		});
 	}
 }
