@@ -1,6 +1,7 @@
 ﻿using audionysos.display;
 using audionysos.geom;
 using System.Collections.Generic;
+//using System.IO;
 
 namespace com.audionysos; 
 
@@ -116,4 +117,16 @@ public static class MicroGraphicsExtensions {
 		g.moveTo(p.x, p.y);
 		return g;
 	}
+
+	/// <summary>Draw path starting form first point in the path.
+	/// To join path to previously drawn shape use <see cref="Graphics.drawPath(IReadOnlyList{IPoint2})"/> method.</summary>
+	public static T newPath<T>(this T g, Path path)
+		where T : IMicroGraphics2D {
+		if (path == null || path.Count < 2) return g;
+		g.moveTo(path[0]);
+		for (int i = 1; i < path.Count; i++)
+			g.lineTo(path[i]);
+		return g;
+	}
+
 }

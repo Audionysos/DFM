@@ -1,4 +1,5 @@
-﻿using com.audionysos.text.edit;
+﻿using audionysos.geom;
+using com.audionysos.text.edit;
 using com.audionysos.text.render;
 using SixLabors.Fonts;
 using System.Collections.Generic;

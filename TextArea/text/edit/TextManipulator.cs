@@ -127,13 +127,16 @@ public class TextManipulator {
 		return (p.x, y);
 	}
 
-	public CharLine toCharLine(ColumnLine p) {
+	public CharLine getPosition(ColumnLine p) {
 		var y = p.y; var x = p.x;
 		y = y.clip(0, text.lines.Count - 1);
 		var rl = ctx.renderer.lines[y];
 		x = rl.glyphAt(x, out _);
 		return (x, y);
 	}
+
+	public int getCharacter(ColumnLine p)
+		=> text.getIndex(getPosition(p));
 
 	public ColumnLine getPosition(CharLine p) {
 		var y = p.y; var x = p.x;
@@ -142,6 +145,9 @@ public class TextManipulator {
 		x = rl.columnAt(x);
 		return (x, y);
 	}
+
+	public ColumnLine getPosition(int ch) 
+		=> getPosition(text.getPos(ch));
 	#endregion
 
 	/// <summary>Returns information for <see cref="text"/>'s character at given index.</summary>

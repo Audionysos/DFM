@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using audionysos.geom;
+using System.Collections.Generic;
 
 namespace com.audionysos.text.render; 
 /// <summary>Represents a single glyph that could be rendered in text area.</summary>

@@ -117,30 +117,3 @@ public class RenderedGlyph {
 		return $@"""{template.name}"", RenderedGlyph";
 	}
 }
-
-public class Path : IReadOnlyList<V>, IEnumerable<V> {
-	private List<V> _points = new List<V>();
-
-	/// <inheritdoc/>
-	public int Count => _points.Count;
-	/// <inheritdoc/>
-	public V this[int index] {
-		get => _points[index];
-	}
-
-	public void Add(V p) {
-		_points.Add(p);
-	}
-
-	public void Add(double x, double y) {
-		_points.Add(new Point2(x, y));
-	}
-
-	/// <inheritdoc/>
-	public IEnumerator<V> GetEnumerator()
-		=> _points.GetEnumerator();
-
-	/// <inheritdoc/>
-	IEnumerator IEnumerable.GetEnumerator()
-		=> _points.GetEnumerator();
-}

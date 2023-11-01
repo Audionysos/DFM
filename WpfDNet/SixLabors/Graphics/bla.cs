@@ -1,7 +1,7 @@
 ﻿using F = SixLabors.Fonts;
 using SixLabors.Fonts;
 using System.Numerics;
-using X = com.audionysos.text.render;
+using X = audionysos.geom;
 using System.Collections.Generic;
 using System;
 

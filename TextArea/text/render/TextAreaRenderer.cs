@@ -4,6 +4,8 @@ using com.audionysos.text.edit;
 using com.audionysos.text.utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
 
 namespace com.audionysos.text.render; 
 
@@ -69,7 +71,8 @@ public class TextAreaRenderer {
 		ctx.format.size = 12;
 		//grc.gfx = ctx.gfx;
 		//grc.gfx.clear();
-		var linesSpacing = 4;
+		//var linesSpacing = 4;
+		grc.position.y = linesSpacing;
 		var charWidth = ctx.format.size * .5;
 
 		var txt = man.text;
@@ -180,28 +183,115 @@ public class TextAreaRenderer {
 		//cts.pos = new Int2((int)cp.position.x, (int)cp.position.y);
 		caret.postion(pos);
 	}
-}
 
-public class TextLayouter {
+	public void drawBorder(TextSpan span,  Graphics g) {
+		var b = getBorder(span);
+		g.clear();
+		g.beginFill(0x3388FF, .2);
+		g.lineStyle(1, 0x3388FF);
+		foreach (var p in b)
+			g.newPath(p);
+	}
 
-	public void layout(TextManipulator m) {
-		var chs = m.infos;
-		foreach (var ch in chs) {
-			//ch.
+	public List<Path> getBorder(TextSpan span) {
+		var path = new Path();
+		var paths = new List<Path>(2) { path };
+		var p = ctx.manipulator.getPosition(span.start);
+		var ip = p.copy();
+		var r = getGlyphRect(p); //first rect in shape.
+		path.Add(r.topLeft);
+		var ll = lastInLine(p, span);
+		path.Add(ll.topRight);
+		var nl = lastInLine(p.add(0,1), span);
+		if(!nl || nl.right <= r.left) { //selection are not connected. Note this may happen only between first and second line since only first line may start with characters that are not part of the span.
+			path.Add(ll.bottomRight, r.bottomLeft, r.topLeft);
+			//starting new path
+			r = getGlyphRect(p.set(0, p.y));
+			path = new Path() { r.topLeft };
+			paths.Add(path);
+		}else {
+			path.Add(ll.bottomRight);
+
 		}
 
+		//below should be in single shape
+		ll = lastInLine(p, span);
+		if (!ll) { return paths.GetRange(0,1);}
+		path.Add(ll.topRight);
+		nl = lastInLine(p.add(0, 1), span);
+		while (nl) { // moving down
+			while (nl && nl.right == ll.right) {
+				ll = nl; nl = lastInLine(p.add(0, 1), span);
+			}
+			path.Add(ll.bottomRight);
+			if (nl) { //still in span
+				path.Add(nl.topRight);
+				ll = nl; nl = lastInLine(p.add(0,1), span);
+			}
+		}
+		//we are at the bottom
+		path.Add(ll.bottomRight);
+		ll = getGlyphRect(p.set(0, p.y-1));
+		path.Add(ll.bottomLeft);
+		if(ll.left != r.left) {
+			ll = getGlyphRect((0,ip.y + 1));
+			path.Add(ll.topLeft, r.bottomLeft);
+		}
+		path.Add(r.topLeft);
+
+		return paths;
+	}
+
+	/// <summary>Returns rect of last character in line at given position that is also in the range of given span.
+	/// If the span don't intersect with the line, null is returned.</summary>
+	private Rect lastInLine(ColumnLine np, TextSpan span) {
+		if (np.y >= lines.Count) return null;
+		var l = lines[np.y];
+		var x = l.columns;
+		ColumnLine last = (l.columns, np.y);
+		var llch = ctx.manipulator.getCharacter(last); //global index of last character in line.
+		if (span.start > llch) return null;
+		var d = span.end - llch;
+		if (d > 0) return getGlyphRect((x, np.y));
+		//span ends before the line ends.
+		llch = l.Count + d;
+		if(llch < 0) return null; // span ends before line start
+		x = l.columnAt(llch);
+		return getGlyphRect((x, np.y));
+	}
+
+	private bool containsPosition(TextSpan span, ColumnLine p) {
+		var chp = ctx.manipulator.getCharacter(p);
+		return span.contains(chp);
+	}
+
+	private double charWidth => ctx.format.size * .5;
+	private double charHeight => ctx.format.size;
+	private double linesSpacing => 4;
+	private double lineHeight => charHeight + linesSpacing;
+
+	/// <summary>Returns glyph rect at given absolute char index.</summary>
+	private Rect getGlyphRect(int ch) {
+		var p = ctx.manipulator.getPosition(ch);
+		return new Rect((p.x * charWidth, p.y * charHeight), (charWidth, charHeight));
+	}
+
+	public Rect getGlyphRect(ColumnLine p) {
+		return new Rect((p.x * charWidth, p.y * lineHeight), (charWidth, lineHeight));
 	}
 
 }
 
 public class TextLineLayout {
-	/// <summary>Text this is been layed out.</summary>
+	/// <summary>Text that is been laid out.</summary>
 	public TextLine line { get; set; }
 	public TextManipulator man { get; set; }
+	/// <summary>Specifies number of columns in the line.</summary>
 	public int columns { get; private set; }
 	private RenderedGlyph[] _glyphs;
 	public IReadOnlyList<RenderedGlyph> glyphs => _glyphs;
-	private int Count;
+	/// <summary>Number of glyphs/characters in the line.</summary>
+	public int Count { get; private set; }
 
 	public TextLineLayout(TextLine l, TextManipulator man) {
 		line = l;
@@ -237,6 +327,10 @@ public class TextLineLayout {
 			if (i == ch) break;
 			c += glyphs[i].template.columnWidth;
 		}return c;
+	}
+
+	public override string ToString() {
+		return $@"LL[{columns}/{Count}] {line}";
 	}
 
 	//private void produce() {

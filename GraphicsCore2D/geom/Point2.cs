@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Runtime.Serialization;
+using PE = audionysos.geom.IPoint2Extensions;
 
 namespace audionysos.geom; 
 public class Point2 : IPoint2 {
@@ -32,9 +33,37 @@ public class Rect : IRect<IPoint2> {
 	public IPoint2 position { get; }
 	public IPoint2 size { get; }
 
+	public Point2 topLeft => interpolate(0, 0);
+	public Point2 topRight => interpolate(1, 0);
+	public Point2 bottomRight => interpolate(1, 1);
+	public Point2 bottomLeft => interpolate(0, 1);
+
+	public double left => interpolateX(0);
+	public double right => interpolateX(1);
+	public double top => interpolateY(0);
+	public double bottom => interpolateY(1);
+
+
+	public Point2 interpolate(double x, double y) 
+		=> (interpolateX(x), interpolateY(y));
+
+	public double interpolateX(double x)
+		=> position.x + size.x * x;
+
+	public double interpolateY(double y)
+		=> position.y + size.y * y;
+
+	public Point2 interpolate((double x, double y) t)
+		=> interpolate(t.x, t.y);
+
 	public Rect(IPoint2 pos, IPoint2 size) {
 		position = pos.copy();
 		this.size = size.copy();
+	}
+
+	public Rect((double x, double y) pos, (double x, double y) size) {
+		position = (Point2)pos;
+		this.size = (Point2)size;
 	}
 
 	public Rect() {
@@ -73,5 +102,12 @@ public class Rect : IRect<IPoint2> {
 		size.set(s);
 		if (s.x < 0) { s.x = -s.x; position.x -= s.x; }
 		if (s.y < 0) { s.y = -s.y; position.y -= s.y; }
+	}
+
+	public static implicit operator bool(Rect r)
+		=> r != null;
+
+	public override string ToString() {
+		return $@"pos:{position} size:{size}";
 	}
 }

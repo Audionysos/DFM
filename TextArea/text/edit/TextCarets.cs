@@ -51,7 +51,7 @@ public class TextCaret {
 		correcting = true;
 		pos = man.clipLine(pos);
 		correcting = false;
-		var chl = man.toCharLine(pos);
+		var chl = man.getPosition(pos);
 		lCh = chl.x;
 		_c = text.getIndex(chl);
 		CHANGED?.Invoke(this);
@@ -88,6 +88,9 @@ public class TextCaret {
 public class ColumnLine : Int2 {
 	public ColumnLine(int x = 0, int y = 0) : base(x, y) {}
 
+	/// <summary></summary>
+	new public ColumnLine copy() => new ColumnLine(x, y);
+
 	public static implicit operator ColumnLine((int x, int y) t)
 		=> new ColumnLine(t.x, t.y);
 }
@@ -96,6 +99,9 @@ public class ColumnLine : Int2 {
 /// Note that <see cref="ColumnLine"/> and <see cref="CharLine"/> are different classes because a character may occupy different number of columns.</summary>
 public class CharLine : Int2 {
 	public CharLine(int x = 0, int y = 0) : base(x, y) { }
+
+	/// <summary></summary>
+	new public CharLine copy() => new CharLine(x, y);
 
 	public static implicit operator CharLine((int x, int y) t)
 		=> new CharLine(t.x, t.y);

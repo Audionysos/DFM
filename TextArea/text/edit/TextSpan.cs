@@ -1,6 +1,8 @@
 ﻿using audionysos.math;
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization.Metadata;
 
 namespace com.audionysos.text.edit; 
@@ -21,9 +23,11 @@ public class TextSpan {
 
 	#region Derived
 	public int length => end - start;
+	/// <summary>Index of last character that is included in the span.</summary>
+	public int last => end - 1;
 
 	/// <summary>Creates substring from <see cref="source"/> between <see cref="start"/> and <see cref="end"/>.
-	/// Note that this main throw is the span is out of range.</summary>
+	/// Note that this may throw if the span is out of range.</summary>
 	public string text {
 		get {
 			if (length == 0) return "";
@@ -44,10 +48,17 @@ public class TextSpan {
 	}
 	#endregion
 
-	public TextSpan(Text text, int start, int end) {
+	public TextSpan([DisallowNull]Text text, int start, int end) {
 		source = text;
-		start = text.clipIndex(start);
-		end = text.clipIndex(end);
+		order(text.clipIndex(start), text.clipIndex(end));
+		text.CHANGED += onTextChanged;
+	}
+
+	public TextSpan(int start, int end) {
+		order(start, end);
+	}
+
+	private void order(int start, int end) {
 		if (end < start) {
 			this.start = end;
 			this.end = start;
@@ -55,7 +66,6 @@ public class TextSpan {
 			this.start = start;
 			this.end = end;
 		}
-		text.CHANGED += onTextChanged;
 	}
 
 	public void move(int a) {
@@ -126,15 +136,27 @@ public class TextSpan {
 
 	}
 
+	/// <summary>Returns true if character is in range of this span.</summary>
+	internal bool contains(int ch) 
+		=> ch >= start && ch < end;
+
 
 	public char this[int i] {
 		get => source[start + i];
 	}
 
+	public static implicit operator TextSpan(Range<int> r)
+		=> new TextSpan(r.start, r.end);
+
+	public static implicit operator TextSpan((int start, int end) r)
+		=> new TextSpan(r.start, r.end);
+
 	/// <inheritdoc/>
 	public override string ToString() {
-		return $@"({start}-{end}): {fullOrError}";
+		return source ? $@"({start}-{end}): {fullOrError}"
+					  : $@"({start}-{end}) [free TextSpan]";
 	}
+
 }
 
 public enum MutatingBehavior {

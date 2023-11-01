@@ -129,6 +129,9 @@ public class Text : IReadOnlyList<char> {
 	/// <summary>Converts string into text.</summary>
 	public static implicit operator Text(string t) => new Text(t);
 
+	/// <summary>False if null.</summary>
+	public static implicit operator bool(Text t) => t != null;
+
 	/// <inheritdoc/>
 	public override string ToString() {
 		return chars.ToString();

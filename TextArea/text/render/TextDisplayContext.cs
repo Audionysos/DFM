@@ -13,6 +13,7 @@ public class TextDisplayContext {
 	public TextAreaRenderer renderer;
 	public TextAreaView view;
 	public IGraphics2D gfx;
+	public DisplayObjectContainer background;
 	public DisplayObjectContainer container;
 	/// <summary>Default text format used when no other is specified for a portion of text.
 	/// By default the static <see cref="defaultTextFormat"/> is used.</summary>

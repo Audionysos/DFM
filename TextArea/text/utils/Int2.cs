@@ -48,7 +48,7 @@ public class Int2 {
 		_y = y;
 	}
 
-	public Int2 set(int x, int y) {
+	public Int2 setTo(int x, int y) {
 		var d = this - (x, y);
 		if (d.length == 0) return this;
 		_x = x; _y = y;
@@ -56,10 +56,13 @@ public class Int2 {
 		return this;
 	}
 
-	internal Int2 set(Int2 o) {
+
+	public Int2 set(Int2 o) {
 		if (!o) return this;
-		return set(o.x, o.y);
+		return this.set(o.x, o.y);
 	}
+
+	public Int2 copy() => new Int2(x, y);
 
 	public static Int2 operator -(Int2 a, Int2 b)
 		=> new Int2(a.x - b.x, a.y - b.y);
@@ -74,4 +77,16 @@ public class Int2 {
 
 	/// <summary>False if null.</summary>
 	public static implicit operator bool(Int2 i) => i != null;
+}
+
+public static class Int2Extensions {
+
+	public static T set<T>(this T p, int x, int y) where T : Int2
+		=> (T)p.setTo(x, y);
+
+	public static T add<T>(this T p, int x, int y) where T : Int2
+		=> (T)p.set(p.x + x, p.y + y);
+
+	public static T add<T>(this T p, (int x, int y) t) where T : Int2
+		=> (T)p.set(p.x + t.x, p.y + t.y);
 }

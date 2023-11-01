@@ -36,7 +36,10 @@ public class TextAreaView : IDisplayable<Sprite> {
 	public TextAreaView() {
 		view.isFocusable = true;
 		var x = context = new TextDisplayContext() {};
-		x.container = view;
+		x.background = new Sprite();
+		x.container = new Sprite();
+		view.addChild(x.background);
+		view.addChild(x.container);
 		x.view = this;
 		x.manipulator = manipulator = new TextManipulator(context);
 		x.renderer = renderer = new TextAreaRenderer(context);
