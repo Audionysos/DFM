@@ -20,21 +20,22 @@ public class TextCarets : TextCaret {
 }
 
 public class TextCaret {
-	public event Action<TextCaret> CHANGED;
+	/// <summary>Second argument is different between current and previous positions.</summary>
+	public event Action<TextCaret, int> CHANGED;
 	private Text text { get; set; }
 	public TextManipulator man { get; }
 
+	private int pc;
 	private int _c;
 	/// <summary>Absolute index of character within the text before which the caret is placed.</summary>
 	public int ch {
 		get => _c;
-		private set => _c = value;
+		set =>  pos = man.getPosition(value);
 	}
 
 	/// <summary>Index of the character in current line before which the caret is placed.</summary>
 	public int lCh { get; private set; }
 
-	//private Int2 _ap = new Int2();
 	private ColumnLine _pos = new ColumnLine();
 	/// <summary>Column-line coordinates of current caret position.</summary>
 	public ColumnLine pos {
@@ -54,7 +55,10 @@ public class TextCaret {
 		var chl = man.getPosition(pos);
 		lCh = chl.x;
 		_c = text.getIndex(chl);
-		CHANGED?.Invoke(this);
+
+		var d = _c - pc;
+		pc = _c;
+		CHANGED?.Invoke(this, d);
 	}
 
 	public static TextCaret operator ++(TextCaret c)
@@ -63,15 +67,13 @@ public class TextCaret {
 		=> c.move(-1);
 
 	public TextCaret move(int v) {
-		ch += v;
-		if(ch > text.Count) ch = text.Count;
-		if (ch < 0) ch = 0;
+		_c += v;
+		if(ch > text.Count) _c = text.Count;
+		if (ch < 0) _c = 0;
 		var p = text.getPos(ch);
-		lCh = p.x;
 		var np = man.getPosition(p);
 		pos = np;
 		return this;
-
 	}
 
 	public TextCaret(TextManipulator man) {

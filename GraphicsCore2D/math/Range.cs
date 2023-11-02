@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
@@ -40,6 +41,16 @@ public readonly struct Range<N> where N : INumber<N> {
 
 	public bool contains(Range<N> o)
 		=> o.start >= start && o.end <= end;
+
+	public N inter(double u)
+		=>  N.CreateChecked(double.CreateChecked(length) * u)
+			+ start;
+
+	public double normal(N v) {
+		var fs = v - start;
+		return double.CreateChecked(fs) / double.CreateChecked(length);
+	}
+
 
 	/// <summary>Returns true if this range ends before given other range starts.</summary>
 	public bool endsBefore(Range<N> o) => o.start > end;
@@ -98,6 +109,7 @@ public readonly struct Range<N> where N : INumber<N> {
 		if (this == empty) return "(empty range)";
 		return $"({start} <= n <= {end})";
 	}
+
 }
 
 /// <summary>Represents result of an operation on a <see cref="Range{N}"/> objects that may be split into two different <see cref="Range{N}"/> objects (<see cref="left"/>) and <see cref="right"/>).
@@ -148,4 +160,83 @@ public struct RangeOperationResult<N> where N : INumber<N> {
 		return $"({left}, {right})";
 	}
 
+}
+
+public class RangeEnumerator<N> : IEnumerable<N>, IEnumerator<N> where N : INumber<N> {
+	private readonly Range<N> range;
+	private readonly N step;
+	public N Current { get; private set; }
+	object IEnumerator.Current => Current;
+
+	public RangeEnumerator(Range<N> range, N step) {
+		this.range = range;
+		if (N.IsZero(step)) step = N.One;
+		this.step = step;
+		Reset();
+	}
+
+	public bool MoveNext() {
+		Current += step;
+		return range.contains(Current);
+	}
+
+	public void Reset() {
+		if (N.IsPositive(step)) Current = range.start - step;
+		else Current = range.end + step;
+	}
+
+	public IEnumerator<N> GetEnumerator() => this;
+	IEnumerator IEnumerable.GetEnumerator() => this;
+
+	public void Dispose() { }
+}
+
+public class FloatRangeEnumerator<N> : IEnumerable<N>, IEnumerator<N> where N : INumber<N>, IBinaryFloatingPointIeee754<N> {
+	private readonly Range<N> range;
+	private readonly N step;
+	public N Current { get; private set; }
+	object IEnumerator.Current => Current;
+
+	public FloatRangeEnumerator(Range<N> range, N step) {
+		this.range = range;
+		this.step = step;
+		Reset();
+	}
+
+	public void Reset() {
+		if (step == N.Zero) {
+			switchToBitCrement();
+			if (N.IsPositive(step)) //not working for 0 :( Actually can't use -0 N.NegativeZero works :|
+				Current = N.BitDecrement(range.start);
+			else Current = N.BitIncrement(range.end);
+		} else {
+			next = () => Current += step;
+			if (N.IsPositive(step))
+				Current = range.start - step;
+			else Current = range.end + step;
+		}
+	}
+
+	private void switchToBitCrement() {
+		if(N.IsPositive(step))
+			next = () => Current = N.BitIncrement(Current);
+		else next = () => Current = N.BitDecrement(Current);
+	}
+
+	private Action next;
+	public bool MoveNext() {
+		var p = Current;
+		next();
+		if (Current == p) {
+			switchToBitCrement();
+			next();
+		}
+		return range.contains(Current);
+	}
+
+
+	public IEnumerator<N> GetEnumerator() => this;
+	IEnumerator IEnumerable.GetEnumerator() => this;
+
+	public void Dispose() { }
 }

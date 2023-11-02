@@ -15,6 +15,7 @@ using System.Windows;
 using System;
 using AI = audionysos.input;
 using System.Diagnostics;
+using com.audionysos.text.utils;
 
 namespace WpfDNet; 
 public class SLDisplaySurface : DisplaySurface {
@@ -71,6 +72,7 @@ public class WPFInputProcessor : InputProcessor {
 
 	private void onTextInput(object sender, TextCompositionEventArgs e) {
 		Debug.WriteLine(e.Text);
+		if (e.Text.isEmpty()) return;
 		il.keyDown(this, AI.Keyboard.Key.None, e.Text[0]);
 	}
 

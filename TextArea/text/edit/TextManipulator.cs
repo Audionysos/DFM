@@ -4,6 +4,7 @@ using com.audionysos.text.utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 
 namespace com.audionysos.text.edit; 
@@ -64,8 +65,10 @@ public class TextManipulator {
 	private void init() {
 		selection = new TextSelection(text);
 		carets = new TextCarets(this);
+		carets.CHANGED += onCaretsChanged;
 		createInfos();
 	}
+
 
 	private void createInfos() {
 		var lst = new List<CharInfo>(text.Count);
@@ -89,9 +92,21 @@ public class TextManipulator {
 		carets.move(t.Length);
 	}
 
-	public void remove(int c = 1) {
+	public void remove(int c = 0) {
+		if(c == 0) {
+			if (selection.length > 0) {
+				removeSelection();
+				return;
+			} else c = 1;
+		}
 		carets.move(-c);
 		text.remove(carets.ch, c);
+	}
+
+	private void removeSelection() {
+		var l = selection.length;
+		text.remove(selection.start, selection.length);
+		carets.move(-l);
 	}
 
 	private void onTextChanged(TextChangedEvent e) {
@@ -103,11 +118,28 @@ public class TextManipulator {
 		}
 	}
 
-	private CharInfo[] createInfos(string content) {
-		var a  = new CharInfo[content.Length];
-		for (int i = 0; i < content.Length; i++) {
-			a[i] = new CharInfo(content[i], text.span);
-		}return a;
+	/// <summary>Movement of the caret will mark <see cref="selection"/> if set to true.</summary>
+	public bool isSelecting { get; set; }
+	private void onCaretsChanged(TextCaret caret, int change) {
+		var pp = carets.ch - change;
+		if (isSelecting) {
+			if (pp == selection.start) {
+				selection.start = carets.ch;
+			} else if (pp == selection.end) {
+				selection.end = carets.ch;
+			} else Debug.Assert(false);
+		} else {
+			if(selection.length == 0) {
+				selection.setTo(carets.ch, carets.ch);
+				return;
+			}
+			if (change > 0) {
+				selection.start = selection.end;
+			} else {
+				selection.end = selection.start;
+			}
+			caret.ch = selection.start;
+		}
 	}
 
 	#region Navigation/Positioning
@@ -120,6 +152,7 @@ public class TextManipulator {
 		return (x, y);
 	}
 
+	/// <summary>Clips <see cref="Int2.y"/> value to current bounds of the <see cref="text"/>.</summary>
 	public ColumnLine clipLine(ColumnLine p) {
 		var y = p.y;
 		y = y.clip(0, text.lines.Count - 1);
@@ -127,6 +160,7 @@ public class TextManipulator {
 		return (p.x, y);
 	}
 
+	/// <summary>Returns character-line position in the <see cref="text"/>.</summary>
 	public CharLine getPosition(ColumnLine p) {
 		var y = p.y; var x = p.x;
 		y = y.clip(0, text.lines.Count - 1);
@@ -135,6 +169,7 @@ public class TextManipulator {
 		return (x, y);
 	}
 
+	/// <summary>Returns absolute character index in the <see cref="text"/> at given position.</summary>
 	public int getCharacter(ColumnLine p)
 		=> text.getIndex(getPosition(p));
 
@@ -146,6 +181,7 @@ public class TextManipulator {
 		return (x, y);
 	}
 
+	/// <summary>Returns column-line position at given absolute character index in the <see cref="text"/>.</summary>
 	public ColumnLine getPosition(int ch) 
 		=> getPosition(text.getPos(ch));
 	#endregion
@@ -153,6 +189,13 @@ public class TextManipulator {
 	/// <summary>Returns information for <see cref="text"/>'s character at given index.</summary>
 	public CharInfo getCharInfo(int index) {
 		return infos[index];
+	}
+
+	private CharInfo[] createInfos(string content) {
+		var a  = new CharInfo[content.Length];
+		for (int i = 0; i < content.Length; i++) {
+			a[i] = new CharInfo(content[i], text.span);
+		}return a;
 	}
 }
 
@@ -195,6 +238,7 @@ public class TextFormat : ITextFormat, ITextFormatProvider {
 	public IFill foreground { get; set; } = (Color)0x000000FF;
 	public IFill background { get; set; } = (Color)0xFFFFFFFF;
 	public ITextFont font { get; set; } = new NamedFont("Consolas");
+	//public ITextFont font { get; set; } = new NamedFont("Cascadia Code");
 }
 
 /// <summary>Interface for objects providing <see cref="ITextFormat"/>.</summary>

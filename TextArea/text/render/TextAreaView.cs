@@ -3,11 +3,14 @@ using audionysos.input;
 using com.audionysos.text.edit;
 using com.audionysos.text.utils;
 using System;
+using System.Diagnostics;
+using System.Diagnostics.Tracing;
 
 namespace com.audionysos.text.render; 
 public class TextAreaView : IDisplayable<Sprite> {
+	public event Action<TextAreaView> TEXT_CHANGED;
+
 	public Sprite view { get; } = new Sprite();
-	//private Sprite carrets = new Sprite();
 	
 	Int2 size;
 	public TextDisplayContext context { get; }
@@ -29,6 +32,7 @@ public class TextAreaView : IDisplayable<Sprite> {
 		}
 		set {
 			manipulator = new TextManipulator(value, context);
+			TEXT_CHANGED?.Invoke(this);
 			renderer.render();
 		}
 	}
@@ -49,7 +53,21 @@ public class TextAreaView : IDisplayable<Sprite> {
 	}
 
 	private void configureView() {
+		TEXT_CHANGED += onTextChanged;
 		view.input.KEY_DOWN += onKeyDown;
+		view.input.KEY_UP += onKeyUp;
+		//TODO: the whole manipulator and it's selection is changed when text is set to the text area.
+		context.background.addChild(selectionView);
+	}
+
+	private void onTextChanged(TextAreaView view) {
+		onSelectionChanged(manipulator.selection);
+		manipulator.selection.CHANGED += onSelectionChanged;
+	}
+
+	private Sprite selectionView = new ();
+	private void onSelectionChanged(TextSpan span) {
+		renderer.drawBorder(span, selectionView.graphics);
 	}
 
 	private void onKeyDown(KeyboardEvent e) {
@@ -63,12 +81,22 @@ public class TextAreaView : IDisplayable<Sprite> {
 			manipulator.carets.pos.y -= 1;
 		else if (e.key == Keyboard.Key.Tab)
 			manipulator.insert('\t');
+		else if (e.key.isShift())
+			manipulator.isSelecting = true;
 		else if (e.character != '\0') {
 			//var ch = e.key.ToString();
 			manipulator.insert(e.character);
 		}
 
-
 		renderer.renderCarets();
+		var c = manipulator.carets;
+		var s = $"Ln: {c.pos.y}\tCh: {c.lCh}\tCol: {c.actualPos.x}\tACh: {c.ch}\t(x: {c.pos.x}\ty: {c.pos.y})";
+		Debug.WriteLine(s);
+	}
+
+	private void onKeyUp(KeyboardEvent e) {
+		Debug.WriteLine($@"KeyUp: {e.key}");
+		if (e.key.isShift())
+			manipulator.isSelecting = false;
 	}
 }

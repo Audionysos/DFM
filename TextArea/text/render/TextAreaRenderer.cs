@@ -4,7 +4,6 @@ using com.audionysos.text.edit;
 using com.audionysos.text.utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 
 namespace com.audionysos.text.render; 
@@ -73,7 +72,6 @@ public class TextAreaRenderer {
 		//grc.gfx.clear();
 		//var linesSpacing = 4;
 		grc.position.y = linesSpacing;
-		var charWidth = ctx.format.size * .5;
 
 		var txt = man.text;
 		var lc = txt.lines.Count;
@@ -184,10 +182,12 @@ public class TextAreaRenderer {
 		caret.postion(pos);
 	}
 
+	#region Span border
 	public void drawBorder(TextSpan span,  Graphics g) {
-		var b = getBorder(span);
 		g.clear();
-		g.beginFill(0x3388FF, .2);
+		if (span.length == 0) return;
+		var b = getBorder(span);
+		g.beginFill(0x3388FF, .1);
 		g.lineStyle(1, 0x3388FF);
 		foreach (var p in b)
 			g.newPath(p);
@@ -250,19 +250,15 @@ public class TextAreaRenderer {
 		var x = l.columns;
 		ColumnLine last = (l.columns, np.y);
 		var llch = ctx.manipulator.getCharacter(last); //global index of last character in line.
+		if (llch == tracked.Count) llch--; //on the last line, last returned index is equal to count but we don't want that when marking a span
 		if (span.start > llch) return null;
-		var d = span.end - llch;
+		var d = span.last - llch;
 		if (d > 0) return getGlyphRect((x, np.y));
 		//span ends before the line ends.
-		llch = l.Count + d;
+		llch = l.Count + d-1;
 		if(llch < 0) return null; // span ends before line start
 		x = l.columnAt(llch);
 		return getGlyphRect((x, np.y));
-	}
-
-	private bool containsPosition(TextSpan span, ColumnLine p) {
-		var chp = ctx.manipulator.getCharacter(p);
-		return span.contains(chp);
 	}
 
 	private double charWidth => ctx.format.size * .5;
@@ -273,12 +269,24 @@ public class TextAreaRenderer {
 	/// <summary>Returns glyph rect at given absolute char index.</summary>
 	private Rect getGlyphRect(int ch) {
 		var p = ctx.manipulator.getPosition(ch);
-		return new Rect((p.x * charWidth, p.y * charHeight), (charWidth, charHeight));
+		return new Rect((p.x * charWidth, p.y * charHeight)
+			, (charWidth, charHeight));
 	}
 
 	public Rect getGlyphRect(ColumnLine p) {
-		return new Rect((p.x * charWidth, p.y * lineHeight), (charWidth, lineHeight));
+		var g = getGlyphAt(p);
+		var gw = g ? g.template.columnWidth : 0;
+		return new Rect((p.x * charWidth, p.y * lineHeight)
+			, (charWidth*gw, lineHeight));
 	}
+
+	private RenderedGlyph getGlyphAt(ColumnLine p) {
+		if (p.y >= lines.Count) return null;
+		var l = lines[p.y];
+		l.glyphAt(p.x, out var g);
+		return g;
+	}
+	#endregion
 
 }
 
@@ -317,8 +325,14 @@ public class TextLineLayout {
 			if (column < cc) {
 				glyph = ch; return i;
 			}
-		}return _glyphs.Length;
+		}
+		if (endsWithNewLine)
+			return _glyphs.Length - 1;
+		return _glyphs.Length;
 	}
+
+	public bool endsWithNewLine
+		=> _glyphs[^1].template.name.StartsWith(@"'\n'");
 
 	/// <summary>Returns column at given glyph position.</summary>
 	public int columnAt(int ch) {
@@ -333,12 +347,4 @@ public class TextLineLayout {
 		return $@"LL[{columns}/{Count}] {line}";
 	}
 
-	//private void produce() {
-	//	//chars = new RenderedGlyph[line.length];
-	//	for (int i = line.start; i < line.end; i++) {
-	//		var ch = man.getCharInfo(i);
-	//		//ch.
-	//	}
-
-	//}
 }

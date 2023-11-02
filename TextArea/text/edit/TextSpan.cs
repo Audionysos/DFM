@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization.Metadata;
 
 namespace com.audionysos.text.edit; 
@@ -12,19 +13,34 @@ public class TextSpan {
 
 	/// <summary>Source text this span is part of.</summary>
 	public Text source { get; private set; }
+	private int s;
 	/// <summary>Position of first character of this span in <see cref="source"/> text.</summary>
-	public int start { get; set; }
+	public int start { get => s; set {
+			if (value == s) return;
+			if (value > end) e = value;
+			else s = value;
+			CHANGED?.Invoke(this);
+		}
+	}
+	private int e;
 	/// <summary>First position after last character of this span.</summary>
-	public int end { get; set; }
+	public int end { get => e; set {
+			if (value == e) return;
+			if (value < start)
+				s = value;
+			else e = value;
+			CHANGED?.Invoke(this);
+		}
+	}
 
 	public Attributes attributes { get; } = new Attributes();
 
 	public MutatingBehavior mutating;
 
 	#region Derived
-	public int length => end - start;
+	public int length => e - s;
 	/// <summary>Index of last character that is included in the span.</summary>
-	public int last => end - 1;
+	public int last => e - 1;
 
 	/// <summary>Creates substring from <see cref="source"/> between <see cref="start"/> and <see cref="end"/>.
 	/// Note that this may throw if the span is out of range.</summary>
@@ -60,11 +76,11 @@ public class TextSpan {
 
 	private void order(int start, int end) {
 		if (end < start) {
-			this.start = end;
-			this.end = start;
+			s = end;
+			e = start;
 		} else {
-			this.start = start;
-			this.end = end;
+			s = start;
+			e = end;
 		}
 	}
 
@@ -79,9 +95,17 @@ public class TextSpan {
 		CHANGED?.Invoke(this);
 	}
 
-	//public void grow(int a) {
-	//	var h = a / 2;
-	//}
+	public void setTo(int start, int end) {
+		s = start; e = end;
+		CHANGED?.Invoke(this);
+	}
+
+	public void expandTo(int pos) {
+		if(pos < start) s = pos;
+		else if(pos > end) e = pos;
+		else return;
+		CHANGED?.Invoke(this);
+	}
 
 	public void grow(int s, int e) {
 		start -= s; end += e;
@@ -115,18 +139,20 @@ public class TextSpan {
 		}else if(e.type == TextChangeType.REMOVED) {
 			if (d.onlyRight) {
 				//var rc = length - d.right.length;
-				start = e.at;
-				end = start + d.right.length;
+				s = e.at;
+				this.e = start + d.right.length;
 			}else if (d.onlyLeft) {
 				var rc = length - d.left.length;
-				end -= rc;
+				this.e -= rc;
 			}else if (d.splitted) {
 				var rc = length - d.left.length - d.right.length;
-				end -= rc;
+				this.end -= rc;
 			}else {
-				Debugger.Break();
-				Debug.Assert(false);
+				//May happen when span is empty, don't care for now
+				//Debugger.Break();
+				//Debug.Assert(false);
 			}
+			CHANGED?.Invoke(this);
 
 		}
 

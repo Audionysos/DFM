@@ -113,7 +113,12 @@ public class RenderedGlyph {
 		this.data = data;
 	}
 
+
 	public override string ToString() {
 		return $@"""{template.name}"", RenderedGlyph";
 	}
+
+	/// <summary>False if null.</summary>
+	public static implicit operator bool(RenderedGlyph g)
+		=> g != null;
 }

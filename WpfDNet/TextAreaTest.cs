@@ -7,6 +7,7 @@ using com.audionysos.text.edit;
 using com.audionysos;
 using audionysos.display;
 using audionysos.math;
+using audionysos.gui;
 
 namespace WpfDNet; 
 public class TextAreaTest {
@@ -14,6 +15,7 @@ public class TextAreaTest {
 	private TextAreaView pos;
 
 	public TextAreaTest(SixLaborsToWPFAdapter adapter) {
+		//new ScrollBar();
 
 		adapter.displaySurface.background = (Color)0xFFFFFFFF;
 		ta = new TextAreaView();
@@ -36,22 +38,26 @@ public class TextAreaTest {
 
 		ta.manipulator.carets.CHANGED += onCaretsMoved;
 
+		//spanMarking();
+
+	}
+
+	private void spanMarking() {
 		var b = new Shape();
 		ta.context.background.addChild(b);
 		//ta.renderer.drawBorder((5, 15), b.graphics);
 		//ta.renderer.drawBorder((5, 55), b.graphics);
-		ta.renderer.drawBorder((5, ta.text.Length-5), b.graphics);
-
+		ta.renderer.drawBorder((5, ta.text.Length - 5), b.graphics);
 	}
 
-	private void onCaretsMoved(TextCaret caret) {
+	private void onCaretsMoved(TextCaret caret, int change) {
 		displayCaretPosition();
 	}
 
 	private void displayCaretPosition() {
 		//return;
 		var c = ta.manipulator.carets;
-		pos.text = $"Ln: {c.pos.y}\tCh: {c.lCh}\tCol: {c.actualPos.x}";
+		pos.text = $"Ln: {c.pos.y}\tCh: {c.lCh}\tCol: {c.actualPos.x}\tACh: {c.ch}\t(x: {c.pos.x}\ty: {c.pos.y})";
 	}
 
 }

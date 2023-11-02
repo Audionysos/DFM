@@ -3,9 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static audionysos.input.Keyboard;
 
 namespace audionysos.input;
+
+public static class KeyboardExtensions {
+	/// <summary>Returns true if this key is either left or right shift key.</summary>
+	public static bool isShift(this Key key)
+		=> key == Key.LeftShift || key == Key.RightShift;
+}
+
+
 public class Keyboard {
+	
+
 
 	public enum Key {
 		None = 0,

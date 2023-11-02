@@ -206,10 +206,16 @@ public class SharpGraphics : IMicroGraphics2D, IInteractiveGraphics2D {
 	}
 
 	public void render(Image<Bgra32> img) {
+		//var dwo = new DrawingOptions() {
+		//	GraphicsOptions = new GraphicsOptions() {
+		//		Antialias = false,
+		//	}
+		//};
 		img.Mutate(x => {
 			for (int i = 0; i < sFigures.Count; i++) {
 				var f = sFigures[i];
 				if (f.brush != null)
+					//x.Fill(dwo, f.brush, f.path);
 					x.Fill(f.brush, f.path);
 				if (f.pen == null) continue;
 				for (int j = 0; j < f.points.Length; j++) {

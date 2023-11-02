@@ -18,17 +18,20 @@ public class Path : IReadOnlyList<V>, IEnumerable<V> {
 	}
 
 	public void Add(V p) {
+		//p = p.copy();
+		//p.x = Math.Round(p.x);
+		//p.y = Math.Round(p.y);
 		_points.Add(p);
 	}
 
 	public void Add(params V[] points) {
 		_points.EnsureCapacity(Count + points.Length);
 		foreach (var p in points)
-			_points.Add(p);
+			Add(p);
 	}
 
 	public void Add(double x, double y) {
-		_points.Add(new Point2(x, y));
+		Add(new Point2(x, y));
 	}
 
 	/// <inheritdoc/>
