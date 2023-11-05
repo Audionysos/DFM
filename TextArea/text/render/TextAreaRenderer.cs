@@ -99,9 +99,9 @@ public class TextAreaRenderer {
 
 	private void trackText() {
 		if (tracked == ctx.manipulator.text) return;
-		if (tracked != null) tracked.CHANGED -= onTextChanged;
+		//if (tracked != null) tracked.CHANGED -= onTextChanged;
 		tracked = ctx.manipulator.text;
-		tracked.CHANGED += onTextChanged;
+		//tracked.CHANGED += onTextChanged;
 	}
 
 	private void onTextChanged(TextChangedEvent @event) {
@@ -172,8 +172,9 @@ public class TextAreaRenderer {
 		if (rendered.Count == cts.ch) {
 			rg = rendered[^1]; var pg = rendered[^2];
 			var w = rg.position.x - pg.position.x;
-			pos = rg.position + (w, 0); //we use calculated spacing for better alignment in uniform grid
+			//pos = rg.position + (w, 0); //we use calculated spacing for better alignment in uniform grid
 			//pos = rg.position + (rg.size.x, 0);
+			pos = (Point2)(cts.actualPos.x * charWidth, cts.pos.y * lineHeight);
 		}else {
 			rg = rendered[cts.ch];
 			pos = rg.position;
@@ -255,7 +256,7 @@ public class TextAreaRenderer {
 		var d = span.last - llch;
 		if (d > 0) return getGlyphRect((x, np.y));
 		//span ends before the line ends.
-		llch = l.Count + d-1;
+		llch = l.Count + d-1; //TODO: span is updated before glyphs line 
 		if(llch < 0) return null; // span ends before line start
 		x = l.columnAt(llch);
 		return getGlyphRect((x, np.y));
@@ -332,7 +333,9 @@ public class TextLineLayout {
 	}
 
 	public bool endsWithNewLine
-		=> _glyphs[^1].template.name.StartsWith(@"'\n'");
+		=> Count > 0 &&
+			(_glyphs[^1].template.name.StartsWith(@"'\n'")
+			|| _glyphs[^1].template.name.StartsWith(@"'\r'"));
 
 	/// <summary>Returns column at given glyph position.</summary>
 	public int columnAt(int ch) {

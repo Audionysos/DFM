@@ -7,12 +7,30 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace com.audionysos.text.edit; 
+namespace com.audionysos.text.edit;
 
 /// <summary>Represents raw text data as set of logically connected chains (like lines) or characters.
 /// This does not include any other no-data information such as related to text rendering, or formatting.</summary>
 public class Text : IReadOnlyList<char> {
-	public event Action<TextChangedEvent> CHANGED;
+	/// <summary>Line spans listeners are handled first so that the text have proper form when <see cref="CHANGED"/> event is dispatched for other users.</summary>
+	private event Action<TextChangedEvent> _CHANGED_LINES;
+	private event Action<TextChangedEvent> _CHANGED;
+	private bool addingLines = false;
+	public event Action<TextChangedEvent> CHANGED {
+		add {
+			if (addingLines) _CHANGED_LINES += value;
+			else _CHANGED += value;
+		}
+		remove {
+			if (addingLines) _CHANGED_LINES -= value;
+			else _CHANGED -= value;
+		}
+	}
+
+	/// <summary>Dispatched right before <see cref="CHANGED"/> event after <see cref="lines"/> list was modified.
+	/// First argument is position of the old line that was splitted, second is the count of new lines that were inserted.
+	/// Total number of affected lines is second argument + 1.</summary>
+	public event Action<Text, int, int> NEW_LINES;
 
 	private StringBuilder chars;
 
@@ -37,27 +55,95 @@ public class Text : IReadOnlyList<char> {
 
 	}
 
+
 	public void insert(string x, int p) {
+		var chl = getPos(p);
+
 		chars.Insert(p, x);
-		if (CHANGED == null) return;
+
 		var e = new TextChangedEvent(this, TextChangeType.ADDED, p, x);
-		CHANGED(e);
+		_CHANGED_LINES.Invoke(e);
+		var al = lines[chl.y];
+		var nls = splitLine(al);
+		if(nls != null) {
+			_lines.InsertRange(chl.y + 1, nls);
+			NEW_LINES?.Invoke(this, chl.y, nls.Count);
+		}
+		_CHANGED?.Invoke(e);
+	}
+
+	private List<TextLine> tempLines = new();
+	private List<TextLine> splitLine(TextLine l) {
+		addingLines = true;
+		List<TextLine> list = null;
+		var ls = l.start; var ile = -1; //initial line end (if split)
+		char p, c = default; //current and previous characters;
+		var len = l == lines[^1] ? l.length
+					: l.lastBeforeNewLine() +1;
+		for (int i = 0; i < len; i++) {
+			p = c; c = l[i]; var e = -1;
+			if (c == '\n') e = i + 1 + l.start;
+			else if (p == '\r') e = i + l.start;
+			if (e < 0) continue;
+			if(list == null) {
+				tempLines.Clear();
+				list = tempLines;
+				ile = e; ls = e;
+				continue;
+			}
+			list.Add(new TextLine(this, ls, e));
+			ls = e;
+		}
+		if(list != null) list.Add(new TextLine(this, ls, l.end));
+		if (ile > 0) { //else: no new lines
+			l.end = ile;
+			if(l == lines[^1]) {
+				l.mutating = MutatingBehavior.DEFUALT;
+				list[^1].mutating = MutatingBehavior.DEFUALT_EXPAND_FORWARD;
+			}
+		}
+		Debug.Assert(ile != 0);
+		addingLines = false;
+		return list;
 	}
 
 	public void remove(int p, int count) {
 		var x = "";
 		for (int i = p; i < p + count; i++)
 			x += chars[i];
+		var chl = getPos(p);
 		chars.Remove(p, count);
-		if (CHANGED == null) return;
 		var e = new TextChangedEvent(this, TextChangeType.REMOVED, p, x);
-		CHANGED(e);
+		_CHANGED_LINES.Invoke(e);
+		var al = lines[chl.y];
+		var r = joinLines(al, chl);
+		if(r > 0) {
+			_lines.RemoveRange(chl.y + 1, r);
+			_lines[^1].mutating = MutatingBehavior.DEFUALT_EXPAND_FORWARD;
+		}
+		
+		_CHANGED?.Invoke(e);
+	}
+
+	private int joinLines(TextLine l, CharLine chl) {
+		addingLines = true;
+		var c = 0; var nl = l;
+		while(l.last(ch => ch == '\n' || ch == '\r') < 0) {
+			if (nl == lines[^1]) break;
+			c++;
+			nl = lines[chl.y + c];
+			l.end = nl.end;
+			nl.dispose();
+		}
+		addingLines = false;
+		return c;
 	}
 
 	/// <summary>Produces <see cref="lines"/> out of source text.</summary>
 	/// <param name="text"></param>
 	/// <param name="lines">List to end of which the lines spans will be add. If not specified, new list will be created.</param>
 	private void splitLines(string text, IList<TextLine> lines = null) {
+		addingLines = true;
 		lines ??= new List<TextLine>();
 		char p, c = default; //current and previous characters;
 		var ls = 0; //line start index
@@ -70,6 +156,8 @@ public class Text : IReadOnlyList<char> {
 			ls = e;
 		}
 		lines.Add(new TextLine(this, ls, text.Length));
+		lines[^1].mutating = MutatingBehavior.DEFUALT_EXPAND_FORWARD;
+		addingLines = false;
 	}
 
 	#region Navigation
@@ -156,7 +244,12 @@ public class TextChangedEvent {
 		this.type = type;
 		this.at = at;
 		this.content = content;
-		range = at.to(end);
+		range = at.to(end-1);
+	}
+
+	public override string ToString() {
+		var s = type == TextChangeType.ADDED ? '+' : '-';
+		return @$"{at}-{end} {s}""{content.escaped()}""";
 	}
 
 }
@@ -172,5 +265,9 @@ public class TextLine : TextSpan {
 	public TextLine(Text text, int start, int end)
 		: base(text, start, end) {
 
+	}
+
+	public override string ToString() {
+		return $@"({start}-{end}): {fullOrError.escaped()}";
 	}
 }

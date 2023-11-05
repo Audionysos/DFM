@@ -88,9 +88,7 @@ public class TextTests {
 		Assert.AreEqual("", t.ToString());
 
 		t.insert("abc", 0);
-		Assert.AreEqual("", s.text);
-		Assert.AreEqual(3, s.start);
-		Assert.AreEqual(3, s.end);
+		Assert.AreEqual("abc", s.text);
 		Assert.AreEqual("abc", t.ToString());
 	}
 

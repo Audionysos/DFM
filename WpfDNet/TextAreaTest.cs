@@ -34,7 +34,7 @@ public class TextAreaTest {
 			"Chrząszcz brzmi w trzcinie w trzebżeszynie" +
 			"\n\tŹaba daba doom" +
 			"\n\tvwifjwoe ij  wjor ijj" +
-			"wrt";
+			"\nwrt";
 
 		ta.manipulator.carets.CHANGED += onCaretsMoved;
 

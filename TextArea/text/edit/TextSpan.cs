@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization.Metadata;
+using System.Threading.Channels;
 
 namespace com.audionysos.text.edit; 
 /// <summary>Represents a continuous sub sequence of characters in a <see cref="Text"/> by storing boundary indexes.</summary>
@@ -70,6 +71,11 @@ public class TextSpan {
 		text.CHANGED += onTextChanged;
 	}
 
+	public void dispose() {
+		if (!source) return;
+		source.CHANGED -= onTextChanged;
+	}
+
 	public TextSpan(int start, int end) {
 		order(start, end);
 	}
@@ -84,20 +90,10 @@ public class TextSpan {
 		}
 	}
 
-	public void move(int a) {
-		start += a; end += a;
-		CHANGED?.Invoke(this);
-	}
-
-	public void moveTo(int newStart) {
-		int a = newStart - start;
-		start += a; end += a;
-		CHANGED?.Invoke(this);
-	}
-
-	public void setTo(int start, int end) {
+	public TextSpan setTo(int start, int end) {
 		s = start; e = end;
 		CHANGED?.Invoke(this);
+		return this;
 	}
 
 	public void expandTo(int pos) {
@@ -108,32 +104,35 @@ public class TextSpan {
 	}
 
 	public void grow(int s, int e) {
-		start -= s; end += e;
+		this.s -= s; this.e += e;
 		CHANGED?.Invoke(this);
 	}
 
 	private void onTextChanged(TextChangedEvent e) {
+		//if (this is TextLine) Debugger.Break();
 		if (mutating == MutatingBehavior.STATIC)
 			return;
-		var r = start.to(end);
+		var re = mutating == MutatingBehavior.DEFUALT ? 1 : 0;
+		var r = start.to(end-re);
         if (r.endsBefore(e.range)) return; //not affected
 		if (r.startsAfter(e.range)) { // only moved
 			if (e.type == TextChangeType.ADDED)
-				move(e.size);
+				this.move(e.size);
 			else if (e.type == TextChangeType.REMOVED)
-				move(-e.size);
+				this.move(-e.size);
 			else throw new Exception(@$"Unsupported text change event ""{e.type}""");
 			return;
 		}
 		var d = r.subtract(e.range);
 		if(e.type == TextChangeType.ADDED) {
-			if (d.onlyRight || d.empty) move(e.size); //was pushed
+			if (d.onlyRight || d.empty) this.move(e.size); //was pushed
 			else {
 				if (mutating == MutatingBehavior.CUSTOM)
 					mutate(e, d);
 				else {
 					if (d.splitted) grow(0, e.size);
 					else if (d.onlyLeft) grow(0, e.size);
+					else grow(0, e.size);
 				}
 			}
 		}else if(e.type == TextChangeType.REMOVED) {
@@ -145,9 +144,11 @@ public class TextSpan {
 				var rc = length - d.left.length;
 				this.e -= rc;
 			}else if (d.splitted) {
-				var rc = length - d.left.length - d.right.length;
-				this.end -= rc;
-			}else {
+				var rc = length - d.left.length - d.right.length+1;
+				this.e -= rc;
+			}else if (d.single == r) {
+				this.e = s;
+			} else {
 				//May happen when span is empty, don't care for now
 				//Debugger.Break();
 				//Debug.Assert(false);
@@ -185,9 +186,42 @@ public class TextSpan {
 
 }
 
+public static class TextSpanExtensions {
+	public static T moveTo<T>(this T s, int newStart) where T : TextSpan {
+		int a = newStart - s.start;
+		s.setTo(s.start + a, s.end + a);
+		return s;
+	}
+
+	public static T move<T>(this T s, int a) where T : TextSpan
+		=> (T)s.setTo(s.start + a, s.end + a);
+
+	/// <summary>Returns local span index of character that satisfies given predicate.</summary>
+	public static int last(this TextSpan s, Predicate<char> p) {
+		for (int i = s.length-1; i >= 0; i--)
+			if (p(s[i])) return i;
+		return -1;
+	}
+
+	/// <summary>Returns local span index of last character before tailing new line break ("\n" or "\r\n").
+	/// I line break is not at the end of the span, span.length -1 is returned.</summary>
+	public static int lastBeforeNewLine(this TextSpan s) {
+		if (s.length == 0) return -1;
+		var i = s.length-1;
+		var c = s[i];
+		if (c == '\r') return i - 1;
+		else if (c == '\n') {
+			if (s.length == 1) return -1;
+			if (s[i - 1] == '\r') return i - 2;
+			return i - 1;
+		} else return i;
+	}
+}
+
 public enum MutatingBehavior {
 	/// <summary></summary>
 	DEFUALT,
+	DEFUALT_EXPAND_FORWARD,
 	/// <summary>Don't mutate - span's properties will stay untouched regardless of parent text change.</summary>
 	STATIC,
 	CUSTOM

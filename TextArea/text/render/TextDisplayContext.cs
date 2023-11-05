@@ -18,4 +18,8 @@ public class TextDisplayContext {
 	/// <summary>Default text format used when no other is specified for a portion of text.
 	/// By default the static <see cref="defaultTextFormat"/> is used.</summary>
 	public ITextFormat format = defaultTextFormat.textFormat;
+
+	/// <summary>False if null.</summary>
+	public static implicit operator bool(TextDisplayContext context)
+		=> context != null;
 }

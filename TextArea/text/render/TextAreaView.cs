@@ -45,8 +45,8 @@ public class TextAreaView : IDisplayable<Sprite> {
 		view.addChild(x.background);
 		view.addChild(x.container);
 		x.view = this;
-		x.manipulator = manipulator = new TextManipulator(context);
 		x.renderer = renderer = new TextAreaRenderer(context);
+		x.manipulator = manipulator = new TextManipulator(context);
 		//x.gfx = view.graphics;
 
 		configureView();

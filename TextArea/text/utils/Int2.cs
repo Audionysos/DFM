@@ -81,12 +81,15 @@ public class Int2 {
 
 public static class Int2Extensions {
 
+	/// <summary>Changes coordinates and returns this object.</summary>
 	public static T set<T>(this T p, int x, int y) where T : Int2
 		=> (T)p.setTo(x, y);
 
+	/// <summary>Increments coordinates and returns this object.</summary>
 	public static T add<T>(this T p, int x, int y) where T : Int2
 		=> (T)p.set(p.x + x, p.y + y);
 
+	/// <summary>Increments coordinates and returns this object.</summary>
 	public static T add<T>(this T p, (int x, int y) t) where T : Int2
 		=> (T)p.set(p.x + t.x, p.y + t.y);
 }

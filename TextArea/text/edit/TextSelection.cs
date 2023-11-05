@@ -7,7 +7,9 @@ public class TextSelection : TextSpan {
 	private List<TextSpan> spans = new List<TextSpan>();
 
 
-	public TextSelection(Text text) : base(text, 0, 0) {}
+	public TextSelection(Text text) : base(text, 0, 0) {
+		mutating = MutatingBehavior.STATIC;
+	}
 
 	/// <summary>Sets new selection clearing any previous ones.</summary>
 	/// <param name="start"></param>

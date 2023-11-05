@@ -46,8 +46,8 @@ public class TextManipulator {
 	#region Constructors
 	public TextManipulator(render.TextDisplayContext context) {
 		text = new Text();
-		init();
 		this.context = context;
+		init();
 	}
 
 	public TextManipulator(string text, render.TextDisplayContext context) {
@@ -80,16 +80,22 @@ public class TextManipulator {
 	}
 	#endregion
 
+	#region Editing
 	public void insert(char c) {
 		if (c == '\b') { remove(); return; }
+		if (c == '\r') c = '\n';
+		isInserting = true;
 		text.insert(c.ToString(), carets.ch);
 		carets++;
+		isInserting = false;
 	}
 
 	public void insert(string t) {
 		//return;
+		isInserting = true;
 		text.insert(t, carets.ch);
 		carets.move(t.Length);
+		isInserting = false;
 	}
 
 	public void remove(int c = 0) {
@@ -99,6 +105,7 @@ public class TextManipulator {
 				return;
 			} else c = 1;
 		}
+
 		carets.move(-c);
 		text.remove(carets.ch, c);
 	}
@@ -108,6 +115,7 @@ public class TextManipulator {
 		text.remove(selection.start, selection.length);
 		carets.move(-l);
 	}
+	#endregion
 
 	private void onTextChanged(TextChangedEvent e) {
 		if(e.type == TextChangeType.ADDED) {
@@ -116,13 +124,15 @@ public class TextManipulator {
 		}else if(e.type == TextChangeType.REMOVED) {
 			_infos.RemoveRange(e.at, e.size);
 		}
+		context.renderer?.render();
 	}
 
+	private bool isInserting;
 	/// <summary>Movement of the caret will mark <see cref="selection"/> if set to true.</summary>
 	public bool isSelecting { get; set; }
 	private void onCaretsChanged(TextCaret caret, int change) {
 		var pp = carets.ch - change;
-		if (isSelecting) {
+		if (isSelecting && !isInserting) {
 			if (pp == selection.start) {
 				selection.start = carets.ch;
 			} else if (pp == selection.end) {
@@ -135,8 +145,10 @@ public class TextManipulator {
 			}
 			if (change > 0) {
 				selection.start = selection.end;
-			} else {
+			} else if(change < 0) {
 				selection.end = selection.start;
+			} else {
+				selection.setTo(carets.ch, carets.ch);
 			}
 			caret.ch = selection.start;
 		}
