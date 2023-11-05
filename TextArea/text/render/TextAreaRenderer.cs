@@ -170,8 +170,8 @@ public class TextAreaRenderer {
 		if (rendered.Count < cts.ch) return;
 		RenderedGlyph rg; IPoint2 pos;
 		if (rendered.Count == cts.ch) {
-			rg = rendered[^1]; var pg = rendered[^2];
-			var w = rg.position.x - pg.position.x;
+			//rg = rendered[^1]; var pg = rendered[^2];
+			//var w = rg.position.x - pg.position.x;
 			//pos = rg.position + (w, 0); //we use calculated spacing for better alignment in uniform grid
 			//pos = rg.position + (rg.size.x, 0);
 			pos = (Point2)(cts.actualPos.x * charWidth, cts.pos.y * lineHeight);

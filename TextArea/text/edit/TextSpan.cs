@@ -140,15 +140,20 @@ public class TextSpan {
 				//var rc = length - d.right.length;
 				s = e.at;
 				this.e = start + d.right.length;
+				if (mutating == MutatingBehavior.DEFUALT_EXPAND_FORWARD)
+					this.e--;
 			}else if (d.onlyLeft) {
 				var rc = length - d.left.length;
 				this.e -= rc;
 			}else if (d.splitted) {
-				var rc = length - d.left.length - d.right.length+1;
+				var rc = length - d.left.length - d.right.length;
 				this.e -= rc;
+				if (mutating == MutatingBehavior.DEFUALT_EXPAND_FORWARD)
+					this.e--;
 			}else if (d.single == r) {
 				this.e = s;
 			} else {
+				s = this.e = e.at;
 				//May happen when span is empty, don't care for now
 				//Debugger.Break();
 				//Debug.Assert(false);
@@ -167,6 +172,15 @@ public class TextSpan {
 	internal bool contains(int ch) 
 		=> ch >= start && ch < end;
 
+	/// <summary>Tries to read character at given local position.</summary>
+	public bool tryAt(int i, out char c) {
+		c = default;
+		var p = start + i;
+		if (p >= source.Count || p < 0)
+			return false;
+		c = source[p];
+		return true;
+	}
 
 	public char this[int i] {
 		get => source[start + i];
@@ -199,7 +213,8 @@ public static class TextSpanExtensions {
 	/// <summary>Returns local span index of character that satisfies given predicate.</summary>
 	public static int last(this TextSpan s, Predicate<char> p) {
 		for (int i = s.length-1; i >= 0; i--)
-			if (p(s[i])) return i;
+			if (s.tryAt(i, out var ch) && p(ch))
+				return i;
 		return -1;
 	}
 

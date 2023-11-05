@@ -105,15 +105,16 @@ public class TextManipulator {
 				return;
 			} else c = 1;
 		}
-
+		if (carets.ch == 0) return;
 		carets.move(-c);
 		text.remove(carets.ch, c);
 	}
 
 	private void removeSelection() {
-		var l = selection.length;
+		//var l = selection.length;
 		text.remove(selection.start, selection.length);
-		carets.move(-l);
+		carets.ch = selection.end = selection.start;
+		//carets.move(-l); //this causes problem if caret is on start and it doesn't actually move
 	}
 	#endregion
 

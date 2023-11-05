@@ -15,8 +15,6 @@ public static class KeyboardExtensions {
 
 
 public class Keyboard {
-	
-
 
 	public enum Key {
 		None = 0,
