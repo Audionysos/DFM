@@ -103,10 +103,10 @@ public class TextManipulator {
 			if (selection.length > 0) {
 				removeSelection();
 				return;
-			} else c = 1;
+			} else c = 1; //TODO: \r\n should be removed together be default
 		}
 		if (carets.ch == 0) return;
-		carets.move(-c);
+		carets.move(-c); 
 		text.remove(carets.ch, c);
 	}
 

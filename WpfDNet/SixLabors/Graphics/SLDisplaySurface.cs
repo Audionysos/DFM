@@ -114,4 +114,21 @@ public class WPFInputProcessor : InputProcessor {
 	public override IPoint2 getSurfacePosition(DisplayPointer p, DisplaySurface s) {
 		return new Point2(0,0);
 	}
+
+	public override bool isCurrentClipboard(object o) {
+		if(o as IDataObject == null) return false;
+		return Clipboard.IsCurrent(o as IDataObject);
+	}
+
+	public override object getClipboard(Type t) {
+		var ido = Clipboard.GetDataObject();
+		if (ido == null) return null;
+		var d = ido.GetData(t);
+		if (d == null) return ido;
+		return d;
+	}
+
+	public override void setClipboard(object o) {
+		Clipboard.SetData(DataFormats.Serializable, o);
+	}
 }

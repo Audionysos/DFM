@@ -2,5 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>audionysos</RootNamespace>
+		<Nullable>enable</Nullable>
   </PropertyGroup>
 </Project>

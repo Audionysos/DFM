@@ -83,7 +83,11 @@ public class TextAreaView : IDisplayable<Sprite> {
 			manipulator.insert('\t');
 		else if (e.key.isShift())
 			manipulator.isSelecting = true;
-		else if (e.character != '\0') {
+		else if (Keyboard.anyPressed(Keyboard.Key.LeftCtrl, Keyboard.Key.RightCtrl)) {
+			if (e.key == Keyboard.Key.X) cut();
+			else if (e.key == Keyboard.Key.C) copy();
+			else if (e.key == Keyboard.Key.V) paste();
+		} else if (e.character != '\0') {
 			//var ch = e.key.ToString();
 			manipulator.insert(e.character);
 		}
@@ -92,6 +96,20 @@ public class TextAreaView : IDisplayable<Sprite> {
 		var c = manipulator.carets;
 		var s = $"Ln: {c.pos.y}\tCh: {c.lCh}\tCol: {c.actualPos.x}\tACh: {c.ch}\t(x: {c.pos.x}\ty: {c.pos.y})";
 		Debug.WriteLine(s);
+	}
+
+	private void paste() {
+		var d = PinBoard.get<string>();
+		if (d == null) return;
+		manipulator.insert(d);
+	}
+
+	private void copy() {
+
+	}
+
+	private void cut() {
+
 	}
 
 	private void onKeyUp(KeyboardEvent e) {

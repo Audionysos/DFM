@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using static audionysos.input.Keyboard;
 
 namespace audionysos.input;
@@ -11,10 +7,35 @@ public static class KeyboardExtensions {
 	/// <summary>Returns true if this key is either left or right shift key.</summary>
 	public static bool isShift(this Key key)
 		=> key == Key.LeftShift || key == Key.RightShift;
+
+	/// <summary>Returns true if this key is either left or right "ctrl" key.</summary>
+	public static bool isCtrl(this Key key)
+		=> key == Key.LeftCtrl || key == Key.RightCtrl;
+
+	public static bool isPressed(this Key key)
+		=> Keyboard.isPressed(key);
+
 }
 
 
 public class Keyboard {
+	private static HashSet<Key> pressed = new HashSet<Key>();
+
+	internal static void press(Key k) {
+		pressed.Add(k);
+	}
+
+	internal static void release(Key k) {
+		pressed.Remove(k);
+	}
+
+	public static bool isPressed(Key k) => pressed.Contains(k);
+
+	public static bool anyPressed(params Key[] keys) {
+		foreach (var key in keys) {
+			if(pressed.Contains(key)) return true;
+		}return false;
+	}
 
 	public enum Key {
 		None = 0,
