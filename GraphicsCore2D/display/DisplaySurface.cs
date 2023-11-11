@@ -45,7 +45,7 @@ public abstract class DisplaySurface {
 	}
 
 	private List<DisplayObject> hitTestCache = new();
-	public IReadOnlyList<DisplayObject> hitTest(IPoint2 p) {
+	public IReadOnlyList<DisplayObject>? hitTest(IPoint2 p) {
 		hitTestCache.Clear();
 		foreach (DisplayObject d in _displayed) {
 			if (d is DisplayObjectContainer c) {

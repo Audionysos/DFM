@@ -11,6 +11,7 @@ public class DisplayObjectInputEvents {
 	public event Action<DisplayObject> POINTER_LEFT;
 	public event Action<DisplayObject> POINTER_DOWN;
 	public event Action<DisplayObject> POINTER_UP;
+	public event Action<DisplayObject, DisplayPointer> POINTER_MOVE;
 	public event KeyboardEventHandler KEY_DOWN;
 	public event KeyboardEventHandler KEY_UP;
 
@@ -20,6 +21,7 @@ public class DisplayObjectInputEvents {
 			firePointerLeft: () => POINTER_LEFT?.Invoke(owner),
 			firePointerDown: () => POINTER_DOWN?.Invoke(owner),
 			firePointerUp: () => POINTER_UP?.Invoke(owner),
+			firePointerMove: (p) => POINTER_MOVE?.Invoke(owner, p),
 			fireKeyDown: (k) => KEY_DOWN?.Invoke(k),
 			fireKeyUp: (k) => KEY_UP?.Invoke(k)
 		);
@@ -33,12 +35,15 @@ public class EventsDispatcher {
 	public Action firePointerLeft { get; }
 	public Action firePointerDown { get; }
 	public Action firePointerUp { get; }
+	public Action<DisplayPointer> firePointerMove { get; }
 	public KeyboardEventHandler fireKeyDown { get; }
 	public KeyboardEventHandler fireKeyUp { get; }
 
 	public EventsDispatcher(Action firePointerEnter, Action firePointerLeft
 		, Action firePointerDown, Action firePointerUp
-		, KeyboardEventHandler fireKeyDown, KeyboardEventHandler fireKeyUp)
+		, Action<DisplayPointer> firePointerMove
+		, KeyboardEventHandler fireKeyDown, KeyboardEventHandler fireKeyUp
+		)
 	{
 		this.firePointerEnter = firePointerEnter;
 		this.firePointerLeft = firePointerLeft;
@@ -46,6 +51,7 @@ public class EventsDispatcher {
 		this.firePointerUp = firePointerUp;
 		this.fireKeyDown = fireKeyDown;
 		this.fireKeyUp = fireKeyUp;
+		this.firePointerMove = firePointerMove;
 	}
 
 }

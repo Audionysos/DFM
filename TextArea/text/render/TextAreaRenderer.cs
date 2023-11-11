@@ -123,6 +123,19 @@ public class TextAreaRenderer {
 		return r.render(grc) ?? missingGlyph(grc, chi.character);
 	}
 
+	/// <summary>Returns column-line position for given local coordinates.
+	/// Note this may return position out of character range for example negative values.</summary>
+	public ColumnLine getPosition(IPoint2 p) {
+		p.copy();
+		p.y -= linesSpacing;
+		p.y /= ctx.format.size + linesSpacing;
+		p.x /= charWidth;
+		var cl = new ColumnLine((int)Math.Round(p.x), (int)Math.Round(p.y));
+		return cl;
+	}
+
+
+
 	#region Special characters
 	private RenderedGlyph missingGlyph(GlyphRenderingContext grc, char character) {
 		return new RenderedGlyph(
@@ -182,6 +195,11 @@ public class TextAreaRenderer {
 		//cts.pos = new Int2((int)cp.position.x, (int)cp.position.y);
 		caret.postion(pos);
 	}
+
+	private double charWidth => ctx.format.size * .5;
+	private double charHeight => ctx.format.size;
+	private double linesSpacing => 4;
+	private double lineHeight => charHeight + linesSpacing;
 
 	#region Span border
 	public void drawBorder(TextSpan span,  Graphics g) {
@@ -262,10 +280,6 @@ public class TextAreaRenderer {
 		return getGlyphRect((x, np.y));
 	}
 
-	private double charWidth => ctx.format.size * .5;
-	private double charHeight => ctx.format.size;
-	private double linesSpacing => 4;
-	private double lineHeight => charHeight + linesSpacing;
 
 	/// <summary>Returns glyph rect at given absolute char index.</summary>
 	private Rect getGlyphRect(int ch) {

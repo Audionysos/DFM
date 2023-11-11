@@ -56,8 +56,14 @@ public class TextAreaView : IDisplayable<Sprite> {
 		TEXT_CHANGED += onTextChanged;
 		view.input.KEY_DOWN += onKeyDown;
 		view.input.KEY_UP += onKeyUp;
+		view.input.POINTER_MOVE += onPointerMove;
 		//TODO: the whole manipulator and it's selection is changed when text is set to the text area.
 		context.background.addChild(selectionView);
+	}
+
+	private void onPointerMove(DisplayObject o, DisplayPointer p) {
+		var cl = context.renderer.getPosition(p.position);
+		Debug.WriteLine($"Pointer: {cl}");
 	}
 
 	private void onTextChanged(TextAreaView view) {

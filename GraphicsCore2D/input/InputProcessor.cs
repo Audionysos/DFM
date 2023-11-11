@@ -5,8 +5,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using static audionysos.utils.Fantastatics;
 
 namespace audionysos.input;
 public abstract class InputProcessor {
@@ -44,6 +46,7 @@ public class InputListener {
 	private IReadOnlyList<DisplayObject> prevHit = new DisplayObject[0];
 	#endregion
 
+	/// <summary>Deepest object with positive hit test.</summary>
 	private InteractiveObject? last => (hit.Count > 0 ? hit[0] : null) as InteractiveObject;
 
 	public void pointerMove(InputProcessor ip, DisplayPointer dp) {
@@ -52,22 +55,28 @@ public class InputListener {
 			var s = _surfs[i];
 			var sp = ip.getSurfacePosition(dp, s);
 			dp.position.add(sp);
-			var ht = hit = s.hitTest(dp.position);
+			var ht = s.hitTest(dp.position);
 
 			if (ht != null) {
-				var f = ht[0] as Sprite;
+				hit = ht;
+				var f = ht[0] as Sprite; Debug.Assert(f != null);
 				var p = (prevHit.Count > 0 ? prevHit[0] : null) as InteractiveObject;
 				if (p != f) {
 					p?.dispatcher.firePointerLeft();
 					prevHit = new List<DisplayObject>(hit);
+					Debug.WriteLine($"PointerEnter {RapidTimeStamp}");
+					f.dispatcher.firePointerEnter();
+				} else {
+					Debug.WriteLine($"PointerMoved {RapidTimeStamp}");
+					f.dispatcher.firePointerMove(dp);
 				}
-				f.dispatcher.firePointerEnter();
 			} else {
+				hit = noHit;
 				if (prevHit.Count > 0 && prevHit[0] is InteractiveObject io) {
+					Debug.WriteLine($"PointerLeft {RapidTimeStamp}");
 					io.dispatcher.firePointerLeft();
 					prevHit = noHit;
 				}
-				hit = noHit;
 			}
 			s.pointerMove(dp);
 		}
@@ -98,6 +107,16 @@ public class InputListener {
 	}
 }
 
+public class PointerTracker {
+	public DisplayPointer p { get; }
+
+
+	public PointerTracker(DisplayPointer p) {
+		this.p = p;
+	}
+
+}
+
 public class DisplayPointer {
 	public int id { get; init; }
 	public DisplayPointerType type { get; init; }
@@ -109,6 +128,7 @@ public class DisplayPointer {
 
 }
 
+
 public enum DisplayPointerType {
 	UNKNOWN,
 	MOUSE,
@@ -116,87 +136,6 @@ public enum DisplayPointerType {
 	PEN,
 	OTHER
 
-}
-
-public class PinBoard {
-	private static PinBoard g = new PinBoard();
-	public static InputProcessor? ip { get; set; }
-
-
-	public static T? get<T>() {
-		var c = g._get<T>();
-		if (ip) {
-			if (ip.isCurrentClipboard(c))
-				return c;
-			else {
-				g.store(ip.getClipboard(typeof(T)));
-				c = g._get<T>();
-			}
-		}
-		return c; 
-	}
-
-	public static void set<T>(T o) {
-		ip?.setClipboard(o);
-		g.store(o);
-	}
-
-
-	private ImmutableArray<byte> current = ImmutableArray<byte>.Empty;
-	private Type? type;
-	private Converters converters = new Converters();
-	private StringToBytes fromString = new StringToBytes();
-
-	public PinBoard() {
-		converters.Add(fromString);
-		converters.Add(new BytesToString());
-	}
-
-	public void store(object o) {
-		o = o ?? throw new ArgumentNullException();
-		var c = converters.get(o.GetType(), typeof(ImmutableArray<byte>));
-		if (c != null) {
-			current = (ImmutableArray<byte>)c.convert(o);
-			type = o.GetType();
-		} else {
-			current = fromString.convert(o.ToString() ?? "null");
-			type = typeof(string);
-		}
-	}
-
-	public T? _get<T>() {
-		var r = get(typeof(T));
-		if (r == null) return default;
-		return (T)r;
-	}
-
-	public object? get(Type t) {
-		if (current.IsDefaultOrEmpty || type == null) return null;
-		var c = converters.get(typeof(ImmutableArray<byte>), type);
-		if (c == null) return null;
-		var o = c.convert(current);
-		if (type == t) return o;
-		c = converters.get(type, t);
-		if(c == null) return null;
-		return c.convert(o);
-	}
-
-	public ImmutableArray<byte> get() {
-		return current;
-	}
-
-}
-
-public class StringToBytes : ConverterBase<string, ImmutableArray<byte>> {
-	public override ImmutableArray<byte> convert(string o)
-		=> ImmutableArray.Create(Encoding.UTF8.GetBytes(o));
-}
-
-public class BytesToString : ConverterBase<ImmutableArray<byte>, string> {
-	public override string convert(ImmutableArray<byte> o) {
-		var a = System.Linq.ImmutableArrayExtensions.ToArray(o);
-		return Encoding.UTF8.GetString(a);
-	}
 }
 
 public class Converters : IEnumerable<IConverter> {

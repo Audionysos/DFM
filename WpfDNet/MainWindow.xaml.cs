@@ -26,14 +26,18 @@ public partial class MainWindow : W.Window {
 
 	public MainWindow() {
 		InitializeComponent();
-		//new WPFComparision(this); return;
-
 		adapter = new SixLaborsToWPFAdapter(img);
 		//Left = 1800;
-		//new HitTestTests(adapter);
-		//new DisplayTest(adapter);
-		new TextAreaTest(adapter);
-		//previous();
+		pickTest(adapter, App.mode);
 	}
+
+	private object pickTest(SixLaborsToWPFAdapter adapter, string mode)
+		=> mode switch {
+		"hitTest" => new HitTestTests(adapter),
+		"display" => new DisplayTest(adapter),
+		"textArea" => new TextAreaTest(adapter),
+		"wpfDisplay" => new WPFComparision(this),
+			_ => null,
+	};
 
 }

@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "DisplayTest": {
+      "commandName": "Project",
+      "commandLineArgs": "display"
+    },
+    "HitTest": {
+      "commandName": "Project",
+      "commandLineArgs": "hitTest"
+    },
+    "TextAreaTest": {
+      "commandName": "Project",
+      "commandLineArgs": "textArea"
+    },
+    "WPFDisplayTest": {
+      "commandName": "Project",
+      "commandLineArgs": "wpfDisplay"
+    }
+  }
+}
