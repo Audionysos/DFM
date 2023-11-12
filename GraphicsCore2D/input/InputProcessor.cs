@@ -62,19 +62,23 @@ public class InputListener {
 				var f = ht[0] as Sprite; Debug.Assert(f != null);
 				var p = (prevHit.Count > 0 ? prevHit[0] : null) as InteractiveObject;
 				if (p != f) {
-					p?.dispatcher.firePointerLeft();
+					//p?.dispatcher.firePointerLeft();
+					dispatch(events.POINTER_LEFT, p, prevHit, dp);
 					prevHit = new List<DisplayObject>(hit);
 					Debug.WriteLine($"PointerEnter {RapidTimeStamp}");
-					f.dispatcher.firePointerEnter();
+					//f.dispatcher.firePointerEnter();
+					dispatch(events.POINTER_ENTER, f, ht, dp);
 				} else {
 					Debug.WriteLine($"PointerMoved {RapidTimeStamp}");
-					f.dispatcher.firePointerMove(dp);
+					//f.dispatcher.firePointerMove(dp);
+					dispatch(events.POINTER_MOVE, f, ht, dp);
 				}
 			} else {
 				hit = noHit;
-				if (prevHit.Count > 0 && prevHit[0] is InteractiveObject io) {
+				if (prevHit.Count > 0 && prevHit[0] is InteractiveObject p) {
 					Debug.WriteLine($"PointerLeft {RapidTimeStamp}");
-					io.dispatcher.firePointerLeft();
+					//io.dispatcher.firePointerLeft();
+					dispatch(events.POINTER_LEFT, p, prevHit, dp);
 					prevHit = noHit;
 				}
 			}
@@ -83,27 +87,55 @@ public class InputListener {
 	}
 
 	public void pointerDown(InputProcessor ip, DisplayPointer dp) {
-		last?.dispatcher.firePointerDown();
+		dispatch(events.POINTER_DOWN, last, hit, dp);
 	}
 
 	public void pointerUp(InputProcessor ip, DisplayPointer dp) {
-		last?.dispatcher.firePointerUp();
+		dispatch(events.POINTER_UP, last, hit, dp);
 	}
 
 	public void keyDown(InputProcessor ip, Keyboard.Key k, char ch = '\0') {
 		Keyboard.press(k);
-		var f = ip.focus.current as InteractiveObject;
-		f?.dispatcher.fireKeyDown(new KeyboardEvent() {
-			target = f, key = k, character = ch
-		});
+		dispatch(events.KEY_DOWN, ip.focus.current, null, (k, ch));
 	}
 
 	public void keyUp(InputProcessor ip, Keyboard.Key k, char ch = '\0') {
 		Keyboard.release(k);
-		var f = ip.focus.current as InteractiveObject;
-		f?.dispatcher.fireKeyUp(new KeyboardEvent() {
-			target = f, key = k, character = ch
-		});
+		dispatch(events.KEY_UP, ip.focus.current, null, (k, ch));
+	}
+
+	private DisplayObjectInputEvents events = DisplayObjectInputEvents.initialized;
+	private void dispatch<T>(EventDispatcher<T>? dis, object? target, IReadOnlyList<DisplayObject>? route
+		, T e) where T : Event
+	{
+		if (target is not InteractiveObject t) return;
+		if (route == null || route.Count == 0)
+			route = t.tree.routeToRoot();
+		if (dis == null) return;
+		e.target = t;
+		var ec = e.control = new EvenControl();
+		
+		ec.phase = EventPhase.CAPTURING;
+		for (int i = route.Count-1; i >= 0; i--) {
+			var ct = route[i] as InteractiveObject;
+			if (!ct) continue;
+			ec.currentTarget = ct;
+			var cd = ct.input.getDispatcher(dis);
+			cd?.getListeners(ec.phase, ct.dispatcherAccessKey)
+				?.Invoke(e);
+			if (e.canceled) return;
+		}
+
+		ec.phase = EventPhase.BUBBLING;
+		for (int i = 0; i < route.Count; i++) {
+			var ct = route[i] as InteractiveObject;
+			if (!ct) continue;
+			ec.currentTarget = ct;
+			var cd = ct.input.getDispatcher(dis);
+			cd?.getListeners(ec.phase, ct.dispatcherAccessKey)
+				?.Invoke(e);
+			if (e.canceled) return;
+		}
 	}
 }
 

@@ -78,8 +78,8 @@ internal class HitTestTests {
 
 	}
 
-	private void onPointerDown(DisplayObject o) {
-		var s = o as Sprite;
+	private void onPointerDown(PointerEvent o) {
+		var s = o.target as Sprite;
 		var g = s.graphics;
 		g.clear();
 		g.beginFill(0x0000FF);
@@ -87,13 +87,13 @@ internal class HitTestTests {
 		//g.drawDiamond((P)(0, 0), 25, 25);
 	}
 
-	private void onPointEnter(DisplayObject o) {
-		o.transform.sX = 1.3;
-		o.transform.sY = 1.3;
+	private void onPointEnter(PointerEvent o) {
+		o.target.transform.sX = 1.3;
+		o.target.transform.sY = 1.3;
 	}
 
-	private void onPointLeft(DisplayObject o) {
-		o.transform.sX = 1;
-		o.transform.sY = 1;
+	private void onPointLeft(PointerEvent o) {
+		o.target.transform.sX = 1;
+		o.target.transform.sY = 1;
 	}
 }

@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace audionysos.display; 
@@ -67,15 +68,20 @@ public abstract class DisplayObject : ITransformProvier, ITreeLeafClient<Display
 		return $@"{name} [{GetType().Name}]";	
 	}
 
+	/// <summary>False if null.</summary>
+	public static implicit operator bool
+		([NotNullWhen(true)]DisplayObject? o) => o!= null;
 }
 
 public abstract class InteractiveObject : DisplayObject {
 	public bool isFocusable { get; set; }
 	public DisplayObjectInputEvents input { get; private set; }
-	protected internal EventsDispatcher dispatcher { get; private set; }
+	//protected internal EventsDispatcher dispatcher { get; private set; }
+	internal object? dispatcherAccessKey = Random.Shared.NextInt64();
 
 	public InteractiveObject() {
-		input = new DisplayObjectInputEvents(this, d => dispatcher = d);
+		input = new DisplayObjectInputEvents(this, dispatcherAccessKey);
+		
 	}
 }
 

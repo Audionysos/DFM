@@ -1,4 +1,5 @@
-﻿using System;
+﻿using audionysos.display;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -206,11 +207,18 @@ public class TreePoint<T> where T : class {
 		});
 	}
 
+	public List<T> routeToRoot(List<T>? output = null) {
+		output ??= new List<T>() { data };
+		forAncestors(output.Add);
+		return output;
+	}
+
 	/// <inheritdoc/>
 	public override string ToString() {
 		return $@"TN<{typeof(T).Name}>";
 	}
 }
+
 
 public class TreeNode<T> : TreePoint<T> where T : class {
 	/// <inheritdoc/>
