@@ -46,4 +46,9 @@ public class Transform {
 		p.x *= sX; p.y *= sY;
 		p.x += x; p.y += y;
 	}
+
+	public void reverse(IPoint2 p) {
+		p.x -= x; p.y -= y;
+		p.x /= sX; p.y /= sY;
+	}
 }

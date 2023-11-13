@@ -16,6 +16,7 @@ public abstract class DisplayObject : ITransformProvier, ITreeLeafClient<Display
 	
 	public string name { get; set; }
 	public Transform transform { get; } = new Transform();
+	//TODO
 	public Transform globalTransform { get; } = new Transform();
 	private DisplaySurface _surf;
 	public DisplaySurface surface {
@@ -51,6 +52,13 @@ public abstract class DisplayObject : ITransformProvier, ITreeLeafClient<Display
 		var t = globalTransform.setTo(transform);
 		tree.forAncestors(d => t.append(d.transform));
 		return t;
+	}
+
+	public IPoint2 localCoordinates(IPoint2 position) {
+		var p = position.copy();
+		var t = getGlobalTransform();
+		t.reverse(p);
+		return p;
 	}
 
 	internal void update() {

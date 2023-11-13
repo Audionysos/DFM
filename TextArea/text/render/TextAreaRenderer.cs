@@ -130,11 +130,16 @@ public class TextAreaRenderer {
 		p.y -= linesSpacing;
 		p.y /= ctx.format.size + linesSpacing;
 		p.x /= charWidth;
-		var cl = new ColumnLine((int)Math.Round(p.x), (int)Math.Round(p.y));
+		//var cl = new ColumnLine((int)Math.Round(p.x), (int)Math.Round(p.y));
+		var cl = new ColumnLine((int)p.x, (int)p.y);
+		if(cl.y < lines.Count) { //corrects column position for wider chars like \t
+			var l = lines[cl.y];
+			var c = l.glyphAt(cl.x, out var g);
+			if (g == null) return cl;
+			cl.x = l.columnAt(c);
+		}
 		return cl;
 	}
-
-
 
 	#region Special characters
 	private RenderedGlyph missingGlyph(GlyphRenderingContext grc, char character) {

@@ -5,6 +5,8 @@ using com.audionysos.text.utils;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
+using audionysos.graphics.extensions.shapes;
+
 
 namespace com.audionysos.text.render; 
 public class TextAreaView : IDisplayable<Sprite> {
@@ -57,14 +59,34 @@ public class TextAreaView : IDisplayable<Sprite> {
 		TEXT_CHANGED += onTextChanged;
 		view.input.KEY_DOWN += onKeyDown;
 		view.input.KEY_UP += onKeyUp;
-		view.input.POINTER_UP += onPointerMove;
+		view.input.POINTER_MOVE += onPointerMove;
 		//TODO: the whole manipulator and it's selection is changed when text is set to the text area.
+		drawBackground();
 		context.background.addChild(selectionView);
 	}
 
+	private Sprite bg = new Sprite();
+	private Sprite chRect = new Sprite();
+	private void drawBackground() {
+		context.background.addChild(bg);
+		//TODO: Investigate why cached graphics are no flushed
+		bg.graphics.clear();
+		bg.graphics.beginFill(0xf8ecd7, 1);
+		bg.graphics.drawRect(0,0, 300, 300);
+
+		context.background.addChild(chRect);
+	}
+
 	private void onPointerMove(PointerEvent e) {
-		var cl = context.renderer.getPosition(e.pointer.position);
+		var lp = view.localCoordinates(e.pointer.position);
+		var cl = context.renderer.getPosition(lp);
+		var r = renderer.getGlyphRect(cl);
 		Debug.WriteLine($"Pointer: {cl}");
+		if(r.size.x == 0)
+			return;
+		chRect.graphics.clear();
+		chRect.graphics.lineStyle(1, 0xFF0000);
+		chRect.graphics.drawRect(r.position.x, r.position.y , r.size.x, r.size.y);
 	}
 
 	private void onTextChanged(TextAreaView view) {
@@ -75,6 +97,10 @@ public class TextAreaView : IDisplayable<Sprite> {
 	private Sprite selectionView = new ();
 	private void onSelectionChanged(TextSpan span) {
 		renderer.drawBorder(span, selectionView.graphics);
+
+		bg.graphics.clear();
+		bg.graphics.beginFill(0xf8ecd7, 1);
+		bg.graphics.drawRect(0, 0, 300, 300);
 	}
 
 	private void onKeyDown(KeyboardEvent e) {
