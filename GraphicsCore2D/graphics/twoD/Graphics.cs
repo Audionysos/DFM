@@ -1,4 +1,6 @@
-﻿using audionysos.display;
+﻿// Ignore Spelling: rgb
+
+using audionysos.display;
 using audionysos.geom;
 using cnc.geom;
 using System;
@@ -19,8 +21,8 @@ public class Graphics : IGraphics2D, IInteractiveGraphics2D, IPoint2 {
 	private IMicroGraphics2D m;
 	/// <summary>Underlaying graphics on which actual drawing is performed.</summary>
 	internal IMicroGraphics2D baseGraphics => m;
-	private IBasicGraphics2D b;
-	private IGraphics2D g;
+	private IBasicGraphics2D? b;
+	private IGraphics2D? g;
 
 	#region Position
 	/// <summary>Current position from which next figure will be drawn.</summary>

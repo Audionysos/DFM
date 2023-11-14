@@ -37,12 +37,12 @@ public class TreeInfo {
 	public TreeNode root;
 
 	internal TreeInfo(TreePoint root) {
-		this.root = root as TreeNode;
+		this.root = (TreeNode)root;
 	}
 
-	private Dictionary<object, object> _attached;
+	private Dictionary<object, object>? _attached;
 	/// <summary>Returns attached object at given key, or creates new object for the key if no present already.</summary>
-	/// <param name="key">Key at wich the object is stored.</param>
+	/// <param name="key">Key at which the object is stored.</param>
 	/// <param name="create">Function which creates new object.</param>
 	/// <returns></returns>
 	public object getAttached(object key, Func<TreeInfo, object> create) {
@@ -58,19 +58,19 @@ public class TreeInfo {
 	/// <param name="create"></param>
 	/// <returns></returns>
 	public T getAttached<T>(Func<TreeInfo, T> create) where T : class {
-		return getAttached(typeof(T), create) as T;
+		return (T)getAttached(typeof(T), create);
 	}
 
 }
 
 public class TreePoint {
 	/// <summary>Dispatched after this point was added to a tree.</summary>
-	public event Action<TreePoint> ADDED;
+	public event Action<TreePoint>? ADDED;
 	/// <summary>Dispatched after this point was removed from a tree.</summary>
-	public event Action<TreePoint> REMOVED;
+	public event Action<TreePoint>? REMOVED;
 
 
-	internal TreeInfo _info;
+	internal TreeInfo? _info;
 	/// <summary>Common information object for all tree points in a single tree.
 	/// If the property is accessed without first been add to a tree, new info object will be created for this point.</summary>
 	public TreeInfo info {
@@ -181,7 +181,7 @@ public class TreeInfo<T> where T : class {
 
 public class TreePoint<T> where T : class {
 	/// <summary>Dispatched when this point was add to a tree.</summary>
-	public event Action<TreePoint<T>> ADDED;
+	public event Action<TreePoint<T>>? ADDED;
 	private void addEventsPassHandlers() {
 		bass.ADDED += (b) => ADDED?.Invoke(this);
 	}
@@ -202,7 +202,7 @@ public class TreePoint<T> where T : class {
 
 	public void forAncestors(Action<T> a) {
 		bass.forAncestorNodes((tn) => {
-			var p = tn.data as TreePoint<T>;
+			var p = (TreePoint<T>)tn.data;
 			a(p.data);
 		});
 	}
@@ -298,12 +298,12 @@ public class TreePoints<T> : IReadOnlyList<TreePoint<T>> where T : class {
 
 	public int Count => points.Count;
 	public TreePoint<T> this[int index]
-		=> points[index].data as TreePoint<T>;
+		=> (TreePoint<T>)points[index].data;
 
 	/// <inheritdoc/>
 	public IEnumerator<TreePoint<T>> GetEnumerator() {
 		foreach (var tp in points) {
-			yield return tp.data as TreePoint<T>;
+			yield return (TreePoint<T>)tp.data;
 		}
 	}
 

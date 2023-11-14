@@ -16,6 +16,7 @@ using System;
 using AI = audionysos.input;
 using System.Diagnostics;
 using com.audionysos.text.utils;
+using static audionysos.utils.Fantastatics;
 
 namespace WpfDNet; 
 public class SLDisplaySurface : DisplaySurface {
@@ -66,8 +67,18 @@ public class WPFInputProcessor : InputProcessor {
 		root.MouseUp += onMouseUp;
 		root.KeyDown += onKeyDown;
 		root.KeyUp += onKeyUp;
+		//root.Cursor = Cursors.IBeam;
 
 		root.TextInput += onTextInput;
+        AI.Cursor.CHANGED += onCursorChanged;
+	}
+
+	private void onCursorChanged() {
+		Debug.WriteLine("Cursor changed");
+		Mouse.OverrideCursor = AI.Cursor.current.@switch(
+			(AI.Cursor.TEXT, Cursors.IBeam)
+		);
+
 	}
 
 	private void onTextInput(object sender, TextCompositionEventArgs e) {

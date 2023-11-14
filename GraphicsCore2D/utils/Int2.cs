@@ -6,9 +6,9 @@ namespace com.audionysos.text.utils;
 /// <summary>Represents bounds in quantized 2d grid.</summary>
 public class Int4 {
 	/// <summary>Initial position of the in the grid.</summary>
-	public Int2 pos;
+	public Int2 pos = new Int2();
 	/// <summary>Dimensions of the (width-height).</summary>
-	public Int2 size;
+	public Int2 size = new Int2();
 
 	public Int4() { }
 }
@@ -17,7 +17,7 @@ public class Int4 {
 public class Int2 {
 	/// <summary>Dispatched when one of object's properties were changed.
 	/// First handler argument is this instance, second argument is difference from previous state.</summary>
-	public event Action<Int2, Int2> CHANGED;
+	public event Action<Int2, Int2>? CHANGED;
 
 	private int _x;
 	public int x {

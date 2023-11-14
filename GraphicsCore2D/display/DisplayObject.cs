@@ -9,17 +9,17 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace audionysos.display; 
-public abstract class DisplayObject : ITransformProvier, ITreeLeafClient<DisplayObject> {
-	public event Action<DisplayObject> ADDED_TO_SURFACE;
-	public event Action<DisplayObject> REMOVED_FROM_SURFACE;
-	public event Action<DisplayObject> ENTER_FRAME;
+public abstract class DisplayObject : ITransformProvider, ITreeLeafClient<DisplayObject> {
+	public event Action<DisplayObject>? ADDED_TO_SURFACE;
+	public event Action<DisplayObject>? REMOVED_FROM_SURFACE;
+	public event Action<DisplayObject>? ENTER_FRAME;
 	
-	public string name { get; set; }
+	public string? name { get; set; }
 	public Transform transform { get; } = new Transform();
 	//TODO
 	public Transform globalTransform { get; } = new Transform();
-	private DisplaySurface _surf;
-	public DisplaySurface surface {
+	private DisplaySurface? _surf;
+	public DisplaySurface? surface {
 		get => _surf;
 		internal set {
 			_surf = value;
@@ -31,7 +31,7 @@ public abstract class DisplayObject : ITransformProvier, ITreeLeafClient<Display
 		}
 	}
 	public TreePoint<DisplayObject> tree { get; private set; }
-	public DisplayObjectContainer parent => tree.parent?.data as DisplayObjectContainer;
+	public DisplayObjectContainer? parent => tree.parent?.data as DisplayObjectContainer;
 	public bool isVisible { get; set; } = true;
 
 	public DisplayObject() {
@@ -88,7 +88,7 @@ public abstract class InteractiveObject : DisplayObject {
 	internal object? dispatcherAccessKey = Random.Shared.NextInt64();
 
 	public InteractiveObject() {
-		input = new DisplayObjectInputEvents(this, dispatcherAccessKey);
+		input = new DisplayObjectInputEvents(dispatcherAccessKey);
 		
 	}
 }
@@ -133,7 +133,7 @@ public class Shape : DisplayObject {
 
 public class HitTester {
 
-	public IList Test(DisplayObject o, IPoint2 p) {
+	public IList? Test(DisplayObject o, IPoint2 p) {
 		return null;
 	}
 }
@@ -141,13 +141,13 @@ public class HitTester {
 public abstract class DisplayObjectContainer : InteractiveObject, ITreeNodeClient<DisplayObject> {
 	//new public TreeNode<DisplayObject> tree { get; private set; }
 	/// <summary>Return tree point which is associated with this node.</summary>
-	new public TreeNode<DisplayObject> tree => base.tree as TreeNode<DisplayObject>;
+	new public TreeNode<DisplayObject> tree => (TreeNode<DisplayObject>)base.tree;
 
 	/// <summary>Number of children present in this container.</summary>
 	public int Count => tree.children.Count;
 
-	public event Action<DisplayObjectContainer, DisplayObject> CHILD_ADD;
-	public event Action<DisplayObjectContainer, DisplayObject> CHILD_REMOVED;
+	public event Action<DisplayObjectContainer, DisplayObject>? CHILD_ADD;
+	public event Action<DisplayObjectContainer, DisplayObject>? CHILD_REMOVED;
 
 	public DisplayObjectContainer() {
 		//tree = new TreeNode<DisplayObject>(this);

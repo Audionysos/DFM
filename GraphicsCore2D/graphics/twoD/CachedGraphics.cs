@@ -1,4 +1,6 @@
-﻿using audionysos.display;
+﻿// Ignore Spelling: rgb
+
+using audionysos.display;
 using audionysos.geom;
 using System;
 using System.Collections.Generic;

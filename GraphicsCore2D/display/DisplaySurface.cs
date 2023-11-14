@@ -4,14 +4,15 @@ using audionysos.input;
 using com.audionysos;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 //skatching
 
 namespace audionysos.display; 
 public abstract class DisplaySurface {
 	private List<DisplayObject> _displayed = new List<DisplayObject>(); 
-	public event Action<DisplaySurface, DisplayPointer> POINTER_MOVED;
-	public event Action<DisplaySurface, DisplayObject> OBJECT_ADD;
+	public event Action<DisplaySurface, DisplayPointer>? POINTER_MOVED;
+	public event Action<DisplaySurface, DisplayObject>? OBJECT_ADD;
 
 	public IFill background { get; set; } = (Color)0xD3D3D3FF;
 
@@ -32,7 +33,7 @@ public abstract class DisplaySurface {
 	}
 
 	public void clear() => clear<IPoint2>();
-	public abstract void clear<P>(IRect<P> rect = null) where P : IPoint2;
+	public abstract void clear<P>(IRect<P>? rect = null) where P : IPoint2;
 
 	/// <summary>Create graphics that this surface will display.</summary>
 	public abstract IMicroGraphics2D createGraphics();
@@ -60,7 +61,7 @@ public abstract class DisplaySurface {
 	}
 
 	/// <summary>False if null.</summary>
-	public static implicit operator bool(DisplaySurface s) => s!=null;
+	public static implicit operator bool([NotNullWhen(true)]DisplaySurface? s) => s!=null;
 }
 
 public class Der : DisplayObject {
@@ -71,20 +72,20 @@ public class DerX : DisplayObjectContainer {
 
 }
 
-public class XXX : IDisplayable<DerX> {
-	public DerX view { get; }
+public class XXX : IDisplayable<DerX?> {
+	public DerX? view { get; }
 }
 
-public interface IDisplayable<T> where T : DisplayObject {
+public interface IDisplayable<T> where T : DisplayObject? {
 	/// <summary>Displayable view that could be add to a <see cref="DisplayObject"/>.</summary>
-	public T view { get; }
+	public T? view { get; }
 }
 
 public class Polygon {
 
 }
 
-public interface ITransformProvier {
+public interface ITransformProvider {
 	Transform transform { get; }
 
 }
@@ -98,8 +99,8 @@ public static class TransformProviderExtensions {
 }
 
 public class ViewsLayouter {
-	private IArrangable container { get; set; }
-	private List<IArrangable> childs { get; set; }
+	private IArrangeble container { get; set; }
+	private List<IArrangeble> childs { get; set; }
 
 	public void layout() {
 		var childsSize = getChildrenSize();
@@ -119,7 +120,7 @@ public class ObjectArranger {
 
 }
 
-public interface IArrangable {
+public interface IArrangeble {
 	void arragne(int pos, int size);
 
 	IPoint2 pos { get; }

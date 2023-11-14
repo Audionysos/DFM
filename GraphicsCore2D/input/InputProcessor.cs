@@ -57,6 +57,7 @@ public class InputListener {
 			dp.position.add(sp);
 			var ht = s.hitTest(dp.position);
 
+			//TODO: PointerLeft is fired when it enters a child which should not happen.
 			if (ht != null) {
 				hit = ht;
 				var f = ht[0] as Sprite; Debug.Assert(f != null);

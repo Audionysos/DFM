@@ -2,6 +2,7 @@
 using audionysos.geom;
 using com.audionysos.text.edit;
 using com.audionysos.text.utils;
+using audionysos.math;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -19,7 +20,7 @@ public class TextAreaRenderer {
 
 	private List<RenderedGlyph> rendered = new List<RenderedGlyph>();
 
-	private Graphics g;
+	//private Graphics g;
 	//public void render2() {
 	//	rendered.Clear();
 	//	var man = ctx.manipulator;
@@ -125,13 +126,18 @@ public class TextAreaRenderer {
 
 	/// <summary>Returns column-line position for given local coordinates.
 	/// Note this may return position out of character range for example negative values.</summary>
-	public ColumnLine getPosition(IPoint2 p) {
+	public ColumnLine getPosition(IPoint2 p, bool clip = false) {
 		p.copy();
 		p.y -= linesSpacing;
 		p.y /= ctx.format.size + linesSpacing;
 		p.x /= charWidth;
 		//var cl = new ColumnLine((int)Math.Round(p.x), (int)Math.Round(p.y));
 		var cl = new ColumnLine((int)p.x, (int)p.y);
+		if (clip) {
+			cl.y = cl.y.clip(0, lines.Count - 1);
+			cl.x = cl.x.clip(0, lines[cl.y].columns-1);
+		}
+
 		if(cl.y < lines.Count) { //corrects column position for wider chars like \t
 			var l = lines[cl.y];
 			var c = l.glyphAt(cl.x, out var g);

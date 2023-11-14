@@ -21,12 +21,20 @@ public interface IPoint2  {
 	public static P operator +(P a, (double x, double y)t)
 		=> a.copy().add(t.x, t.y);
 
+	/// <summary>Compares length of the vector with given value.</summary>
+	public static bool operator >(P a, double b) => a.len() > b;
+	/// <summary>Compares length of the vector with given value.</summary>
+	public static bool operator <(P a, double b) => a.len() < b;
+
 	public string ToRawString() {
 		return $@"{x.ToString(CultureInfo.InvariantCulture)}, {y.ToString(CultureInfo.InvariantCulture)}";
 	}
 }
 
 public static class IPoint2Extensions {
+
+	public static double len<T>(this T p) where T : P
+		=> Math.Sqrt(p.x*p.x + p.y*p.y);
 
 	public static P interpolate(P v1, P v2, double d) {
 		return v2.copy().sub(v1).mul(d).add(v1);

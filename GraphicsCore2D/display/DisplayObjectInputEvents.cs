@@ -102,7 +102,7 @@ public class DisplayObjectInputEvents {
 
 	private object? accessKey { get; }
 
-	public DisplayObjectInputEvents(DisplayObject owner, object? accessKey = null) {
+	public DisplayObjectInputEvents(object? accessKey = null) {
 		this.accessKey = accessKey;
 
 		//var ed = new EventsDispatcher(
@@ -160,7 +160,6 @@ public class PointerEvent : Event {
 		init => base.target = value;
 	}
 	required public DisplayPointer pointer { get; init; }
-	public char character { get; init; }
 	public static implicit operator PointerEvent(DisplayPointer p)
 		=> new PointerEvent() { pointer = p };
 }
@@ -181,7 +180,7 @@ public class KeyboardEvent : Event {
 
 public abstract class Event {
 	private object? _t;
-	public object? target { get => _t; set => _t ??= value; }
+	public object target { get => _t; set => _t ??= value; }
 	public object? currentTarget => _c.currentTarget;
 	public EventPhase phase => _c.phase;
 	private bool _h;
@@ -204,7 +203,9 @@ public abstract class Event {
 		}
 	}
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 	private EvenControl _c;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 	public EvenControl control { set => _c ??= value; }
 
 }

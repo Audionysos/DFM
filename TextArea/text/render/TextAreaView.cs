@@ -6,7 +6,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using audionysos.graphics.extensions.shapes;
-
+using audionysos.geom;
 
 namespace com.audionysos.text.render; 
 public class TextAreaView : IDisplayable<Sprite> {
@@ -59,7 +59,13 @@ public class TextAreaView : IDisplayable<Sprite> {
 		TEXT_CHANGED += onTextChanged;
 		view.input.KEY_DOWN += onKeyDown;
 		view.input.KEY_UP += onKeyUp;
+
+		view.input.POINTER_ENTER += onPoinerEnter;
+		view.input.POINTER_LEFT += onPoinerLeft;
 		view.input.POINTER_MOVE += onPointerMove;
+		view.input.POINTER_DOWN += onPointerDown;
+		view.input.POINTER_UP += onPointerUp;
+
 		//TODO: the whole manipulator and it's selection is changed when text is set to the text area.
 		drawBackground();
 		context.background.addChild(selectionView);
@@ -71,15 +77,45 @@ public class TextAreaView : IDisplayable<Sprite> {
 		context.background.addChild(bg);
 		//TODO: Investigate why cached graphics are no flushed
 		bg.graphics.clear();
-		bg.graphics.beginFill(0xf8ecd7, 1);
+		bg.graphics.beginFill(0xfffff4, 1);
 		bg.graphics.drawRect(0,0, 300, 300);
 
 		context.background.addChild(chRect);
 	}
 
+	#region Pointer events handlers 
+	/// <summary>Pointer down position.</summary>
+	private Point2 pdp = new Point2();
+	/// <summary>Last know pointer position when it was moved.</summary>
+	private Point2 plp = new Point2();
+	bool isDragging = false;
+	private void onPointerDown(PointerEvent e) {
+		var lp = view.localCoordinates(e.pointer.position);
+		pdp.set(lp);
+		isDragging = true;
+		
+	}
+
+	private void onPointerUp(PointerEvent e) {
+		isDragging = false;
+		var p = view.localCoordinates(e.pointer.position);
+		if (p - pdp > 2) return; //was moved
+		
+		manipulator.carets.pos = renderer.getPosition(p);
+		renderer.renderCarets();
+	}
+
 	private void onPointerMove(PointerEvent e) {
 		var lp = view.localCoordinates(e.pointer.position);
-		var cl = context.renderer.getPosition(lp);
+		plp.set(lp);
+		var cl = context.renderer.getPosition(lp, true);
+
+		if (isDragging) {
+			var m = manipulator;
+			var chi = m.getCharacter(cl);
+			m.selection.end = chi;
+			return;
+		}
 		var r = renderer.getGlyphRect(cl);
 		Debug.WriteLine($"Pointer: {cl}");
 		if(r.size.x == 0)
@@ -88,6 +124,15 @@ public class TextAreaView : IDisplayable<Sprite> {
 		chRect.graphics.lineStyle(1, 0xFF0000);
 		chRect.graphics.drawRect(r.position.x, r.position.y , r.size.x, r.size.y);
 	}
+
+	private void onPoinerEnter(PointerEvent e) {
+		Cursor.set(Cursor.TEXT);
+	}
+
+	private void onPoinerLeft(PointerEvent e) {
+		Cursor.set(null);
+	}
+	#endregion
 
 	private void onTextChanged(TextAreaView view) {
 		onSelectionChanged(manipulator.selection);
@@ -99,7 +144,7 @@ public class TextAreaView : IDisplayable<Sprite> {
 		renderer.drawBorder(span, selectionView.graphics);
 
 		bg.graphics.clear();
-		bg.graphics.beginFill(0xf8ecd7, 1);
+		bg.graphics.beginFill(0xfffff4, 1);
 		bg.graphics.drawRect(0, 0, 300, 300);
 	}
 

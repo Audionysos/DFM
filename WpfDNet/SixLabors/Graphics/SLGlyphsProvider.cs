@@ -11,22 +11,6 @@ using X = com.audionysos.text.render;
 namespace WpfDNet; 
 public class SLGlyphsProvider : GlyphsProvider {
 
-	public X.Glyph get2(char ch, ITextFormat f) {
-		if (ch == ' ') return missingGlyph;
-		var font = F.SystemFonts.CreateFont(f.font.name, (float)f.size);
-		font.TryGetGlyphs(new F.Unicode.CodePoint(ch), out var glyphs);
-		var g = glyphs[0];
-		var b = new bla();
-		TextRenderer.RenderTextTo(b,  ch.ToString(), new TextOptions(font) { 
-			
-		});
-		var rc = g.BoundingBox(GlyphLayoutMode.Horizontal
-			,new System.Numerics.Vector2(), 128);
-		var width = rc.Width; var height = 0;
-		var r = new X.Glyph(ch.ToString(), width, height, b.phs);
-		return r;
-	}
-
 	public override X.Glyph get(char ch, ITextFormat f) {
 		if (ch == ' ') return missingGlyph;
 		var font = F.SystemFonts.CreateFont(f.font.name, (float)f.size);
