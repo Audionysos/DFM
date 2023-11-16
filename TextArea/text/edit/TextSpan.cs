@@ -91,7 +91,7 @@ public class TextSpan {
 	}
 
 	public TextSpan setTo(int start, int end) {
-		s = start; e = end;
+		order(start, end);
 		CHANGED?.Invoke(this);
 		return this;
 	}

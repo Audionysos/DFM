@@ -64,6 +64,7 @@ public class TextManipulator {
 
 	private void init() {
 		selection = new TextSelection(text);
+		selection.CHANGED += onSelectionChanged;
 		carets = new TextCarets(this);
 		carets.CHANGED += onCaretsChanged;
 		createInfos();
@@ -128,17 +129,27 @@ public class TextManipulator {
 		context.renderer?.render();
 	}
 
+	private void onSelectionChanged(TextSpan span) {
+		if (selection.length == 0) selectingStart = -1;
+	}
+
+	/// <summary>Tells that new text is currently been inserted through the manipulator.</summary>
 	private bool isInserting;
-	/// <summary>Movement of the caret will mark <see cref="selection"/> if set to true.</summary>
-	public bool isSelecting { get; set; }
+	/// <summary>Movement of the caret will mark <see cref="selection"/> if set to true.
+	/// Note that setting this flag to false will not clear the selection and next caret position change attempt will cause the caret to align with the selection's <see cref="TextSpan.start"/> or <see cref="TextSpan.end"/> (depending on move direction) and then clear the <see cref="selection"/>.
+	/// If you want to change caret position without aligning to selection boundaries, <see cref="TextSelection.clear"/> the selection manually. </summary>
+	public bool isSelecting;
+	/// <summary>Position at which selecting process started.</summary>
+	private int selectingStart = -1;
 	private void onCaretsChanged(TextCaret caret, int change) {
-		var pp = carets.ch - change;
 		if (isSelecting && !isInserting) {
-			if (pp == selection.start) {
-				selection.start = carets.ch;
-			} else if (pp == selection.end) {
-				selection.end = carets.ch;
-			} else Debug.Assert(false);
+			if(selectingStart < 0) {
+				Debug.WriteLine($"Selecting start: c:{carets.ch} ch:{change}");
+				selectingStart = carets.ch - change;
+				Debug.WriteLine($"start:{selectingStart}");
+			}
+			//Debug.WriteLine($"Selecting: start:{selectingStart} end: {carets.ch}");
+			selection.setTo(selectingStart, carets.ch);
 		} else {
 			if(selection.length == 0) {
 				selection.setTo(carets.ch, carets.ch);
@@ -151,6 +162,8 @@ public class TextManipulator {
 			} else {
 				selection.setTo(carets.ch, carets.ch);
 			}
+			Debug.WriteLine("resetting selection");
+			selectingStart = -1;
 			caret.ch = selection.start;
 		}
 	}

@@ -10,6 +10,8 @@ using audionysos.geom;
 
 namespace com.audionysos.text.render; 
 public class TextAreaView : IDisplayable<Sprite> {
+	private static Action<string> WL = s => Debug.WriteLine(s);
+
 	public event Action<TextAreaView> TEXT_CHANGED;
 
 	public Sprite view { get; } = new Sprite();
@@ -50,9 +52,14 @@ public class TextAreaView : IDisplayable<Sprite> {
 		x.view = this;
 		x.renderer = renderer = new TextAreaRenderer(context);
 		x.manipulator = manipulator = new TextManipulator(context);
+
 		//x.gfx = view.graphics;
 
 		configureView();
+	}
+
+	private void onCaretsChanged(TextCaret caret, int arg2) {
+		renderer.renderCarets();
 	}
 
 	private void configureView() {
@@ -92,17 +99,24 @@ public class TextAreaView : IDisplayable<Sprite> {
 	private void onPointerDown(PointerEvent e) {
 		var lp = view.localCoordinates(e.pointer.position);
 		pdp.set(lp);
+		WL("Pointer Down");
 		isDragging = true;
-		
+
+
+		var m = manipulator;
+		m.selection.clear();
+		var cl = context.renderer.getPosition(lp, true);
+		var chi = m.getCharacter(cl);
+		WL($"Moving caret from {m.carets.ch,3} to {chi,3}");
+		m.carets.ch = chi;
+		WL($"Current: {m.carets.ch}");
 	}
 
 	private void onPointerUp(PointerEvent e) {
 		isDragging = false;
 		var p = view.localCoordinates(e.pointer.position);
-		if (p - pdp > 2) return; //was moved
-		
-		manipulator.carets.pos = renderer.getPosition(p);
-		renderer.renderCarets();
+		WL("Pointer Up");
+		manipulator.isSelecting = false;
 	}
 
 	private void onPointerMove(PointerEvent e) {
@@ -112,14 +126,12 @@ public class TextAreaView : IDisplayable<Sprite> {
 
 		if (isDragging) {
 			var m = manipulator;
-			var chi = m.getCharacter(cl);
-			m.selection.end = chi;
+			m.isSelecting = true;
+			m.carets.pos = cl;
 			return;
 		}
 		var r = renderer.getGlyphRect(cl);
-		Debug.WriteLine($"Pointer: {cl}");
-		if(r.size.x == 0)
-			return;
+		if (r.size.x == 0) return;
 		chRect.graphics.clear();
 		chRect.graphics.lineStyle(1, 0xFF0000);
 		chRect.graphics.drawRect(r.position.x, r.position.y , r.size.x, r.size.y);
@@ -137,6 +149,7 @@ public class TextAreaView : IDisplayable<Sprite> {
 	private void onTextChanged(TextAreaView view) {
 		onSelectionChanged(manipulator.selection);
 		manipulator.selection.CHANGED += onSelectionChanged;
+		manipulator.carets.CHANGED += onCaretsChanged;
 	}
 
 	private Sprite selectionView = new ();
@@ -170,7 +183,6 @@ public class TextAreaView : IDisplayable<Sprite> {
 			manipulator.insert(e.character);
 		}
 
-		renderer.renderCarets();
 		var c = manipulator.carets;
 		var s = $"Ln: {c.pos.y}\tCh: {c.lCh}\tCol: {c.actualPos.x}\tACh: {c.ch}\t(x: {c.pos.x}\ty: {c.pos.y})";
 		Debug.WriteLine(s);
@@ -183,7 +195,7 @@ public class TextAreaView : IDisplayable<Sprite> {
 	}
 
 	private void copy() {
-
+		PinBoard.set(manipulator.selection.text);
 	}
 
 	private void cut() {

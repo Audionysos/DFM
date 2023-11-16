@@ -20,7 +20,7 @@ public class TextCarets : TextCaret {
 }
 
 public class TextCaret {
-	/// <summary>Second argument is different between current and previous positions.</summary>
+	/// <summary>Second argument is difference between current and previous positions.</summary>
 	public event Action<TextCaret, int> CHANGED;
 	private Text text { get; set; }
 	public TextManipulator man { get; }

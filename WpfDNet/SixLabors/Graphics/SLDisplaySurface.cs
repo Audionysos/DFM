@@ -74,7 +74,7 @@ public class WPFInputProcessor : InputProcessor {
 	}
 
 	private void onCursorChanged() {
-		Debug.WriteLine("Cursor changed");
+		//Debug.WriteLine("Cursor changed");
 		Mouse.OverrideCursor = AI.Cursor.current.@switch(
 			(AI.Cursor.TEXT, Cursors.IBeam)
 		);
@@ -140,6 +140,6 @@ public class WPFInputProcessor : InputProcessor {
 	}
 
 	public override void setClipboard(object o) {
-		Clipboard.SetData(DataFormats.Serializable, o);
+		Clipboard.SetDataObject(o);
 	}
 }

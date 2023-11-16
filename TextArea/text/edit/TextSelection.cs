@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace com.audionysos.text.edit; 
 /// <summary>Represents selection in a <see cref="TextManipulator"/>.
@@ -19,9 +20,11 @@ public class TextSelection : TextSpan {
 		spans.Clear();
 		var ns = new TextSpan(source, start, end);
 		spans.Add(ns);
-		this.start = ns.start;
-		this.end = ns.end;
+		setTo(start, end);
 		return ns;
 	}
 
+	public void clear() {
+		set(0, 0);
+	}
 }

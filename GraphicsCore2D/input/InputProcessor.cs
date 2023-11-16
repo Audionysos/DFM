@@ -66,18 +66,18 @@ public class InputListener {
 					//p?.dispatcher.firePointerLeft();
 					dispatch(events.POINTER_LEFT, p, prevHit, dp);
 					prevHit = new List<DisplayObject>(hit);
-					Debug.WriteLine($"PointerEnter {RapidTimeStamp}");
+					//Debug.WriteLine($"PointerEnter {RapidTimeStamp}");
 					//f.dispatcher.firePointerEnter();
 					dispatch(events.POINTER_ENTER, f, ht, dp);
 				} else {
-					Debug.WriteLine($"PointerMoved {RapidTimeStamp}");
+					//Debug.WriteLine($"PointerMoved {RapidTimeStamp}");
 					//f.dispatcher.firePointerMove(dp);
 					dispatch(events.POINTER_MOVE, f, ht, dp);
 				}
 			} else {
 				hit = noHit;
 				if (prevHit.Count > 0 && prevHit[0] is InteractiveObject p) {
-					Debug.WriteLine($"PointerLeft {RapidTimeStamp}");
+					//Debug.WriteLine($"PointerLeft {RapidTimeStamp}");
 					//io.dispatcher.firePointerLeft();
 					dispatch(events.POINTER_LEFT, p, prevHit, dp);
 					prevHit = noHit;

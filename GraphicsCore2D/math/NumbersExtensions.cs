@@ -23,6 +23,9 @@ public static class NumbersExtensions {
 		return n;
 	}
 
+	public static N clip<N>(this N n, N max) where N : INumber<N>
+		=> (n > max) ? max : n;
+
 	/// <summary>Creates range from this up to given number.</summary>
 	public static Range<N> to<N>(this N start, N otherEnd) where N : INumber<N>
 		=> new(start, otherEnd);

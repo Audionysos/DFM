@@ -127,7 +127,7 @@ public class TextAreaRenderer {
 	/// <summary>Returns column-line position for given local coordinates.
 	/// Note this may return position out of character range for example negative values.</summary>
 	public ColumnLine getPosition(IPoint2 p, bool clip = false) {
-		p.copy();
+		p = p.copy();
 		p.y -= linesSpacing;
 		p.y /= ctx.format.size + linesSpacing;
 		p.x /= charWidth;
@@ -135,7 +135,8 @@ public class TextAreaRenderer {
 		var cl = new ColumnLine((int)p.x, (int)p.y);
 		if (clip) {
 			cl.y = cl.y.clip(0, lines.Count - 1);
-			cl.x = cl.x.clip(0, lines[cl.y].columns-1);
+			var l = lines[cl.y];
+			cl.x = cl.x.clip(0, l.columns-l.lineEndSize.clip(1)); //TODO: The line end size is stupid and will break in future
 		}
 
 		if(cl.y < lines.Count) { //corrects column position for wider chars like \t
@@ -356,6 +357,11 @@ public class TextLineLayout {
 			return _glyphs.Length - 1;
 		return _glyphs.Length;
 	}
+
+	/// <summary>NOT fully implemented!
+	/// Returns 1 if (<see cref="endsWithNewLine"/>) and 0 on last line.</summary>
+	public int lineEndSize
+		=> endsWithNewLine ? 1 : 0;
 
 	public bool endsWithNewLine
 		=> Count > 0 &&
