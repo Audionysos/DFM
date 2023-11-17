@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using audionysos.graphics.extensions.shapes;
 using audionysos.geom;
+using System.Numerics;
 
 namespace com.audionysos.text.render; 
 public class TextAreaView : IDisplayable<Sprite> {
@@ -174,6 +175,7 @@ public class TextAreaView : IDisplayable<Sprite> {
 			manipulator.insert('\t');
 		else if (e.key.isShift())
 			manipulator.isSelecting = true;
+		//TODO: When button is released while the application is in break mode it will not register the release event 
 		else if (Keyboard.anyPressed(Keyboard.Key.LeftCtrl, Keyboard.Key.RightCtrl)) {
 			if (e.key == Keyboard.Key.X) cut();
 			else if (e.key == Keyboard.Key.C) copy();

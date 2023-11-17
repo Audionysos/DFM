@@ -54,7 +54,7 @@ public class Text : IReadOnlyList<char> {
 		span = new TextSpan(this, 0, chars.Length-1);
 
 	}
-	//TODO: lines are bugged out when pasting text at the end when last line is empty
+	//TODO: lines are bugged out when pasting text in empty line
 	public void insert(string x, int p) {
 		var chl = getPos(p);
 

@@ -32,6 +32,7 @@ public class TextAreaTest {
 
 		ta.text =
 			"Chrząszcz brzmi w trzcinie w trzebżeszynie" +
+			"\n" +
 			"\n\tŹaba daba doom" +
 			"\n\tvwifjwoe ij  wjor ijj" +
 			"\nwrt";

@@ -16,6 +16,7 @@ using SixLabors.Fonts;
 using F = SixLabors.Fonts;
 using WpfDNet.SLtoWPF;
 using SixLabors.Fonts.Unicode;
+using System.Numerics;
 
 namespace WpfDNet; 
 /// <summary>
@@ -28,6 +29,7 @@ public partial class MainWindow : W.Window {
 		InitializeComponent();
 		adapter = new SixLaborsToWPFAdapter(img);
 		//Left = 1800;
+		Debug.WriteLine("Vector hardware: " + Vector.IsHardwareAccelerated);
 		pickTest(adapter, App.mode);
 	}
 

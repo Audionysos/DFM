@@ -82,6 +82,7 @@ public class TextAreaRenderer {
 			_lines.Add(l);
 
 			for (int j = 0; j < tl.length; j++) {
+				grc.format = ctx.format;
 				var chi = man.getCharInfo(tl.start + j);
 				var rg = renderCharacter(chi, grc);
 				var v = rg.data as Shape;

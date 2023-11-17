@@ -108,6 +108,8 @@ public class TextSpan {
 		CHANGED?.Invoke(this);
 	}
 
+	public void grow(int endIncrease) => grow(0, endIncrease);
+
 	private void onTextChanged(TextChangedEvent e) {
 		//if (this is TextLine) Debugger.Break();
 		if (mutating == MutatingBehavior.STATIC)
@@ -125,7 +127,8 @@ public class TextSpan {
 		}
 		var d = r.subtract(e.range);
 		if(e.type == TextChangeType.ADDED) {
-			if (d.onlyRight || d.empty) this.move(e.size); //was pushed
+			if(r.start == e.range.start) grow(e.size);
+			else if (d.onlyRight || d.empty) this.move(e.size);//was pushed
 			else {
 				if (mutating == MutatingBehavior.CUSTOM)
 					mutate(e, d);

@@ -20,7 +20,7 @@ public class TextSelection : TextSpan {
 		spans.Clear();
 		var ns = new TextSpan(source, start, end);
 		spans.Add(ns);
-		setTo(start, end);
+		setTo(ns.start, ns.end);
 		return ns;
 	}
 
