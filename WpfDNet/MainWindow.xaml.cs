@@ -39,6 +39,7 @@ public partial class MainWindow : W.Window {
 		"display" => new DisplayTest(adapter),
 		"textArea" => new TextAreaTest(adapter),
 		"wpfDisplay" => new WPFComparision(this),
+		"layoutAPI" => new LayoutAPI_Tests(),
 			_ => null,
 	};
 

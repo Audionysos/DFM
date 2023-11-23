@@ -74,11 +74,15 @@ public class DerX : DisplayObjectContainer {
 
 public class XXX : IDisplayable<DerX?> {
 	public DerX? view { get; }
+	//DisplayObject IDisplayable.view { get; }
 }
 
-public interface IDisplayable<T> where T : DisplayObject? {
+public interface IDisplayable {
+	//public DisplayObject view { get; }
+}
+public interface IDisplayable<T> : IDisplayable where T : DisplayObject {
 	/// <summary>Displayable view that could be add to a <see cref="DisplayObject"/>.</summary>
-	public T? view { get; }
+	new public T view { get; }
 }
 
 public class Polygon {

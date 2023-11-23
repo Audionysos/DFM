@@ -8,6 +8,9 @@ using static System.Math;
 namespace audionysos.math; 
 public static class NumbersExtensions {
 
+	public static bool NaN<N>(this N n) where N : IFloatingPoint<N> 
+		=> N.IsNaN(n);
+
 	/// <summary>Return true if this number equals given other number with some tolerance.</summary>
 	/// <param name="n"></param>
 	/// <param name="o">Other number to compare.</param>

@@ -15,6 +15,10 @@
     "WPFDisplayTest": {
       "commandName": "Project",
       "commandLineArgs": "wpfDisplay"
+    },
+    "LayoutAPI": {
+      "commandName": "Project",
+      "commandLineArgs": "layoutAPI"
     }
   }
 }
