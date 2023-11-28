@@ -9,6 +9,7 @@ using LS = audionysos.gui.LayoutSettings;
 using static audionysos.utils.Fantastatics;
 using audionysos.graphics.extensions.shapes;
 using com.audionysos;
+using audionysos.math;
 
 namespace audionysos.gui;
 public class LayoutArranger {
@@ -39,7 +40,10 @@ public class LayoutArranger {
 		chL.position = each(t => {
 				var (p, sl, s, av) = t; //placement, size left(parent), size
 				if (p.isInside) return sl * p.value + sl;
-				else return av * .5 + av * p.localScale - s * .5;
+				else {
+					var e = sl * p.value.clip(-1, 1) + sl;
+					return e + s * p.localScale;
+				}
 			}
 			, (chL.placement.horizontal, sl.width, s.width, avs.width)
 			, (chL.placement.vertical, sl.height, s.height, avs.height)

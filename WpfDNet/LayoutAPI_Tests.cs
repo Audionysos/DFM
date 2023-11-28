@@ -33,7 +33,7 @@ internal class LayoutAPI_Tests {
 			children = {
 				new Block() {
 					layout = {
-						placement = (CENTER, LEFT_EDGE),
+						placement = (-.9, -.9),
 						size = (25, 25)
 					},
 					style = {
