@@ -29,7 +29,7 @@ public  class LineTests {
 	static CrossingConfig caseX2 = new() {
 		a = ((100, 100), (158.4, 200)),
 		b = ((150, 200), (150, 150)),
-		expected = (150, 185.61643835616437), //not really buy expecting something
+		expected = (150, 185.61643835616437),
 	};
 
 	[TestMethod]

@@ -8,7 +8,7 @@ public interface IFill : IFillPiece {
 
 }
 
-public interface IFillPorovider {
+public interface IFillProvider {
 	IFill getFill(int id);
 }
 
@@ -52,16 +52,16 @@ public class Color : IFill {
 		=> new Color(rgba);
 
 	//NOTE: not tested
-	public static bool operator ==(Color a, Color b)
+	public static bool operator ==(Color? a, Color? b)
 		=> (!(a is null)) && a.Equals(b)
 			|| (a is null && b is null);
 
-	public static bool operator !=(Color a, Color b)
+	public static bool operator !=(Color? a, Color? b)
 		=> (!(a is null)) && !a.Equals(b)
 			|| (a is null && !(b is null));
 
 	/// <inheritdoc/>
-	public override bool Equals(object obj) {
+	public override bool Equals(object? obj) {
 		if (!(obj is Color oc)) return false;
 		return rgba == oc.rgba;
 	}

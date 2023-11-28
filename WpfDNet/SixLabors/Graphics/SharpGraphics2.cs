@@ -27,7 +27,7 @@ public class SharpGraphics2 : IMicroGraphics2D {
 	private Figure2 currFigure = new Figure2();
 	private IFill fill;
 	private Stroke2 stroke;
-	private IFillPorovider fillPorovider;
+	private IFillProvider fillPorovider;
 	private Image<Bgra32> img;
 
 	public SharpGraphics2(Image<Bgra32> img) {

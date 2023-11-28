@@ -32,7 +32,7 @@ public class SharpGraphics : IMicroGraphics2D, IInteractiveGraphics2D {
 	private Figure currFigure = new Figure();
 	private IFill fill;
 	private Stroke stroke;
-	private IFillPorovider fillPorovider;
+	private IFillProvider fillPorovider;
 	private Image<Bgra32> img;
 
 	public SharpGraphics(Image<Bgra32> img) {

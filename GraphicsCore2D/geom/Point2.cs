@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.Serialization;
 using PE = audionysos.geom.IPoint2Extensions;
@@ -14,6 +16,13 @@ public class Point2 : IPoint2 {
 		this.x = x; this.y = y;
 	}
 
+	public Point2(IReadOnlyList<double> coordinates) {
+		if (coordinates != null && coordinates.Count > 0)
+			x = coordinates[0];
+		if (coordinates?.Count > 1)
+			y = coordinates[1];
+	}
+
 	IPoint2 IPoint2.copy() => new Point2(x, y);
 	//public Point2 copy() => new Point2(x, y);
 
@@ -21,6 +30,9 @@ public class Point2 : IPoint2 {
 
 	public static implicit operator Point2((double x, double y) t)
 		=> new Point2(t.x, t.y);
+
+	public static implicit operator Point2(double[] l)
+		=> new Point2(l);
 
 	/// <inheritdoc/>
 	public override string ToString() {

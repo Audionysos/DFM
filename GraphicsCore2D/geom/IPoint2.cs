@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using P = audionysos.geom.IPoint2;
 
 
-public interface IPoint2  {
+public interface IPoint2 {
 	double x { get; set; }
 	double y { get; set; }
 
@@ -32,6 +32,9 @@ public interface IPoint2  {
 }
 
 public static class IPoint2Extensions {
+
+	public static T fromArray<T>(this T p) where T : P
+		=> (T)p.copy();
 
 	public static double len<T>(this T p) where T : P
 		=> Math.Sqrt(p.x*p.x + p.y*p.y);

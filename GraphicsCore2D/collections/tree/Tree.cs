@@ -191,7 +191,7 @@ public class TreePoint<T> where T : class {
 	public T data { get; private set; }
 	public TreeInfo<T> info => bass.info
 		.getAttached((i) => new TreeInfo<T>(i));
-	public TreeNode<T> parent => bass?.parent.data as TreeNode<T>;
+	public TreeNode<T>? parent => bass.parent?.data as TreeNode<T>;
 
 	public TreePoint(T data){
 		this.data = data;

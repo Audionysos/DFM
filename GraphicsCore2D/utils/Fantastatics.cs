@@ -14,7 +14,7 @@ public static class Fantastatics {
 	public static string RapidTimeStamp
 		=> DateTime.Now.ToString("ss:ffff");
 
-	/// <summary>Compares this object to objects in the list and returns other object from the tuple where the objects were equal.</summary>
+	/// <summary>Compares this object to first objects in the tuples list and returns second object from a tuple where <see cref="object.Equals(object?)"/> returned true.</summary>
 	/// <typeparam name="R">Type of returned object.</typeparam>
 	/// <typeparam name="I">Type of input/compared object.</typeparam>
 	/// <param name="input">Compared object.</param>
@@ -25,5 +25,28 @@ public static class Fantastatics {
 			if (Equals(input, m.c))
 				return m.r;
 		return default;
+	}
+
+	/// <summary>Executes given function one time per each listed object.</summary>
+	/// <typeparam name="T">Type of objects passed to the function.</typeparam>
+	/// <typeparam name="R">Type of object returned by the function.</typeparam>
+	/// <param name="f">Function to execute.</param>
+	/// <param name="ps">List of to be passed as the function parameters.</param>
+	/// <returns>List of function calls results.</returns>
+	public static void each<T>(Action<T> f, params T[] ps) {
+		foreach (var p in ps) f(p);
+	}
+
+	/// <summary>Executes given function one time per each listed object and returns all returned values as an array.</summary>
+	/// <typeparam name="T">Type of objects passed to the function.</typeparam>
+	/// <typeparam name="R">Type of object returned by the function.</typeparam>
+	/// <param name="f">Function to execute.</param>
+	/// <param name="ps">List of to be passed as the function parameters.</param>
+	/// <returns>List of function calls results.</returns>
+	public static R[] each<T, R>(Func<T, R> f, params T[] ps) {
+		var r = new R[ps.Length];
+		for (var i = 0; i < ps.Length; i++)
+			r[i] = f(ps[i]);
+		return r;
 	}
 }

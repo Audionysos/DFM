@@ -214,6 +214,7 @@ public class Sprite : DisplayObjectContainer {
 		getGlobalTransform();
 		graphics.transform(globalTransform);
 		surface.renderGraphics(graphics.baseGraphics);
+		//TODO: ISN'T THIS SUPPOSE TO be called only on children?? This may case to render the same object multiple times in one frame
 		tree.forDescendants(d => d.update());
 	}
 
