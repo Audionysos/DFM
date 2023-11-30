@@ -1,17 +1,12 @@
-﻿using audionysos.display;
-using audionysos.gui;
+﻿using audionysos.gui;
+using audionysos.gui.layout;
 using com.audionysos;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WpfDNet.SLtoWPF;
-using static audionysos.gui.RelativePlacement;
+using static audionysos.gui.layout.RelativePlacement;
 
 namespace WpfDNet;
+
 internal class LayoutAPI_Tests {
 	private readonly SixLaborsToWPFAdapter adapter;
 
